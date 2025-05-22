@@ -1,0 +1,49 @@
+name: eventsolutions
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+environment:
+  sdk: ^3.6.2
+dependencies:
+  flutter:
+    sdk: flutter
+  riverpod: ^2.6.1
+  flutter_riverpod: ^2.6.1    
+  cupertino_icons: ^1.0.8
+  device_preview: ^1.2.0
+  shared_preferences: ^2.5.3
+  dio: ^5.8.0+1
+  intl: ^0.19.0
+  connectivity_plus: ^6.1.4
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+
+
+  fonts:
+    - family: Montserrat
+      fonts: 
+        - asset: assets/fonts/Montserrat-Black.ttf
+        - asset: assets/fonts/Montserrat-BlackItalic.ttf
+        - asset: assets/fonts/Montserrat-Bold.ttf
+        - asset: assets/fonts/Montserrat-BoldItalic.ttf
+        - asset: assets/fonts/Montserrat-ExtraBold.ttf
+        - asset: assets/fonts/Montserrat-ExtraBoldItalic.ttf
+        - asset: assets/fonts/Montserrat-ExtraLight.ttf
+        - asset: assets/fonts/Montserrat-ExtraLightItalic.ttf
+        - asset: assets/fonts/Montserrat-Italic.ttf
+        - asset: assets/fonts/Montserrat-Light.ttf
+        - asset: assets/fonts/Montserrat-LightItalic.ttf
+        - asset: assets/fonts/Montserrat-Medium.ttf
+        - asset: assets/fonts/Montserrat-MediumItalic.ttf
+        - asset: assets/fonts/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat-SemiBold.ttf
+        - asset: assets/fonts/Montserrat-SemiBoldItalic.ttf
+        - asset: assets/fonts/Montserrat-Thin.ttf
+        - asset: assets/fonts/Montserrat-ThinItalic.ttf
