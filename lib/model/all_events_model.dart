@@ -26,9 +26,11 @@ class Data {
   final String startDate;
   final String endDate;
   final List<TicketTiers> ticketTiers;
+  final String eventId;
 
   Data({
     this.poster,
+    required this.eventId,
     required this.title,
     required this.description,
     required this.startDate,
@@ -39,6 +41,7 @@ class Data {
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
         title: json['title'],
+        eventId: json['eventId'],
         poster: json['poster'],
         description: json['description'],
         startDate: json['startDateTime'],
@@ -53,7 +56,8 @@ class Data {
       'description': description,
       'startDateTime': startDate,
       'endDateTime': endDate,
-      'ticketTiers': ticketTiers.map((e) => e.toJson()).toList()
+      'ticketTiers': ticketTiers.map((e) => e.toJson()).toList(),
+      'eventId': eventId
     };
   }
 }
