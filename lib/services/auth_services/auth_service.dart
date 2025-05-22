@@ -200,12 +200,12 @@
 // }
 
 import 'package:dio/dio.dart';
-import 'package:eventsolutions/model/forgot_password_model.dart';
-import 'package:eventsolutions/model/verify_model.dart';
+import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/verify_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:eventsolutions/model/login_model.dart';
-import 'package:eventsolutions/model/register_model.dart';
+import 'package:eventsolutions/model/auth_model/login_model.dart';
+import 'package:eventsolutions/model/auth_model/register_model.dart';
 import 'package:eventsolutions/services/dio_client.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 

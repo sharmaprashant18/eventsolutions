@@ -335,7 +335,7 @@
 // }
 
 import 'dart:async';
-import 'package:eventsolutions/provider/auth_provider.dart';
+import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/forgot_password.dart';
 import 'package:eventsolutions/view/home_page.dart';

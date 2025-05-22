@@ -1,16 +1,48 @@
 class EventRegisterModel {
-  final String status;
-  final String data;
+  final bool success;
   final String message;
-  EventRegisterModel(
-      {required this.data, required this.message, required this.status});
+  final RegistrationData data;
+
+  EventRegisterModel({
+    required this.success,
+    required this.message,
+    required this.data,
+  });
 
   factory EventRegisterModel.fromJson(Map<String, dynamic> json) {
     return EventRegisterModel(
-        data: json['data'], message: json['message'], status: json['status']);
+      success: json['success'],
+      message: json['message'],
+      data: RegistrationData.fromJson(json['data']),
+    );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    return {'data': data, 'message': message, 'status': status};
+class RegistrationData {
+  final String id;
+  final String email;
+  final String name;
+  final String number;
+  final String tierName;
+  final String paymentScreenshot;
+
+  RegistrationData({
+    required this.id,
+    required this.email,
+    required this.name,
+    required this.number,
+    required this.tierName,
+    required this.paymentScreenshot,
+  });
+
+  factory RegistrationData.fromJson(Map<String, dynamic> json) {
+    return RegistrationData(
+      id: json['id'],
+      email: json['email'],
+      name: json['name'],
+      number: json['number'],
+      tierName: json['tierName'],
+      paymentScreenshot: json['paymentScreenshot'],
+    );
   }
 }

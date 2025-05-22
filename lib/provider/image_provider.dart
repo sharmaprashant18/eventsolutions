@@ -21,6 +21,10 @@ class ImagePickerNotifier extends StateNotifier<XFile?> {
       state = image;
     }
   }
+
+  void clearImage() {
+    state = null;
+  }
 }
 
 final imagePickerProvider = StateNotifierProvider<ImagePickerNotifier, XFile?>(

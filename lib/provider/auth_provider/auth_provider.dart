@@ -1,9 +1,9 @@
-import 'package:eventsolutions/model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:eventsolutions/model/login_model.dart';
-import 'package:eventsolutions/model/register_model.dart';
+import 'package:eventsolutions/model/auth_model/login_model.dart';
+import 'package:eventsolutions/model/auth_model/register_model.dart';
 
-import 'package:eventsolutions/services/auth_service.dart';
+import 'package:eventsolutions/services/auth_services/auth_service.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService();

@@ -65,7 +65,7 @@ class MyValidation {
       return 'Please enter your mobile number';
     }
     String pattern =
-        r"^\+?0[0-9]{10}$"; // Adjust pattern to match your country's phone format
+        r"^\+[0-9]{1,4}[0-9]{10}$"; // Adjust pattern to match your country's phone format
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(value)) {
       return 'Please enter a valid mobile number';
