@@ -1,274 +1,143 @@
-// // // // import 'package:eventsolutions/provider/event/eventProvider.dart';
-// // // // import 'package:flutter/material.dart';
-// // // // import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// // // // class TicketQr extends ConsumerWidget {
-// // // //   const TicketQr({super.key});
-
-// // // //   @override
-// // // //   Widget build(BuildContext context, WidgetRef ref) {
-// // // //     final registerState = ref.watch(registerEventProvider);
-// // // //     return Scaffold(
-// // // //       body: Column(
-// // // //         mainAxisAlignment: MainAxisAlignment.center,
-// // // //         crossAxisAlignment: CrossAxisAlignment.center,
-// // // //         children: [
-// // // //           Center(
-// // // //             child: Text(
-// // // //               registerState.result?.data.status ?? 'No status available',
-// // // //             ),
-// // // //           ),
-// // // //         ],
-// // // //       ),
-// // // //     );
-// // // //   }
-// // // // }
-
-// // // import 'package:eventsolutions/provider/event/eventProvider.dart';
-// // // import 'package:flutter/material.dart';
-// // // import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// // // class TicketQr extends ConsumerWidget {
-// // //   final String ticketId;
-
-// // //   const TicketQr({super.key, required this.ticketId});
-
-// // //   @override
-// // //   Widget build(BuildContext context, WidgetRef ref) {
-// // //     final registerState = ref.watch(registerEventProvider);
-
-// // //     // Fetch ticket details when the screen is loaded
-// // //     WidgetsBinding.instance.addPostFrameCallback((_) {
-// // //       ref.read(registerEventProvider.notifier).fetchTicketDetails(ticketId);
-// // //     });
-
-// // //     return Scaffold(
-// // //       appBar: AppBar(title: const Text('Ticket QR Code')),
-// // //       body: Center(
-// // //         child: registerState.isLoading
-// // //             ? const CircularProgressIndicator()
-// // //             : registerState.error != null
-// // //                 ? Text('Error: ${registerState.error}',
-// // //                     style: const TextStyle(color: Colors.red))
-// // //                 : registerState.ticketDetails == null
-// // //                     ? const Text('No ticket details available')
-// // //                     : Column(
-// // //                         mainAxisAlignment: MainAxisAlignment.center,
-// // //                         crossAxisAlignment: CrossAxisAlignment.center,
-// // //                         children: [
-// // //                           Text(
-// // //                             'Status: ${registerState.ticketDetails!.data.status}',
-// // //                             style: const TextStyle(fontSize: 18),
-// // //                           ),
-// // //                           const SizedBox(height: 20),
-// // //                           if (registerState.ticketDetails!.data.status ==
-// // //                                   'approved' &&
-// // //                               registerState.ticketDetails!.data != null)
-// // //                             Image.network(
-// // //                               'http://182.93.94.210:8000${registerState.ticketDetails!.data.qr}',
-// // //                               width: 200,
-// // //                               height: 200,
-// // //                               errorBuilder: (context, error, stackTrace) =>
-// // //                                   const Text(
-// // //                                 'Failed to load QR code',
-// // //                                 style: TextStyle(color: Colors.red),
-// // //                               ),
-// // //                             )
-// // //                           else
-// // //                             const Text(
-// // //                               'QR code not available. Ticket is not approved.',
-// // //                               style:
-// // //                                   TextStyle(fontSize: 16, color: Colors.grey),
-// // //                             ),
-// // //                         ],
-// // //                       ),
-// // //       ),
-// // //     );
-// // //   }
-// // // }
-
-// // import 'package:eventsolutions/provider/event/eventProvider.dart';
-// // import 'package:flutter/material.dart';
-// // import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// // class TicketQr extends ConsumerWidget {
-// //   final String ticketId;
-
-// //   const TicketQr({super.key, required this.ticketId});
-
-// //   @override
-// //   Widget build(BuildContext context, WidgetRef ref) {
-// //     final registerState = ref.watch(registerEventProvider);
-
-// //     // Fetch ticket details when the screen is loaded
-// //     WidgetsBinding.instance.addPostFrameCallback((_) {
-// //       ref.read(registerEventProvider.notifier).fetchTicketDetails(ticketId);
-// //     });
-
-// //     return Scaffold(
-// //       appBar: AppBar(title: const Text('Ticket QR Code')),
-// //       body: Center(
-// //         child: registerState.isLoading
-// //             ? const CircularProgressIndicator()
-// //             : registerState.error != null
-// //                 ? Text('Error: ${registerState.error}',
-// //                     style: const TextStyle(color: Colors.red))
-// //                 : registerState.ticketDetails == null
-// //                     ? const Text('No ticket details available')
-// //                     : Column(
-// //                         mainAxisAlignment: MainAxisAlignment.center,
-// //                         crossAxisAlignment: CrossAxisAlignment.center,
-// //                         children: [
-// //                           Text(
-// //                             'Status: ${registerState.ticketDetails!.data.status}',
-// //                             style: const TextStyle(fontSize: 18),
-// //                           ),
-// //                           const SizedBox(height: 20),
-// //                           if (registerState.ticketDetails!.data.status ==
-// //                                   'approved' &&
-// //                               registerState.ticketDetails!.data.qr != null)
-// //                             Image.network(
-// //                               'http://182.93.94.210:8000${registerState.ticketDetails!.data.qr}',
-// //                               width: 200,
-// //                               height: 200,
-// //                               errorBuilder: (context, error, stackTrace) =>
-// //                                   const Text(
-// //                                 'Failed to load QR code',
-// //                                 style: TextStyle(color: Colors.red),
-// //                               ),
-// //                             )
-// //                           else
-// //                             const Text(
-// //                               'QR code not available. Ticket is not approved.',
-// //                               style:
-// //                                   TextStyle(fontSize: 16, color: Colors.grey),
-// //                             ),
-// //                         ],
-// //                       ),
-// //       ),
-// //     );
-// //   }
-// // }
-
-// import 'package:eventsolutions/provider/event/eventProvider.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// class TicketQr extends ConsumerWidget {
-//   final String? ticketId; // Make ticketId optional
-
-//   const TicketQr({super.key, this.ticketId});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final registerState = ref.watch(registerEventProvider);
-
-//     if (ticketId != null && ticketId!.isNotEmpty) {
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         ref.read(registerEventProvider.notifier).fetchTicketDetails(ticketId!);
-//       });
-//     }
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Ticket QR Code')),
-//       body: Center(
-//         child: registerState.isLoading
-//             ? const CircularProgressIndicator()
-//             : registerState.error != null
-//                 ? Text(
-//                     'Error: ${registerState.error}',
-//                     style: const TextStyle(color: Colors.red),
-//                   )
-//                 : registerState.ticketDetails == null &&
-//                         registerState.result?.data == null
-//                     ? const Text('No ticket details available')
-//                     : Column(
-//                         mainAxisAlignment: MainAxisAlignment.center,
-//                         crossAxisAlignment: CrossAxisAlignment.center,
-//                         children: [
-//                           Text(
-//                             'Status: ${registerState.ticketDetails?.data.status ?? registerState.result?.data.status ?? 'Unknown'}',
-//                             style: const TextStyle(fontSize: 18),
-//                           ),
-//                           const SizedBox(height: 20),
-//                           if ((registerState.ticketDetails?.data.status ==
-//                                       'approved' &&
-//                                   registerState.ticketDetails?.data.qr !=
-//                                       null) ||
-//                               (registerState.result?.data.status ==
-//                                       'approved' &&
-//                                   registerState.result?.data.qr != null))
-//                             Image.network(
-//                               'http://182.93.94.210:8000${registerState.ticketDetails?.data.qr ?? registerState.result?.data.qr}',
-//                               width: 200,
-//                               height: 200,
-//                               errorBuilder: (context, error, stackTrace) =>
-//                                   const Text(
-//                                 'Failed to load QR code',
-//                                 style: TextStyle(color: Colors.red),
-//                               ),
-//                             )
-//                           else
-//                             const Text(
-//                               'QR code not available. Ticket is not approved.',
-//                               style:
-//                                   TextStyle(fontSize: 16, color: Colors.grey),
-//                             ),
-//                         ],
-//                       ),
-//       ),
-//     );
-//   }
-// }
-
-// import 'package:eventsolutions/provider/event/eventProvider.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// class TicketQr extends ConsumerWidget {
-//   const TicketQr({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final ticket = ref.watch(ticketProvider);
-//     return Container();
-//   }
-// }
-
 import 'package:eventsolutions/provider/event/eventProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
-class TicketQr extends ConsumerWidget {
+class TicketQr extends ConsumerStatefulWidget {
   final String ticketId;
 
-  const TicketQr({Key? key, required this.ticketId}) : super(key: key);
+  const TicketQr({super.key, required this.ticketId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ticketAsync = ref.watch(ticketProvider(ticketId));
+  _TicketQrState createState() => _TicketQrState();
+}
 
-    return ticketAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
-      data: (ticket) {
-        if (ticket.status.toLowerCase() == 'approved') {
-          return ticket.qr != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('Your QR Code:'),
-                      const SizedBox(height: 10),
-                      Image.network(ticket.qr!), // Assuming QR is an image URL
-                    ],
+class _TicketQrState extends ConsumerState<TicketQr> {
+  Timer? _pollingTimer;
+  String? _cachedQr;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCachedQr();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
+  // Load cached QR code from SharedPreferences
+  Future<void> _loadCachedQr() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _cachedQr = prefs.getString('qr_${widget.ticketId}');
+      debugPrint(_cachedQr);
+    });
+  }
+
+  // Save QR code to SharedPreferences
+  Future<void> _saveQr(String qr) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('qr_${widget.ticketId}', qr);
+    setState(() {
+      _cachedQr = qr;
+    });
+  }
+
+  // Start polling to check ticket status periodically
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+      final ticketAsync = ref.read(ticketProvider(widget.ticketId));
+      ticketAsync.when(
+        data: (ticket) {
+          if (ticket.status.toLowerCase() == 'approved' && ticket.qr != null) {
+            _saveQr(ticket.qr!); // Save QR code when approved
+            timer.cancel(); // Stop polling once approved
+          }
+        },
+        loading: () {},
+        error: (err, stack) {},
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ticketAsync = ref.watch(ticketProvider(widget.ticketId));
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Ticket QR Code')),
+      body: ticketAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
+        data: (ticket) {
+          if (ticket.status.toLowerCase() == 'approved') {
+            if (ticket.qr != null) {
+              // Save QR code if not already cached
+              if (_cachedQr == null) {
+                _saveQr(ticket.qr!);
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Your QR Code:',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 20),
+                    Image.network(
+                      ticket.qr!,
+                      width: 200,
+                      height: 200,
+                      errorBuilder: (context, error, stackTrace) => const Text(
+                        'Failed to load QR code.',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Scan this QR code at the event.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const Center(child: Text('QR code not available.'));
+            }
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Ticket is pending approval.',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                )
-              : const Center(child: Text('QR code not available.'));
-        } else {
-          return const Center(child: Text('Ticket not approved.'));
-        }
-      },
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Please wait for admin approval. You will see the QR code once approved.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.refresh(ticketProvider(widget.ticketId));
+                    },
+                    child: const Text('Refresh Status'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

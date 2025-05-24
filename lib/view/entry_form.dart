@@ -461,50 +461,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                             ),
                                           ),
                                         ),
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     Navigator.pushReplacement(
-                                        //         context,
-                                        //         MaterialPageRoute(
-                                        //             builder: (context) =>
-                                        //                 TicketQr(ticketId: widget.events.,)));
-                                        //   },
-                                        //   child: Text(
-                                        //     'View QR',
-                                        //     style: TextStyle(
-                                        //       fontSize: 16,
-                                        //       fontWeight: FontWeight.bold,
-                                        //       color: Colors.blue,
-                                        //     ),
-                                        //   ),
-                                        // )
-                                        // ElevatedButton(
-                                        //   onPressed: () {
-                                        //     final ticketId = ref
-                                        //         .read(registerEventProvider)
-                                        //         .result
-                                        //         ?.data
-                                        //         .ticketId;
-                                        //     if (ticketId != null) {
-                                        //       Navigator.push(
-                                        //         context,
-                                        //         MaterialPageRoute(
-                                        //           builder: (context) =>
-                                        //               TicketQr(
-                                        //                   ticketId: ticketId),
-                                        //         ),
-                                        //       );
-                                        //     } else {
-                                        //       ScaffoldMessenger.of(context)
-                                        //           .showSnackBar(
-                                        //         const SnackBar(
-                                        //             content: Text(
-                                        //                 'Ticket ID not available')),
-                                        //       );
-                                        //     }
-                                        //   },
-                                        //   child: const Text('View QR'),
-                                        // ),
                                         ElevatedButton(
                                           onPressed: () {
                                             final ticketId = ref
