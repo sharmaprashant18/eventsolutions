@@ -1,11 +1,11 @@
-class EventRegisterModel {
+class TicketModel {
   final bool success;
   final String message;
-  final RegistrationData data;
+  final TicketData data;
   final String? error;
   final String timestamp;
 
-  EventRegisterModel({
+  TicketModel({
     required this.success,
     required this.message,
     required this.data,
@@ -13,18 +13,18 @@ class EventRegisterModel {
     required this.timestamp,
   });
 
-  factory EventRegisterModel.fromJson(Map<String, dynamic> json) {
-    return EventRegisterModel(
+  factory TicketModel.fromJson(Map<String, dynamic> json) {
+    return TicketModel(
       success: json['success'],
       message: json['message'],
-      data: RegistrationData.fromJson(json['data']),
+      data: TicketData.fromJson(json['data']),
       error: json['error'],
       timestamp: json['timestamp'],
     );
   }
 }
 
-class RegistrationData {
+class TicketData {
   final String eventId;
   final String name;
   final String eventName;
@@ -41,7 +41,7 @@ class RegistrationData {
   final String updatedAt;
   final String? qr; // Nullable to handle cases where qr is not present
 
-  RegistrationData({
+  TicketData({
     required this.eventId,
     required this.name,
     required this.eventName,
@@ -59,8 +59,8 @@ class RegistrationData {
     this.qr,
   });
 
-  factory RegistrationData.fromJson(Map<String, dynamic> json) {
-    return RegistrationData(
+  factory TicketData.fromJson(Map<String, dynamic> json) {
+    return TicketData(
       eventId: json['eventId'],
       name: json['name'],
       eventName: json['eventName'],

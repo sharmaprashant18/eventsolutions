@@ -14,7 +14,9 @@
 import 'dart:io';
 
 import 'package:eventsolutions/model/all_events_model.dart';
-import 'package:eventsolutions/model/event_register_model.dart';
+import 'package:eventsolutions/model/contact_us_model.dart';
+import 'package:eventsolutions/model/state/event_register_state.dart';
+import 'package:eventsolutions/model/ticket_model.dart';
 import 'package:eventsolutions/services/event_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,34 +35,71 @@ final eventProvider = FutureProvider<List<Data>>((ref) async {
   }
 });
 
-final emailProvider = StateProvider<String>((ref) => '');
-final nameProvider = StateProvider<String>((ref) => '');
-final numberProvider = StateProvider<String>((ref) => '');
-final tierProvider = StateProvider<String>((ref) => '');
-final screenshotProvider = StateProvider<File?>((ref) => null);
-final eventIdProvider = StateProvider<String>((ref) => '');
+final ticketProvider =
+    FutureProvider.family<TicketData, String>((ref, ticketId) async {
+  final ticket = ref.watch(eventServiceProvider);
+  final response = await ticket.fetchTicketDetails(ticketId);
+  return response.data;
+});
+final contactusProvider =
+    FutureProvider.family<ContactUsModel, Map<String, dynamic>>((ref, data) {
+  final contactService = ref.read(eventServiceProvider);
+  return contactService.register(
+      data['email']!, data['name']!, data['message']);
+});
 
-final registrationEventProvider =
-    FutureProvider<EventRegisterModel>((ref) async {
-  final service = ref.watch(eventServiceProvider);
+final selectedTierProvider = StateProvider<String?>((ref) => null);
 
-  final email = ref.watch(emailProvider);
-  final name = ref.watch(nameProvider);
-  final number = ref.watch(numberProvider);
-  final tierName = ref.watch(tierProvider);
-  final paymentScreenshot = ref.watch(screenshotProvider);
-  final eventId = ref.watch(eventIdProvider);
+class RegisterEventNotifier extends StateNotifier<RegisterEventState> {
+  final EventServices _eventServices;
 
-  if (paymentScreenshot == null) {
-    throw Exception("Please upload a payment screenshot.");
+  RegisterEventNotifier(this._eventServices) : super(RegisterEventState());
+
+  Future<void> registerEvent({
+    required String email,
+    required String name,
+    required String number,
+    required String tierName,
+    required File paymentScreenshot,
+    required String eventId,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final result = await _eventServices.registerEvent(
+        email,
+        name,
+        number,
+        tierName,
+        paymentScreenshot,
+        eventId,
+      );
+      state = state.copyWith(isLoading: false, result: result);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
   }
 
-  return await service.registerEvent(
-    email,
-    name,
-    number,
-    tierName,
-    paymentScreenshot,
-    eventId,
-  );
+  // Future<void> fetchTicketDetails(String ticketId) async {
+  //   state = state.copyWith(isLoading: true, error: null);
+
+  //   try {
+  //     final ticketDetails = await _eventServices.fetchTicketDetails(ticketId);
+  //     state = state.copyWith(isLoading: false, ticketDetails: ticketDetails);
+  //   } catch (e) {
+  //     state = state.copyWith(
+  //       isLoading: false,
+  //       error: e.toString(),
+  //     );
+  //   }
+  // }
+}
+
+final registerEventProvider =
+    StateNotifierProvider<RegisterEventNotifier, RegisterEventState>((ref) {
+  final eventService = ref.watch(eventServiceProvider);
+  return RegisterEventNotifier(eventService);
 });

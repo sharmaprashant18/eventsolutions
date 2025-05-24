@@ -1,14 +1,16 @@
+import 'package:eventsolutions/provider/event/eventProvider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ContactUsPage extends StatefulWidget {
+class ContactUsPage extends ConsumerStatefulWidget {
   const ContactUsPage({super.key});
 
   @override
-  State<ContactUsPage> createState() => _ContactUsPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ContactUsPageState();
 }
 
-class _ContactUsPageState extends State<ContactUsPage> {
+class _ContactUsPageState extends ConsumerState<ContactUsPage> {
   final _formKey = GlobalKey<FormState>();
   final fullNameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -37,33 +39,65 @@ class _ContactUsPageState extends State<ContactUsPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Handle form submission here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Message sent successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      final data = {
+        'email': emailController.text.trim(),
+        'name': fullNameController.text.trim(),
+        'message': messageController.text.trim(),
+        'phone': '$_selectedCountryCode${phoneController.text.trim()}',
+      };
 
-      // Clear form after submission
-      fullNameController.clear();
-      phoneController.clear();
-      emailController.clear();
-      messageController.clear();
-      setState(() {
-        _selectedCountryCode = '+977';
-      });
+      try {
+        final contactUsModel = await ref.read(contactusProvider(data).future);
+
+        if (contactUsModel.success) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Thank You!'),
+              content: const Text('Thank you for contacting us!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _formKey.currentState!.reset();
+                    fullNameController.clear();
+                    phoneController.clear();
+                    emailController.clear();
+                    messageController.clear();
+                    setState(() {
+                      _selectedCountryCode = '+977';
+                    });
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(contactUsModel.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: const Color(0xFF9BC5C5),
       appBar: AppBar(
-        // backgroundColor: const Color(0xFF9BC5C5),
         elevation: 0,
         title: const Text(
           'Contact Us',
@@ -86,10 +120,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
                 hintText: 'Enter your full name',
               ),
               const SizedBox(height: 20),
-
               _buildPhoneField(),
               const SizedBox(height: 20),
-
               _buildTextField(
                 label: 'Email',
                 controller: emailController,
@@ -97,7 +129,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
                 hintText: 'Enter your email address',
               ),
               const SizedBox(height: 20),
-
               _buildTextField(
                 label: 'Message',
                 controller: messageController,
@@ -105,16 +136,12 @@ class _ContactUsPageState extends State<ContactUsPage> {
                 hintText: 'Enter your message',
               ),
               const SizedBox(height: 32),
-
-              // Send Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
-                    // backgroundColor: const Color(0xFFFFB84D),
                     backgroundColor: Colors.black,
-
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -124,9 +151,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   child: const Text(
                     'Send',
                     style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -177,9 +205,8 @@ class _ContactUsPageState extends State<ContactUsPage> {
                     return 'This field is required';
                   }
                   if (keyboardType == TextInputType.emailAddress) {
-                    MyValidation.validateEmail(value);
+                    return MyValidation.validateEmail(value);
                   }
-
                   return null;
                 }
               : null,
@@ -209,20 +236,17 @@ class _ContactUsPageState extends State<ContactUsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
-          text: const TextSpan(
-            text: 'Phone Number',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF2D5A5A),
-            ),
+        const Text(
+          'Phone Number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF2D5A5A),
           ),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
-            // Country Code Dropdown
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFF5E6D3),
@@ -252,11 +276,16 @@ class _ContactUsPageState extends State<ContactUsPage> {
               ),
             ),
             const SizedBox(width: 12),
-            // Phone Number Field
             Expanded(
               child: TextFormField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'This field is required';
+                  }
+                  return null;
+                },
                 decoration: InputDecoration(
                   hintText: 'Enter your phone number',
                   hintStyle: TextStyle(
