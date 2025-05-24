@@ -1,4 +1,4 @@
-import 'package:eventsolutions/provider/event/eventProvider.dart';
+import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
 import 'package:eventsolutions/view/contact_us_page.dart';

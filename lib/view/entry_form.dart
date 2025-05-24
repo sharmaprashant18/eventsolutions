@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'package:eventsolutions/model/all_events_model.dart';
-import 'package:eventsolutions/provider/event/eventProvider.dart';
+import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 
 import 'package:eventsolutions/validation/form_validation.dart';

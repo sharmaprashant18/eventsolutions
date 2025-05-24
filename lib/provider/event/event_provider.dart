@@ -15,16 +15,19 @@ import 'dart:io';
 
 import 'package:eventsolutions/model/all_events_model.dart';
 import 'package:eventsolutions/model/contact_us_model.dart';
+import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/state/event_register_state.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
 import 'package:eventsolutions/services/event_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+//Event Service
 final eventServiceProvider = Provider<EventServices>((ref) {
   return EventServices();
 });
 
+//List of event data
 final eventProvider = FutureProvider<List<Data>>((ref) async {
   final event = ref.watch(eventServiceProvider);
   try {
@@ -35,12 +38,15 @@ final eventProvider = FutureProvider<List<Data>>((ref) async {
   }
 });
 
+//ticket
 final ticketProvider =
     FutureProvider.family<TicketData, String>((ref, ticketId) async {
   final ticket = ref.watch(eventServiceProvider);
   final response = await ticket.fetchTicketDetails(ticketId);
   return response.data;
 });
+
+//contactus
 final contactusProvider =
     FutureProvider.family<ContactUsModel, Map<String, dynamic>>((ref, data) {
   final contactService = ref.read(eventServiceProvider);
@@ -48,8 +54,10 @@ final contactusProvider =
       data['email']!, data['name']!, data['message']);
 });
 
+//selected tierprovider
 final selectedTierProvider = StateProvider<String?>((ref) => null);
 
+//event register
 class RegisterEventNotifier extends StateNotifier<RegisterEventState> {
   final EventServices _eventServices;
 
@@ -83,19 +91,27 @@ class RegisterEventNotifier extends StateNotifier<RegisterEventState> {
     }
   }
 
-  // Future<void> fetchTicketDetails(String ticketId) async {
-  //   state = state.copyWith(isLoading: true, error: null);
+  Future<void> fetchTicketDetails(String ticketId) async {
+    state = state.copyWith(isLoading: true, error: null);
 
-  //   try {
-  //     final ticketDetails = await _eventServices.fetchTicketDetails(ticketId);
-  //     state = state.copyWith(isLoading: false, ticketDetails: ticketDetails);
-  //   } catch (e) {
-  //     state = state.copyWith(
-  //       isLoading: false,
-  //       error: e.toString(),
-  //     );
-  //   }
-  // }
+    try {
+      final ticketModel = await _eventServices.fetchTicketDetails(ticketId);
+      // Convert TicketModel to EventRegisterModel if possible, or assign null if not applicable
+      EventRegisterModel? eventRegisterModel;
+      if (ticketModel is EventRegisterModel) {
+        eventRegisterModel = ticketModel as EventRegisterModel?;
+      } else {
+        eventRegisterModel = null;
+      }
+      state =
+          state.copyWith(isLoading: false, ticketDetails: eventRegisterModel);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
 }
 
 final registerEventProvider =

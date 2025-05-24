@@ -1,4 +1,4 @@
-import 'package:eventsolutions/provider/event/eventProvider.dart';
+import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
