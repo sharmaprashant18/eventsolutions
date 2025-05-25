@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:eventsolutions/model/events/ongoing.dart';
 
 import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
