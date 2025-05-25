@@ -1,20 +1,23 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:eventsolutions/model/all_events_model.dart';
+import 'package:eventsolutions/model/events/ongoing.dart';
+
 import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UpcomingPage extends ConsumerStatefulWidget {
-  const UpcomingPage({super.key});
+class OngoingEvents extends ConsumerStatefulWidget {
+  const OngoingEvents({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UpcomingPageState();
 }
 
-class _UpcomingPageState extends ConsumerState<UpcomingPage> {
+class _UpcomingPageState extends ConsumerState<OngoingEvents> {
   final baseUrlImage = 'http://182.93.94.210:8000';
   String formatDateManually(DateTime dateTime) {
     String day = dateTime.day.toString().padLeft(2, '');
@@ -36,13 +39,14 @@ class _UpcomingPageState extends ConsumerState<UpcomingPage> {
     String month = months[dateTime.month - 1];
 
     // Get last two digits of year
-    String year = (dateTime.year % 100).toString().padLeft(2, '0');
+    // String year = (dateTime.year % 100).toString().padLeft(2, '0');
 
     return '$day $month';
   }
 
   late StreamSubscription<List<ConnectivityResult>> subscription;
   bool wasOffline = false;
+  @override
   void initState() {
     super.initState();
     subscription = Connectivity()
@@ -81,7 +85,7 @@ class _UpcomingPageState extends ConsumerState<UpcomingPage> {
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
-    final event = ref.watch(eventProvider);
+    final event = ref.watch(ongoingEventProvider);
     return Scaffold(
       body: event.when(
           data: (event) {
@@ -214,8 +218,7 @@ class _UpcomingPageState extends ConsumerState<UpcomingPage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => EntryForm(
-                                                    events: events,
-                                                  )));
+                                                  eventData: events)));
                                     },
                                     style: ElevatedButton.styleFrom(
                                       // backgroundColor: Color(0xff35353E),

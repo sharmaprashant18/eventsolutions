@@ -1,6 +1,6 @@
-import 'dart:ui';
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:eventsolutions/model/all_events_model.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -133,6 +133,7 @@ class _AdminChangingState extends ConsumerState<AdminChanging> {
                 height: screenHeight * 0.017,
               ),
               Form(
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

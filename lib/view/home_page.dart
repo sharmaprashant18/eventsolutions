@@ -1,15 +1,15 @@
-import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
 import 'package:eventsolutions/view/contact_us_page.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
-import 'package:eventsolutions/view/upcoming.dart';
+import 'package:eventsolutions/view/ongoing_events.dart';
 import 'package:eventsolutions/view/faq.dart';
 import 'package:eventsolutions/view/loginpage.dart';
-import 'package:eventsolutions/view/on_going.dart';
+
 import 'package:eventsolutions/view/privacypolicy.dart';
 import 'package:eventsolutions/view/service_page.dart';
 import 'package:eventsolutions/view/stall_page.dart';
+import 'package:eventsolutions/view/upcoming_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,7 +40,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
-    final screenWidth = screenSize.width;
+    // final screenWidth = screenSize.width;
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -195,9 +195,9 @@ class _HomePageState extends ConsumerState<HomePage>
                     color: Colors.white,
                   ),
                   tabs: const [
-                    Tab(text: 'SERVICES'),
                     Tab(text: 'ONGOING'),
                     Tab(text: 'UPCOMING'),
+                    Tab(text: 'SERVICES'),
                   ],
                 ),
               ),
@@ -206,9 +206,9 @@ class _HomePageState extends ConsumerState<HomePage>
               child: TabBarView(
                 controller: _tabController,
                 children: const [
-                  ServicePage(),
                   OngoingEvents(),
-                  UpcomingPage()
+                  UpcomingEvents(),
+                  ServicePage(),
                 ],
               ),
             ),
@@ -306,23 +306,13 @@ class _HomePageState extends ConsumerState<HomePage>
                   MaterialPageRoute(builder: (context) => const ServicePage()),
                 );
                 break;
+
               case 7:
-                final ticketId =
-                    ref.read(registerEventProvider).result?.data.ticketId;
-                // if (ticketId != null) {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TicketQr(ticketId: ticketId ?? ''),
-                  ),
-                );
-                // } else {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     const SnackBar(
-                //         content: Text(
-                //             'No ticket available. Please register for an event first.')),
-                // //   );
-                // }
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TicketQr(
+                            ticketId: '614cb9ed-e23c-4a3e-b603-6fe613337cea')));
                 break;
             }
           },

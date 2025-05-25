@@ -1,8 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-import 'package:eventsolutions/abstract/event_data.dart';
-
+import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/provider/event/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
@@ -12,15 +11,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EntryForm extends ConsumerStatefulWidget {
-  const EntryForm({super.key, required this.eventData});
-  final EventData eventData;
+class UpcomingEntryForm extends ConsumerStatefulWidget {
+  const UpcomingEntryForm({super.key, required this.upcomingEvents});
+  final UpcomingData upcomingEvents;
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _EntryFormState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _UpcomingEntryFormState();
 }
 
-class _EntryFormState extends ConsumerState<EntryForm> {
+class _UpcomingEntryFormState extends ConsumerState<UpcomingEntryForm> {
   final fullNameKey = GlobalKey<FormFieldState>();
   final emailKey = GlobalKey<FormFieldState>();
   final phoneKey = GlobalKey<FormFieldState>();
@@ -91,7 +91,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
               child: Column(
                 children: [
                   Text(
-                    widget.eventData.title,
+                    widget.upcomingEvents.title,
                     style: const TextStyle(
                       fontSize: 20,
                       letterSpacing: 1.5,
@@ -102,10 +102,10 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   const SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: (widget.eventData.poster != null &&
-                            widget.eventData.poster!.isNotEmpty)
+                    child: (widget.upcomingEvents.poster != null &&
+                            widget.upcomingEvents.poster!.isNotEmpty)
                         ? Image.network(
-                            '$baseUrlImage${widget.eventData.poster}',
+                            '$baseUrlImage${widget.upcomingEvents.poster}',
                             height: screenHeight * 0.2,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -122,7 +122,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    widget.eventData.description,
+                    widget.upcomingEvents.description,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -137,14 +137,14 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                         builder: (context, ref, child) {
                           final selectedTier = ref.watch(selectedTierProvider);
                           final price = selectedTier != null
-                              ? widget.eventData.ticketTiers
+                              ? widget.upcomingEvents.ticketTiers
                                   .firstWhere(
                                       (tier) => tier.name == selectedTier,
                                       orElse: () =>
-                                          widget.eventData.ticketTiers[0])
+                                          widget.upcomingEvents.ticketTiers[0])
                                   .price
-                              : widget.eventData.ticketTiers.isNotEmpty
-                                  ? widget.eventData.ticketTiers[0].price
+                              : widget.upcomingEvents.ticketTiers.isNotEmpty
+                                  ? widget.upcomingEvents.ticketTiers[0].price
                                   : 'N/A';
                           return Text(
                             'Price: $price',
@@ -182,7 +182,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   const SizedBox(height: 30),
                   Consumer(
                     builder: (context, ref, child) {
-                      final tiers = widget.eventData.ticketTiers;
+                      final tiers = widget.upcomingEvents.ticketTiers;
                       final currentSelectedTier =
                           ref.watch(selectedTierProvider);
                       final isValidTier =
@@ -283,10 +283,11 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               ),
                             )
                           else
-                            ...widget.eventData.ticketTiers
+                            ...widget.upcomingEvents.ticketTiers
                                 .firstWhere(
                                   (tier) => tier.name == selectedTier,
-                                  orElse: () => widget.eventData.ticketTiers[0],
+                                  orElse: () =>
+                                      widget.upcomingEvents.ticketTiers[0],
                                 )
                                 .listofFeatures
                                 .cast<String>()
@@ -398,7 +399,8 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               final selectedTier =
                                   ref.read(selectedTierProvider);
                               if (selectedTier == null &&
-                                  widget.eventData.ticketTiers.isNotEmpty) {
+                                  widget
+                                      .upcomingEvents.ticketTiers.isNotEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     backgroundColor: Colors.red,
@@ -409,7 +411,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                 return;
                               }
 
-                              if (widget.eventData.ticketTiers.isEmpty) {
+                              if (widget.upcomingEvents.ticketTiers.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     backgroundColor: Colors.red,
@@ -432,9 +434,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                   'name': fullNameController.text,
                                   'number': phoneController.text,
                                   'tierName': selectedTier ??
-                                      widget.eventData.ticketTiers[0].name,
+                                      widget.upcomingEvents.ticketTiers[0].name,
                                   'paymentScreenshot': File(selectedImage.path),
-                                  'eventId': widget.eventData.eventId,
+                                  'eventId': widget.upcomingEvents.eventId,
                                 };
 
                                 // Step 4: Send registration request

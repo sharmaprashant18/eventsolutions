@@ -10,10 +10,10 @@ class TokenStorage {
       {int expiresInSeconds = 3600}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_accessTokenKey, token);
-    final expiryTimestamp = DateTime.now()
-        .add(Duration(seconds: expiresInSeconds))
-        .millisecondsSinceEpoch;
-    await prefs.setInt(_tokenExpiryKey, expiryTimestamp);
+    // final expiryTimestamp = DateTime.now()
+    //     .add(Duration(seconds: expiresInSeconds))
+    //     .millisecondsSinceEpoch;
+    // await prefs.setInt(_tokenExpiryKey, expiryTimestamp);
     debugPrint('Token saved. Expires in $expiresInSeconds seconds');
   }
 
@@ -30,10 +30,10 @@ class TokenStorage {
       debugPrint('No access token found');
       return null;
     }
-    if (await isTokenExpired()) {
-      debugPrint('Access token has expired');
-      return null;
-    }
+    // if (await isTokenExpired()) {
+    //   debugPrint('Access token has expired');
+    //   return null;
+    // }
     debugPrint('Token retrieved: $token');
     return token;
   }

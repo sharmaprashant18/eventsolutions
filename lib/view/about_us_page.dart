@@ -7,7 +7,7 @@ class AboutUsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenSize = MediaQuery.of(context).size;
-    final screenWidth = screenSize.width;
+    // final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
 
     return Scaffold(

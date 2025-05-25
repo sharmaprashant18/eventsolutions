@@ -39,7 +39,6 @@ class RegistrationData {
   final String ticketId;
   final String submittedAt;
   final String updatedAt;
-  final String? qr; // Nullable to handle cases where qr is not present
 
   RegistrationData({
     required this.eventId,
@@ -56,7 +55,6 @@ class RegistrationData {
     required this.ticketId,
     required this.submittedAt,
     required this.updatedAt,
-    this.qr,
   });
 
   factory RegistrationData.fromJson(Map<String, dynamic> json) {
@@ -75,7 +73,6 @@ class RegistrationData {
       ticketId: json['ticketId'],
       submittedAt: json['submittedAt'],
       updatedAt: json['updatedAt'],
-      qr: json['qr'],
     );
   }
 }

@@ -199,14 +199,17 @@
 //   }
 // }
 
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
+import 'package:eventsolutions/services/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
 import 'package:eventsolutions/model/auth_model/register_model.dart';
-import 'package:eventsolutions/services/dio_client.dart';
+
 import 'package:eventsolutions/services/token_storage.dart';
 
 class AuthService {
@@ -228,8 +231,11 @@ class AuthService {
       });
       final loginModel = LoginModel.fromJson(response.data);
       debugPrint("Access Token: ${loginModel.accessToken}");
+      // final dummyToken =
+      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NzU1OTc5NywiZXhwIjoxNzQ4MTY0NTk3fQ.IKs5i7VIQtZjFyUS-BQL7omPupCUqVU9iO6-uLizIPs';
       await saveToken(loginModel.accessToken,
           loginModel.accessToken); // Assume refresh token is returned
+      log(loginModel.accessToken);
       return loginModel;
     } on DioException catch (e) {
       if (e.response != null) {
