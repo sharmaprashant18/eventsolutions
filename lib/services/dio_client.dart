@@ -92,6 +92,8 @@
 //   Dio get dio => _dio;
 // }
 
+// ignore_for_file: unused_element
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';

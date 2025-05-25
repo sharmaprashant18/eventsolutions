@@ -217,6 +217,7 @@ class AuthService {
   final TokenStorage _tokenStorage = TokenStorage();
 
   Future<void> saveToken(String accessToken, String refreshToken) async {
+    // ignore: unused_local_variable
     final prefs = await SharedPreferences.getInstance();
     await _tokenStorage.saveAccessToken(accessToken);
     await _tokenStorage.saveRefreshToken(refreshToken);
