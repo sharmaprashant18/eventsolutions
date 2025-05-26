@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-import 'package:eventsolutions/abstract/event_data.dart';
 
-import 'package:eventsolutions/provider/event/event_provider.dart';
+import 'package:eventsolutions/model/abstract/event_data.dart';
+
+import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
@@ -14,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class EntryForm extends ConsumerStatefulWidget {
   const EntryForm({super.key, required this.eventData});
+  // final OngoingData eventData;
   final EventData eventData;
 
   @override
@@ -32,6 +34,20 @@ class _EntryFormState extends ConsumerState<EntryForm> {
   final emailController = TextEditingController();
   bool _isLoading = false;
 
+  String _selectedCountryCode = '+977';
+
+  final Map<String, String> _countryCodes = {
+    '+93': '🇦🇫 Afghanistan (+93)',
+    '+880': '🇧🇩 Bangladesh (+880)',
+    '+975': '🇧🇹 Bhutan (+975)',
+    '+86': '🇨🇳 China (+86)',
+    '+91': '🇮🇳 India (+91)',
+    '+960': '🇲🇻 Maldives (+960)',
+    '+977': '🇳🇵 Nepal (+977)',
+    '+92': '🇵🇰 Pakistan (+92)',
+    '+94': '🇱🇰 Sri Lanka (+94)',
+  };
+
   @override
   void dispose() {
     fullNameController.dispose();
@@ -47,12 +63,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
       ref.read(selectedTierProvider.notifier).state = null;
     });
   }
-
-  // // Helper method to save ticketId to Shared Preferences
-  // Future<void> _saveTicketId(String ticketId) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('lastTicketId', ticketId);
-  // }
 
   Future<void> _saveTicketId(String ticketId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -89,14 +99,17 @@ class _EntryFormState extends ConsumerState<EntryForm> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.eventData.title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                  Center(
+                    child: Text(
+                      widget.eventData.title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -136,16 +149,28 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                       Consumer(
                         builder: (context, ref, child) {
                           final selectedTier = ref.watch(selectedTierProvider);
-                          final price = selectedTier != null
-                              ? widget.eventData.ticketTiers
+
+                          EventTicketTier? matchingTier;
+                          if (selectedTier != null) {
+                            try {
+                              matchingTier = widget.eventData.ticketTiers
                                   .firstWhere(
-                                      (tier) => tier.name == selectedTier,
-                                      orElse: () =>
-                                          widget.eventData.ticketTiers[0])
-                                  .price
-                              : widget.eventData.ticketTiers.isNotEmpty
-                                  ? widget.eventData.ticketTiers[0].price
-                                  : 'N/A';
+                                      (tier) => tier.name == selectedTier);
+                            } catch (e) {
+                              matchingTier =
+                                  widget.eventData.ticketTiers.isNotEmpty
+                                      ? widget.eventData.ticketTiers[0]
+                                      : null;
+                            }
+                          } else {
+                            matchingTier =
+                                widget.eventData.ticketTiers.isNotEmpty
+                                    ? widget.eventData.ticketTiers[0]
+                                    : null;
+                          }
+
+                          final price = matchingTier?.price.toString() ?? 'N/A';
+
                           return Text(
                             'Price: $price',
                             style: const TextStyle(
@@ -155,7 +180,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           );
                         },
                       ),
-                      const Text('Location: Kathmandu'),
+                      Text(widget.eventData.location),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -254,11 +279,11 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 30),
                         ],
                       );
                     },
                   ),
+                  SizedBox(height: 20),
                   Consumer(
                     builder: (context, ref, child) {
                       final selectedTier = ref.watch(selectedTierProvider);
@@ -283,66 +308,91 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               ),
                             )
                           else
-                            ...widget.eventData.ticketTiers
-                                .firstWhere(
-                                  (tier) => tier.name == selectedTier,
-                                  orElse: () => widget.eventData.ticketTiers[0],
-                                )
-                                .listofFeatures
-                                .cast<String>()
-                                .map((feature) => Padding(
-                                      padding: const EdgeInsets.only(bottom: 4),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            '• ',
-                                            style: TextStyle(
-                                              color: Colors.orange,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              feature.trim(),
-                                              style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.bold,
+                            ...() {
+                              EventTicketTier? matchingTier;
+                              try {
+                                matchingTier = widget.eventData.ticketTiers
+                                    .firstWhere(
+                                        (tier) => tier.name == selectedTier);
+                              } catch (e) {
+                                matchingTier =
+                                    widget.eventData.ticketTiers.isNotEmpty
+                                        ? widget.eventData.ticketTiers[0]
+                                        : null;
+                              }
+
+                              if (matchingTier == null) return <Widget>[];
+
+                              return matchingTier.listofFeatures
+                                  .cast<String>()
+                                  .map((feature) => Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 4),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              '• ',
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 16,
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    )),
+                                            Expanded(
+                                              child: Text(
+                                                feature.trim(),
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ))
+                                  .toList();
+                            }(),
                         ],
                       );
                     },
                   ),
-                  const SizedBox(height: 15),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        buildTextField(
-                          fieldKey: fullNameKey,
-                          label: 'Full Name',
-                          controller: fullNameController,
+                  const SizedBox(height: 25),
+                  Card(
+                    color: Color(0xffFAFAFA),
+                    elevation: 6,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 10, bottom: 10, right: 10, left: 10),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            buildTextField(
+                              fieldKey: fullNameKey,
+                              label: 'Full Name',
+                              controller: fullNameController,
+                            ),
+                            buildTextField(
+                              fieldKey: emailKey,
+                              label: 'Email',
+                              controller: emailController,
+                            ),
+                            // buildTextField(
+                            //   fieldKey: phoneKey,
+                            //   label: 'Phone Number',
+                            //   hintText:
+                            //       'Enter phone number with country code (e.g.977)',
+                            //   controller: phoneController,
+                            // ),
+                            _buildPhoneField()
+                          ],
                         ),
-                        buildTextField(
-                          fieldKey: emailKey,
-                          label: 'Email',
-                          controller: emailController,
-                        ),
-                        buildTextField(
-                          fieldKey: phoneKey,
-                          label: 'Phone Number',
-                          hintText:
-                              'Enter phone number with country code (e.g. +977K5)977)',
-                          controller: phoneController,
-                        ),
-                      ],
+                      ),
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                   const Text(
                     '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
@@ -865,9 +915,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   if (label == 'Email') {
                     return MyValidation.validateEmail(value);
                   }
-                  if (label == 'Phone Number') {
-                    return MyValidation.validateMobile(value);
-                  }
+
                   return null;
                 }
               : null,
@@ -889,6 +937,91 @@ class _EntryFormState extends ConsumerState<EntryForm> {
           ),
         ),
         const SizedBox(height: 30),
+      ],
+    );
+  }
+
+  Widget _buildPhoneField() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dropdownWidth = screenWidth * 0.35; // 35% of screen width
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Phone Number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF2D5A5A),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            SizedBox(
+              width: dropdownWidth.clamp(100.0, 140.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedCountryCode,
+                    isExpanded: true,
+                    items: _countryCodes.entries.map((entry) {
+                      return DropdownMenuItem<String>(
+                        value: entry.key,
+                        child: Text(
+                          entry.value,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedCountryCode = newValue;
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'This field is required';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter your phone number',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

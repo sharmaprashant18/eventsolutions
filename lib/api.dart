@@ -3,4 +3,5 @@ class ApiServices {
   static const allEvents = '$baseUrl/events';
   static const ongoing = '$baseUrl/events/ongoing';
   static const upcoming = '$baseUrl/events/upcoming';
+  static const services = '$baseUrl/services';
 }

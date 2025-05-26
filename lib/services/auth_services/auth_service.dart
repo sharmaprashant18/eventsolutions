@@ -204,7 +204,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
-import 'package:eventsolutions/services/dio_client.dart';
+import 'package:eventsolutions/services/auth_services/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';

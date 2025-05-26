@@ -1,4 +1,4 @@
-import 'package:eventsolutions/abstract/event_data.dart';
+import 'package:eventsolutions/model/abstract/event_data.dart';
 
 class OngoingEventModel {
   final bool success;
@@ -9,8 +9,8 @@ class OngoingEventModel {
 
   factory OngoingEventModel.fromJson(Map<String, dynamic> json) {
     return OngoingEventModel(
-      success: json['success'] as bool,
-      error: json['error'] as String?,
+      success: json['success'],
+      error: json['error'],
       data: List<OngoingData>.from(
           json['data'].map((e) => OngoingData.fromJson(e))),
     );
@@ -37,32 +37,34 @@ class OngoingData implements EventData {
   @override
   final String endDate;
   @override
-  final List<TicketTier> ticketTiers;
+  final List<OngoingTicketTier> ticketTiers;
   @override
   final String eventId;
+  @override
+  final String location;
 
-  OngoingData({
-    this.poster,
-    required this.eventId,
-    required this.title,
-    required this.description,
-    required this.startDate,
-    required this.endDate,
-    required List<OngoingTicketTier> this.ticketTiers,
-  });
+  OngoingData(
+      {this.poster,
+      required this.eventId,
+      required this.title,
+      required this.description,
+      required this.startDate,
+      required this.endDate,
+      required this.ticketTiers,
+      required this.location});
 
   factory OngoingData.fromJson(Map<String, dynamic> json) {
     return OngoingData(
-      title: json['title'] as String,
-      eventId: json['eventId'] as String,
-      poster: json['poster'] as String?,
-      description: json['description'] as String,
-      startDate: json['startDateTime'] as String,
-      endDate: json['endDateTime'] as String,
-      ticketTiers: List<OngoingTicketTier>.from(
-        json['ticketTiers'].map((e) => OngoingTicketTier.fromJson(e)),
-      ),
-    );
+        title: json['title'],
+        eventId: json['eventId'],
+        poster: json['poster'],
+        description: json['description'],
+        startDate: json['startDateTime'],
+        endDate: json['endDateTime'],
+        ticketTiers: List<OngoingTicketTier>.from(
+          json['ticketTiers'].map((e) => OngoingTicketTier.fromJson(e)),
+        ),
+        location: json['location']);
   }
 
   Map<String, dynamic> toJson() {
@@ -72,20 +74,20 @@ class OngoingData implements EventData {
       'description': description,
       'startDateTime': startDate,
       'endDateTime': endDate,
-      'ticketTiers':
-          ticketTiers.map((e) => (e as OngoingTicketTier).toJson()).toList(),
+      'ticketTiers': ticketTiers.map((e) => e.toJson()).toList(),
       'eventId': eventId,
+      'location': location
     };
   }
 }
 
-class OngoingTicketTier implements TicketTier {
+class OngoingTicketTier implements EventTicketTier {
   @override
   final String name;
   @override
   final double price;
   @override
-  final List<String> listofFeatures;
+  List<String> listofFeatures;
 
   OngoingTicketTier({
     required this.name,
@@ -95,10 +97,9 @@ class OngoingTicketTier implements TicketTier {
 
   factory OngoingTicketTier.fromJson(Map<String, dynamic> json) {
     return OngoingTicketTier(
-      name: json['name'] as String,
+      name: json['name'],
       price: (json['price'] as num).toDouble(),
-      listofFeatures:
-          List<String>.from(json['listOfFeatures'] as List<dynamic>),
+      listofFeatures: List<String>.from(json['listOfFeatures']),
     );
   }
 

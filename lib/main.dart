@@ -1,4 +1,5 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:eventsolutions/provider/auth_provider/auth_status_provider.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 import 'package:eventsolutions/view/home_page.dart';
 
@@ -14,7 +15,7 @@ void main() {
   // runApp(ProviderScope(child: Home()));
 }
 
-class Home extends StatelessWidget {
+class Home extends ConsumerWidget {
   const Home({super.key});
 
   Future<bool?> isLoggedIn() async {
@@ -27,23 +28,36 @@ class Home extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authStatus = ref.watch(authStatusProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           fontFamily: 'Poppins',
           scaffoldBackgroundColor: Color(0xffF4F4F4),
           appBarTheme: AppBarTheme(color: Color(0xffF4F4F4))),
-      home: FutureBuilder(
-          future: isLoggedIn(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data == true) {
-              return HomePage();
-            }
-            return LoginPage();
-          }),
-
-      // home: HomePage(),
+      // home: FutureBuilder(
+      //     future: isLoggedIn(),
+      //     builder: (context, snapshot) {
+      //       if (snapshot.connectionState == ConnectionState.waiting) {
+      //         return const Scaffold(
+      //           body: Center(child: CircularProgressIndicator()),
+      //         );
+      //       }
+      //       if (snapshot.hasData && snapshot.data == true) {
+      //         return HomePage();
+      //       }
+      //       return LoginPage();
+      //     }),
+      home: authStatus.when(
+        data: (isLoggedIn) => isLoggedIn ? HomePage() : LoginPage(),
+        loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        error: (err, stack) => Scaffold(
+          body: Center(child: Text("Error: $err")),
+        ),
+      ),
     );
   }
 }

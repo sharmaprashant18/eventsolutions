@@ -1,4 +1,5 @@
-import 'package:eventsolutions/provider/event/event_provider.dart';
+import 'package:eventsolutions/provider/contact_us_provider.dart';
+import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +24,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
     '+93': '🇦🇫 Afghanistan (+93)',
     '+880': '🇧🇩 Bangladesh (+880)',
     '+975': '🇧🇹 Bhutan (+975)',
+    '+86': '🇨🇳 China (+86)',
     '+91': '🇮🇳 India (+91)',
     '+960': '🇲🇻 Maldives (+960)',
     '+977': '🇳🇵 Nepal (+977)',
@@ -233,6 +235,9 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
   }
 
   Widget _buildPhoneField() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dropdownWidth = screenWidth * 0.35; // 35% of screen width
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -247,35 +252,41 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
         const SizedBox(height: 8),
         Row(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5E6D3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedCountryCode,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  items: _countryCodes.entries.map((entry) {
-                    return DropdownMenuItem<String>(
-                      value: entry.key,
-                      child: Text(
-                        entry.value,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCountryCode = newValue;
-                      });
-                    }
-                  },
+            SizedBox(
+              width: dropdownWidth.clamp(100.0, 140.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5E6D3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedCountryCode,
+                    isExpanded: true,
+                    items: _countryCodes.entries.map((entry) {
+                      return DropdownMenuItem<String>(
+                        value: entry.key,
+                        child: Text(
+                          entry.value,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedCountryCode = newValue;
+                        });
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
             const SizedBox(width: 12),
+            // Phone number input field expands to fill remaining space
             Expanded(
               child: TextFormField(
                 controller: phoneController,

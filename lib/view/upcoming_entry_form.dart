@@ -2,7 +2,7 @@
 
 import 'dart:io';
 import 'package:eventsolutions/model/events/upcoming.dart';
-import 'package:eventsolutions/provider/event/event_provider.dart';
+import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';

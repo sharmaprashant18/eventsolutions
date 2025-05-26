@@ -48,22 +48,6 @@ final upcomingEventProvider = FutureProvider<List<UpcomingData>>((ref) async {
   }
 });
 
-// Ticket provider
-final ticketProvider =
-    FutureProvider.family<TicketData, String>((ref, ticketId) async {
-  final ticket = ref.watch(eventServiceProvider);
-  final response = await ticket.fetchTicketDetailsById(ticketId);
-  return response;
-});
-
-// Contact us provider
-final contactusProvider =
-    FutureProvider.family<ContactUsModel, Map<String, dynamic>>((ref, data) {
-  final contactService = ref.read(eventServiceProvider);
-  return contactService.register(
-      data['email']!, data['name']!, data['message']!);
-});
-
 // Selected tier provider
 final selectedTierProvider = StateProvider<String?>((ref) => null);
 

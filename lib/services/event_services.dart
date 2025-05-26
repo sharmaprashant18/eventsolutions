@@ -6,8 +6,9 @@ import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
+import 'package:eventsolutions/model/our_services_model.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
-import 'package:eventsolutions/services/dio_client.dart';
+import 'package:eventsolutions/services/auth_services/dio_client.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +19,7 @@ class EventServices {
   Future<List<Data>> fetchEvents() async {
     try {
       final token = await TokenStorage().getAccessToken();
-      final response = await Dio().get(
-          // 'http://182.93.94.210:8000/api/v1/events',
-          ApiServices.allEvents,
+      final response = await Dio().get(ApiServices.allEvents,
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200) {
         final eventData = EventsModel.fromJson(response.data);
@@ -42,9 +41,7 @@ class EventServices {
   Future<List<OngoingData>> fetchOngoingEvents() async {
     try {
       final token = await TokenStorage().getAccessToken();
-      final response = await Dio().get(
-          // 'http://182.93.94.210:8000/api/v1/events',
-          ApiServices.ongoing,
+      final response = await Dio().get(ApiServices.ongoing,
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200) {
         final eventData = OngoingEventModel.fromJson(response.data);
@@ -67,15 +64,40 @@ class EventServices {
   Future<List<UpcomingData>> fetchUpcomingEvents() async {
     try {
       final token = await TokenStorage().getAccessToken();
-      final response = await Dio().get(
-          // 'http://182.93.94.210:8000/api/v1/events',
-          ApiServices.upcoming,
+      final response = await Dio().get(ApiServices.upcoming,
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       if (response.statusCode == 200) {
         final eventData = UpcomingEventModel.fromJson(response.data);
         debugPrint(
             'Upcoming Events fetched successfully: ${eventData.data.length} events');
         return eventData.data;
+      } else {
+        throw Exception(
+            'Failed to fetch Upcomingevents: ${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      debugPrint('Dio error: ${e.message}');
+      throw Exception('Dio error: ${e.message}');
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  Future<List<OurServiceModel>> fetchOurService() async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await Dio().get(ApiServices.services,
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        final List<dynamic> dataList = response.data['data'];
+
+        final List<OurServiceModel> services =
+            dataList.map((json) => OurServiceModel.fromJson(json)).toList();
+
+        debugPrint(
+            'Our Services fetched successfully: ${services.length} events');
+        return services;
       } else {
         throw Exception(
             'Failed to fetch Upcomingevents: ${response.statusMessage}');

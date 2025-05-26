@@ -1,4 +1,4 @@
-import 'package:eventsolutions/abstract/event_data.dart';
+import 'package:eventsolutions/model/abstract/event_data.dart';
 
 class UpcomingEventModel {
   final bool success;
@@ -9,8 +9,8 @@ class UpcomingEventModel {
 
   factory UpcomingEventModel.fromJson(Map<String, dynamic> json) {
     return UpcomingEventModel(
-      success: json['success'] as bool,
-      error: json['error'] as String?,
+      success: json['success'],
+      error: json['error'],
       data: List<UpcomingData>.from(
           json['data'].map((e) => UpcomingData.fromJson(e))),
     );
@@ -37,32 +37,34 @@ class UpcomingData implements EventData {
   @override
   final String endDate;
   @override
-  final List<TicketTier> ticketTiers;
+  final List<UpcomingTicketTier> ticketTiers;
   @override
   final String eventId;
+  @override
+  final String location;
 
-  UpcomingData({
-    this.poster,
-    required this.eventId,
-    required this.title,
-    required this.description,
-    required this.startDate,
-    required this.endDate,
-    required List<UpcomingTicketTier> this.ticketTiers,
-  });
+  UpcomingData(
+      {this.poster,
+      required this.eventId,
+      required this.title,
+      required this.description,
+      required this.startDate,
+      required this.endDate,
+      required this.ticketTiers,
+      required this.location});
 
   factory UpcomingData.fromJson(Map<String, dynamic> json) {
     return UpcomingData(
-      title: json['title'] as String,
-      eventId: json['eventId'] as String,
-      poster: json['poster'] as String?,
-      description: json['description'] as String,
-      startDate: json['startDateTime'] as String,
-      endDate: json['endDateTime'] as String,
-      ticketTiers: List<UpcomingTicketTier>.from(
-        json['ticketTiers'].map((e) => UpcomingTicketTier.fromJson(e)),
-      ),
-    );
+        title: json['title'],
+        eventId: json['eventId'],
+        poster: json['poster'],
+        description: json['description'],
+        startDate: json['startDateTime'],
+        endDate: json['endDateTime'],
+        ticketTiers: List<UpcomingTicketTier>.from(
+          json['ticketTiers'].map((e) => UpcomingTicketTier.fromJson(e)),
+        ),
+        location: json['location']);
   }
 
   Map<String, dynamic> toJson() {
@@ -72,20 +74,20 @@ class UpcomingData implements EventData {
       'description': description,
       'startDateTime': startDate,
       'endDateTime': endDate,
-      'ticketTiers':
-          ticketTiers.map((e) => (e as UpcomingTicketTier).toJson()).toList(),
+      'ticketTiers': ticketTiers.map((e) => e.toJson()).toList(),
       'eventId': eventId,
+      'location': location
     };
   }
 }
 
-class UpcomingTicketTier implements TicketTier {
+class UpcomingTicketTier implements EventTicketTier {
   @override
   final String name;
   @override
   final double price;
   @override
-  final List<String> listofFeatures;
+  List<String> listofFeatures;
 
   UpcomingTicketTier({
     required this.name,
@@ -95,10 +97,9 @@ class UpcomingTicketTier implements TicketTier {
 
   factory UpcomingTicketTier.fromJson(Map<String, dynamic> json) {
     return UpcomingTicketTier(
-      name: json['name'] as String,
+      name: json['name'],
       price: (json['price'] as num).toDouble(),
-      listofFeatures:
-          List<String>.from(json['listOfFeatures'] as List<dynamic>),
+      listofFeatures: List<String>.from(json['listOfFeatures']),
     );
   }
 

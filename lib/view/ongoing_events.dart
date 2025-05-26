@@ -1,10 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:eventsolutions/model/events/ongoing.dart';
 
-import 'package:eventsolutions/provider/event/event_provider.dart';
+import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +37,7 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
     String month = months[dateTime.month - 1];
 
     // Get last two digits of year
-    // String year = (dateTime.year % 100).toString().padLeft(2, '0');
+    String year = (dateTime.year % 100).toString().padLeft(2, '0');
 
     return '$day $month';
   }
@@ -193,7 +192,7 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                                           color: Color(0xffF77018)),
                                       SizedBox(width: 4),
                                       Text(
-                                        'Kathmandu Nepal',
+                                        events.location,
                                         style: TextStyle(
                                           fontSize: 14,
                                         ),
