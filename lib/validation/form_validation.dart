@@ -61,11 +61,11 @@ class MyValidation {
 
   // Mobile number format validation
   static String? validateMobile(String? value) {
-    if (value == null || value.isEmpty) {
+    if (value == null || value.trim().isEmpty) {
       return 'Please enter your mobile number';
     }
     String pattern =
-        r"^\+[0-9]{1,4}[0-9]{10}$"; // Adjust pattern to match your country's phone format
+        r"^(\+?\d{1,3}[-\s]?)?\d{10}$"; // Adjust pattern to match your country's phone format
     RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(value)) {
       return 'Please enter a valid mobile number';

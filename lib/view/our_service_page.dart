@@ -1,9 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/provider/our_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ServicePage extends ConsumerWidget {
-  const ServicePage({super.key});
+  const ServicePage(
+      {super.key, required this.searchQuery, this.showAppBarTitle = true});
+  final String searchQuery;
+  final bool showAppBarTitle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,11 +33,45 @@ class ServicePage extends ConsumerWidget {
     final services = ref.watch(ourServicesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: showAppBarTitle
+          ? AppBar(
+              automaticallyImplyLeading: false,
+              title: const Text(
+                "Our Services",
+                style: TextStyle(
+                  color: Color(0xFF2D5A5A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+              centerTitle: true,
+            )
+          : null,
       body: services.when(
         data: (data) {
+          final filteredServices = data
+              .where((service) =>
+                  service.name
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()) ||
+                  service.description
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+              .toList();
+
+          if (filteredServices.isEmpty) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text(
+                  'No services found.',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            );
+          }
           return Padding(
-            padding: const EdgeInsets.only(top: 10),
+            padding: EdgeInsets.only(top: showAppBarTitle ? 20 : 10),
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -52,7 +90,11 @@ class ServicePage extends ConsumerWidget {
                   final imagePath = getImageForService(service.name);
 
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 15),
+                    margin: EdgeInsets.only(
+                      bottom: 15,
+                      right: showAppBarTitle ? 10 : 0,
+                      left: showAppBarTitle ? 10 : 0,
+                    ),
                     child: Card(
                       elevation: 8,
                       shadowColor: Colors.black.withAlpha(15),

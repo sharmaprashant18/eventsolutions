@@ -359,11 +359,21 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   ),
                   const SizedBox(height: 25),
                   Card(
-                    color: Color(0xffFAFAFA),
-                    elevation: 6,
+                    // color: Color(0xffFAFAFA),
+                    // elevation: 6,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      side: BorderSide(
+                        color: Colors.grey.shade300,
+                        width: 1,
+                      ),
+                    ),
+                    // color: Colors.green.shade300,
+                    color: Colors.grey.shade200,
                     child: Padding(
                       padding: EdgeInsets.only(
-                          top: 10, bottom: 10, right: 10, left: 10),
+                          top: 20, bottom: 20, left: 16, right: 16),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -378,13 +388,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               label: 'Email',
                               controller: emailController,
                             ),
-                            // buildTextField(
-                            //   fieldKey: phoneKey,
-                            //   label: 'Phone Number',
-                            //   hintText:
-                            //       'Enter phone number with country code (e.g.977)',
-                            //   controller: phoneController,
-                            // ),
                             _buildPhoneField()
                           ],
                         ),
@@ -415,7 +418,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                     onPressed: _isLoading
                         ? null
                         : () async {
-                            // Step 1: Validate form and payment screenshot
                             if (_formKey.currentState!.validate()) {
                               if (selectedImage == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -428,22 +430,22 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                 return;
                               }
 
-                              // Validate file type
-                              final fileExtension = selectedImage.path
-                                  .toLowerCase()
-                                  .split('.')
-                                  .last;
-                              if (!['png', 'jpg', 'jpeg']
-                                  .contains(fileExtension)) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        'Payment screenshot must be a PNG or JPEG image'),
-                                  ),
-                                );
-                                return;
-                              }
+                              // // Validate file type
+                              // final fileExtension = selectedImage.path
+                              //     .toLowerCase()
+                              //     .split('.')
+                              //     .last;
+                              // if (!['png', 'jpg', 'jpeg']
+                              //     .contains(fileExtension)) {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //       backgroundColor: Colors.red,
+                              //       content: Text(
+                              //           'Payment screenshot must be a PNG or JPEG image'),
+                              //     ),
+                              //   );
+                              //   return;
+                              // }
 
                               final selectedTier =
                                   ref.read(selectedTierProvider);
@@ -996,12 +998,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
               child: TextFormField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'This field is required';
-                  }
-                  return null;
-                },
+                validator: MyValidation.validateMobile,
                 decoration: InputDecoration(
                   hintText: 'Enter your phone number',
                   hintStyle: TextStyle(

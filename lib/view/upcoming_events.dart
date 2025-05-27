@@ -1,12 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
-import 'package:eventsolutions/view/upcoming_entry_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UpcomingEvents extends ConsumerWidget {
-  const UpcomingEvents({super.key});
+  const UpcomingEvents({super.key, required this.searchQuery});
+  final String searchQuery;
 
   String formatDateManually(DateTime dateTime) {
     String day = dateTime.day.toString().padLeft(2, '0');
@@ -40,25 +41,41 @@ class UpcomingEvents extends ConsumerWidget {
     return Container(
         color: const Color(0xffF4F4F4),
         child: upcomingEvents.when(
-          data: (upcomingevents) => ListView.builder(
-            scrollDirection: Axis.vertical,
+          data: (upcomingevents) {
+            final filteredEvents = upcomingevents
+                .where((event) =>
+                    event.title
+                        .toLowerCase()
+                        .contains(searchQuery.toLowerCase()) ||
+                    event.location
+                        .toLowerCase()
+                        .contains(searchQuery.toLowerCase()))
+                .toList();
 
-            // physics: CarouselScrollPhysics(),
-            clipBehavior: Clip.hardEdge,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            itemCount: upcomingevents.length,
-            itemBuilder: (context, index) {
-              final upcomingevent = upcomingevents[index];
-              return ongoingEvents(
-                  context,
-                  '$baseUrlImage${upcomingevent.poster!}',
-                  upcomingevent.title,
-                  '${formatDateManually(DateTime.parse(upcomingevent.startDate))}-${formatDateManually(DateTime.parse(upcomingevent.endDate))}',
-                  upcomingevent.location,
-                  upcomingevent.ticketTiers[0].price.toString(),
-                  upcomingevent);
-            },
-          ),
+            if (filteredEvents.isEmpty) {
+              return const Center(child: Text('No events match your search.'));
+            }
+
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+
+              // physics: CarouselScrollPhysics(),
+              clipBehavior: Clip.hardEdge,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              itemCount: upcomingevents.length,
+              itemBuilder: (context, index) {
+                final upcomingevent = upcomingevents[index];
+                return ongoingEvents(
+                    context,
+                    '$baseUrlImage${upcomingevent.poster!}',
+                    upcomingevent.title,
+                    '${formatDateManually(DateTime.parse(upcomingevent.startDate))}-${formatDateManually(DateTime.parse(upcomingevent.endDate))}',
+                    upcomingevent.location,
+                    upcomingevent.ticketTiers[0].price.toString(),
+                    upcomingevent);
+              },
+            );
+          },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
         ));

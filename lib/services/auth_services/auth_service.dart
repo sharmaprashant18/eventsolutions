@@ -202,9 +202,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:eventsolutions/api.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
-import 'package:eventsolutions/services/auth_services/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
@@ -213,7 +213,7 @@ import 'package:eventsolutions/model/auth_model/register_model.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 
 class AuthService {
-  final Dio _dio = DioClient().dio;
+  // final Dio _dio = DioClient().dio;
   final TokenStorage _tokenStorage = TokenStorage();
 
   Future<void> saveToken(String accessToken, String refreshToken) async {
@@ -226,16 +226,17 @@ class AuthService {
 
   Future<LoginModel> login(String email, String password) async {
     try {
-      final response = await _dio.post('/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final token = await _tokenStorage.getAccessToken();
+      final response = await Dio().post(ApiServices.login,
+          data: {
+            'email': email,
+            'password': password,
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
       final loginModel = LoginModel.fromJson(response.data);
       debugPrint("Access Token: ${loginModel.accessToken}");
-      // final dummyToken =
-      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0NzU1OTc5NywiZXhwIjoxNzQ4MTY0NTk3fQ.IKs5i7VIQtZjFyUS-BQL7omPupCUqVU9iO6-uLizIPs';
-      await saveToken(loginModel.accessToken,
-          loginModel.accessToken); // Assume refresh token is returned
+
+      await saveToken(loginModel.accessToken, loginModel.accessToken);
       log(loginModel.accessToken);
       return loginModel;
     } on DioException catch (e) {
@@ -247,12 +248,18 @@ class AuthService {
     }
   }
 
-  Future<LoginRegisterModel> register(String email, String password) async {
+  Future<LoginRegisterModel> register(
+      String email, String fullName, String phone, String password) async {
     try {
-      final response = await _dio.post('/register', data: {
-        'email': email,
-        'password': password,
-      });
+      final token = await _tokenStorage.getAccessToken();
+      final response = await Dio().post(ApiServices.register,
+          data: {
+            'email': email,
+            'password': password,
+            'fullName': fullName,
+            'phone': phone
+          },
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
       return LoginRegisterModel.fromJson(response.data);
     } on DioException catch (e) {
       if (e.response != null) {
@@ -270,7 +277,7 @@ class AuthService {
 
   Future<ForgotPasswordModel> forgotPassword(String email) async {
     try {
-      final response = await _dio.post('/forget-password', data: {
+      final response = await Dio().post(ApiServices.forgotPassword, data: {
         'email': email,
       });
 
@@ -286,7 +293,7 @@ class AuthService {
     required String newPassword,
   }) async {
     try {
-      final response = await _dio.post('/verify-code', data: {
+      final response = await Dio().post(ApiServices.verify, data: {
         'email': email,
         'enteredCode': code,
         'newPassword': newPassword,

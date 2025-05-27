@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/home_page.dart';
@@ -13,6 +14,8 @@ class SignupPage extends ConsumerStatefulWidget {
 }
 
 class _SignupPageState extends ConsumerState<SignupPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   bool isObscure = false;
@@ -60,6 +63,60 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         ),
                         SizedBox(
                           height: screenHeight * 0.04,
+                        ),
+                        Text(
+                          'Full Name',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.009,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 10),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                          ),
+                          controller: nameController,
+                          validator: (value) =>
+                              MyValidation.validateName(value),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.025,
+                        ),
+                        Text(
+                          'Phone Number',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.009,
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 10),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey)),
+                          ),
+                          controller: phoneController,
+                          validator: (value) =>
+                              MyValidation.validateMobile(value),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.025,
                         ),
                         Text(
                           'Email',
@@ -134,6 +191,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                 final authService =
                                     ref.read(authServiceProvider);
                                 await authService.register(
+                                  nameController.text.trim(),
+                                  phoneController.text.trim(),
                                   emailController.text.trim(),
                                   passwordController.text.trim(),
                                 );
@@ -146,7 +205,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                 );
                               } catch (e) {
                                 showDialog(
-                                  // ignore: use_build_context_synchronously
                                   context: context,
                                   builder: (_) => AlertDialog(
                                     title: Text('Registration Failed'),
@@ -163,7 +221,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
+                            // backgroundColor: Colors.pinkAccent,
+                            backgroundColor: Colors.green,
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -208,7 +267,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           alignment: Alignment.center,
                           child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent,
+                                // backgroundColor: Colors.pinkAccent,
+                                backgroundColor: Colors.green,
                                 minimumSize: Size(0, 50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),

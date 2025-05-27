@@ -1,4 +1,5 @@
 // Contact us provider
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

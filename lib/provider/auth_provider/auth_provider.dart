@@ -12,13 +12,17 @@ final authServiceProvider = Provider<AuthService>((ref) {
 final loginProvider =
     FutureProvider.family<LoginModel, Map<String, String>>((ref, credentials) {
   final authService = ref.read(authServiceProvider);
-  return authService.login(credentials['email']!, credentials['password']!);
+  return authService.login(
+    credentials['email']!,
+    credentials['password']!,
+  );
 });
 
 final registerProvider =
     FutureProvider.family<LoginRegisterModel, Map<String, String>>((ref, data) {
   final authService = ref.read(authServiceProvider);
-  return authService.register(data['email']!, data['password']!);
+  return authService.register(
+      data['email']!, data['password']!, data['fullName']!, data['number']!);
 });
 
 final forgotPasswordProvider =

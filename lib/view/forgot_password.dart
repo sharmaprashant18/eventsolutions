@@ -190,7 +190,8 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                           ElevatedButton(
                             onPressed: isSendingOtp ? null : sendOtp,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent,
+                              // backgroundColor: Colors.pinkAccent,
+                              backgroundColor: Colors.green,
                               minimumSize: const Size(double.infinity, 45),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -266,7 +267,8 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                             onPressed:
                                 isResettingPassword ? null : resetPassword,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent,
+                              // backgroundColor: Colors.pinkAccent,
+                              backgroundColor: Colors.green,
                               minimumSize: const Size(double.infinity, 50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

@@ -1,9 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/model/events/all_events_model.dart';
-import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
-import 'package:eventsolutions/model/ticket_model.dart';
 import 'package:eventsolutions/services/event_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

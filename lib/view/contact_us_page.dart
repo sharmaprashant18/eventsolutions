@@ -1,8 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:eventsolutions/provider/contact_us_provider.dart';
-import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsPage extends ConsumerStatefulWidget {
   const ContactUsPage({super.key});
@@ -98,70 +99,208 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    // final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text(
-          'Contact Us',
-          style: TextStyle(
-            color: Color(0xFF2D5A5A),
-            fontWeight: FontWeight.bold,
-          ),
+      body: Padding(
+        padding: EdgeInsets.only(
+          top: screenHeight * 0.06,
+          bottom: screenHeight * 0.01,
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildTextField(
-                label: 'Full Name',
-                controller: fullNameController,
-                hintText: 'Enter your full name',
+        child: Column(
+          children: [
+            Text(
+              'Contact Us',
+              style: TextStyle(
+                color: Color(0xFF2D5A5A),
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
               ),
-              const SizedBox(height: 20),
-              _buildPhoneField(),
-              const SizedBox(height: 20),
-              _buildTextField(
-                label: 'Email',
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                hintText: 'Enter your email address',
-              ),
-              const SizedBox(height: 20),
-              _buildTextField(
-                label: 'Message',
-                controller: messageController,
-                maxLines: 5,
-                hintText: 'Enter your message',
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(right: 16, left: 16),
+              child: Column(
+                children: [
+                  Card(
+                    margin: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
+                      side: BorderSide(
+                        color: Colors.grey.shade300,
+                        width: 1,
+                      ),
                     ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Send',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    // color: Colors.green.shade300,
+                    color: Colors.grey.shade200,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 20, bottom: 20, left: 16, right: 16),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            _buildTextField(
+                              label: 'Full Name',
+                              controller: fullNameController,
+                              hintText: 'Enter your full name',
+                            ),
+                            const SizedBox(height: 20),
+                            _buildPhoneField(),
+                            const SizedBox(height: 20),
+                            _buildTextField(
+                              label: 'Email',
+                              controller: emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              hintText: 'Enter your email address',
+                            ),
+                            const SizedBox(height: 20),
+                            _buildTextField(
+                              label: 'Message',
+                              controller: messageController,
+                              maxLines: 5,
+                              hintText: 'Enter your message',
+                            ),
+                            const SizedBox(height: 32),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: _submitForm,
+                                style: ElevatedButton.styleFrom(
+                                  // backgroundColor: Colors.black,
+                                  backgroundColor: Colors.green,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Text(
+                                  'Send',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  SizedBox(height: screenHeight * 0.04),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.place,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 8),
+                          InkWell(
+                            onTap: () {
+                              launchUrl(Uri.parse(
+                                  "https://maps.app.goo.gl/Mm18oQMJmQBDj1H48"));
+                            },
+                            child: Text(
+                              'Jwagal, Lalitpur, Nepal',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D5A5A)),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.phone,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 8),
+                          Row(
+                            children: [
+                              InkWell(
+                                  onTap: () {
+                                    launchUrl(
+                                      Uri.parse("tel:+977-01-5260535"),
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                    debugPrint("Phone1 link tapped");
+                                  },
+                                  child: Text(
+                                    '+977-01-5260535',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF2D5A5A)),
+                                  )),
+                              SizedBox(width: 4),
+                              Text('/'),
+                              SizedBox(width: 4),
+                              InkWell(
+                                onTap: () {
+                                  launchUrl(
+                                    Uri.parse("tel:01-5260103"),
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                  debugPrint("Phone2 link tapped");
+                                },
+                                child: Text(
+                                  '01-5260103',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2D5A5A),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.email,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 8),
+                          InkWell(
+                            onTap: () {
+                              launchUrl(
+                                mode: LaunchMode.externalApplication,
+                                Uri.parse(
+                                    "mailto:info@eventsolutionnepal.com.np?subject=Want to contact you&body=Hello, I would like to..."),
+                              );
+                              debugPrint("Email link tapped");
+                            },
+                            child: Text(
+                              'info@eventsolutionnepal.com.np',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D5A5A),
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -219,7 +358,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
               fontSize: 14,
             ),
             filled: true,
-            fillColor: const Color(0xFFF5E6D3),
+            // fillColor: const Color(0xFFF5E6D3),
+            fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -256,7 +396,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
               width: dropdownWidth.clamp(100.0, 140.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5E6D3),
+                  // color: const Color(0xFFF5E6D3),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -304,7 +445,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                     fontSize: 14,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF5E6D3),
+                  // fillColor: const Color(0xFFF5E6D3),
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

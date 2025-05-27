@@ -1,7 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:eventsolutions/model/events/ongoing.dart';
 
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OngoingEvents extends ConsumerStatefulWidget {
-  const OngoingEvents({super.key});
+  const OngoingEvents({super.key, required this.searchQuery});
+  final String searchQuery;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UpcomingPageState();
@@ -36,8 +37,8 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
     ];
     String month = months[dateTime.month - 1];
 
-    // Get last two digits of year
-    String year = (dateTime.year % 100).toString().padLeft(2, '0');
+    // // Get last two digits of year
+    // String year = (dateTime.year % 100).toString().padLeft(2, '0');
 
     return '$day $month';
   }
@@ -84,6 +85,9 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final event = ref.watch(ongoingEventProvider);
+    // final filteredEvents = allEvents
+    // .where((event) => event.title.toLowerCase().contains(searchQuery.toLowerCase()))
+    // .toList();
     return Scaffold(
       body: event.when(
           data: (event) {
@@ -91,6 +95,19 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
               return Center(
                 child: Text('No Event Available'),
               );
+            }
+            final filteredEvents = event
+                .where((e) =>
+                    e.title
+                        .toLowerCase()
+                        .contains(widget.searchQuery.toLowerCase()) ||
+                    e.location
+                        .toLowerCase()
+                        .contains(widget.searchQuery.toLowerCase()))
+                .toList();
+
+            if (filteredEvents.isEmpty) {
+              return const Center(child: Text('No events match your search.'));
             }
 
             return Padding(
@@ -100,9 +117,11 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                 left: screenWidth * 0.03,
               ),
               child: ListView.builder(
-                itemCount: event.length,
+                // itemCount: event.length,
+                itemCount: filteredEvents.length,
                 itemBuilder: (context, index) {
-                  final events = event[index];
+                  // final events = event[index];
+                  final events = filteredEvents[index];
                   return Card(
                     // color: Colors.blueGrey,
                     color: Colors.white,

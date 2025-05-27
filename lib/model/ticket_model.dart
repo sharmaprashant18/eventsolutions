@@ -39,7 +39,7 @@ class TicketData {
   final String ticketId;
   final String submittedAt;
   final String updatedAt;
-  final String? qr; // Nullable to handle cases where qr is not present
+  final String? qr;
 
   TicketData({
     required this.eventId,

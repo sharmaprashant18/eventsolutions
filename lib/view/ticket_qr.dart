@@ -547,15 +547,39 @@ class TicketQr extends ConsumerWidget {
                                             size: 32,
                                           ),
                                           SizedBox(height: 12),
-                                          Text(
-                                            ticket.status == 'pending'
-                                                ? 'Pending Approval'
-                                                : ticket.status.toUpperCase(),
-                                            style: TextStyle(
-                                              color: statusColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
+                                          // Text(
+                                          //   ticket.status == 'rejected'
+                                          //       ? 'Rejected'.toUpperCase()
+                                          //       : ticket.status.toUpperCase(),
+                                          //   style: TextStyle(
+                                          //     color: statusColor,
+                                          //     fontWeight: FontWeight.bold,
+                                          //     fontSize: 16,
+                                          //   ),
+                                          // ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                ticket.status.toUpperCase(),
+                                                style: TextStyle(
+                                                  color: statusColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(height: 8),
+                                              if (ticket.status == 'rejected')
+                                                Text(
+                                                  'Your ticket has been rejected due to : ${ticket.note}',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                            ],
                                           ),
                                           if (ticket.status == 'pending')
                                             Padding(
