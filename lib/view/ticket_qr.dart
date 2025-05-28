@@ -13,11 +13,16 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
 
-class TicketQr extends ConsumerWidget {
+class TicketQr extends ConsumerStatefulWidget {
   final String? ticketId; // Optional parameter for direct navigation
 
   const TicketQr({super.key, this.ticketId});
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _TicketQrState();
+}
+
+class _TicketQrState extends ConsumerState<TicketQr> {
   Future<List<String>> _getAllTicketIds() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList('allTicketIds') ?? [];
@@ -208,7 +213,7 @@ class TicketQr extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final ticketService = ref.read(eventServiceProvider);
 
     return FutureBuilder<List<TicketData>>(
@@ -518,11 +523,95 @@ class TicketQr extends ConsumerWidget {
                                                   fontSize: 14,
                                                 ),
                                               ),
-                                              Spacer(),
                                               IconButton(
                                                   onPressed: () => _savePdfFile(
                                                       context, ticket),
-                                                  icon: Icon(Icons.download))
+                                                  icon: Icon(Icons.download)),
+                                              Spacer(),
+                                              // IconButton(
+                                              //     onPressed: () {
+                                              //       showDialog(
+                                              //         context: context,
+                                              //         builder: (context) {
+                                              //           return AlertDialog(
+                                              //             content: Text(
+                                              //                 'Are you sure you want to delete this ticket?'),
+                                              //             actions: [
+                                              //               TextButton(
+                                              //                   onPressed: () {
+                                              //                     tickets.remove(
+                                              //                         ticket);
+                                              //                     debugPrint(
+                                              //                         'Ticket with ID ${ticket.ticketId} deleted');
+                                              //                   },
+                                              //                   child: Text(
+                                              //                       'Yes')),
+                                              //               TextButton(
+                                              //                   onPressed: () {
+                                              //                     Navigator.pop(
+                                              //                         context);
+                                              //                   },
+                                              //                   child:
+                                              //                       Text('No'))
+                                              //             ],
+                                              //           );
+                                              //         },
+                                              //       );
+                                              //     },
+                                              //     icon: Icon(
+                                              //         Icons.delete_outline))
+                                              IconButton(
+                                                onPressed: () async {
+                                                  // Show confirmation dialog
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        content: Text(
+                                                            'Are you sure you want to delete this ticket?'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              final prefs =
+                                                                  await SharedPreferences
+                                                                      .getInstance();
+
+                                                              final ticketIds =
+                                                                  await _getAllTicketIds();
+
+                                                              ticketIds.remove(
+                                                                  ticket
+                                                                      .ticketId);
+
+                                                              await prefs
+                                                                  .setStringList(
+                                                                      'allTicketIds',
+                                                                      ticketIds);
+
+                                                              Navigator.pop(
+                                                                  context);
+
+                                                              setState(() {});
+                                                              debugPrint(
+                                                                  'Ticket with ID ${ticket.ticketId} deleted');
+                                                            },
+                                                            child: Text('Yes'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    context),
+                                                            child: Text('No'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon:
+                                                    Icon(Icons.delete_outline),
+                                              )
                                             ],
                                           ),
                                         ),

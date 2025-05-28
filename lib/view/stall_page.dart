@@ -10,11 +10,21 @@ class StallPage extends ConsumerStatefulWidget {
 
 class _StallPageState extends ConsumerState<StallPage> {
   DateTime selectedDate = DateTime.now();
+  TimeOfDay selectedTime = TimeOfDay.now();
 
   String get formattedDate {
     return "${selectedDate.day.toString().padLeft(2, '0')} "
         "${_monthName(selectedDate.month)}, "
         "${selectedDate.year}";
+  }
+
+  String get formattedTime {
+    return "${selectedTime.hour.toString().padLeft(2, '0')}:"
+        "${selectedTime.minute.toString().padLeft(2, '0')} ${_amPm(selectedTime.hour)}";
+  }
+
+  String _amPm(int hour) {
+    return hour >= 12 ? 'PM' : 'AM';
   }
 
   String _monthName(int month) {
@@ -36,27 +46,34 @@ class _StallPageState extends ConsumerState<StallPage> {
   }
 
   Future<void> _showDatePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime.now(),
-      lastDate: DateTime(2025, 12, 31),
+      lastDate: DateTime(2026, 12, 31),
     );
-    if (picked != null) {
+    if (pickedDate != null) {
       setState(() {
-        selectedDate = picked;
+        selectedDate = pickedDate;
       });
     }
   }
 
   Future<void> _showTimePicker(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
+    final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.input,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
-    if (picked != null) {
+    if (pickedTime != null) {
       setState(() {
-        picked.hour;
+        selectedTime = pickedTime;
       });
     }
   }
@@ -78,372 +95,317 @@ class _StallPageState extends ConsumerState<StallPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: screenWidth * 0.05,
-            right: screenWidth * 0.05,
-            top: screenHeight * 0.02,
-          ),
-          child: Row(
-            children: [
-              Column(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
+                top: screenHeight * 0.02,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Date',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _showDatePicker(context),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.04,
-                        vertical: screenHeight * 0.015,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(formattedDate),
-                          const Icon(Icons.calendar_today, size: 18),
+                          Text(
+                            'Date',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () => _showDatePicker(context),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.04,
+                                vertical: screenHeight * 0.015,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                spacing: 10,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    formattedDate,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  Icon(Icons.keyboard_arrow_down_outlined,
+                                      color: Colors.grey),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
+                      Spacer(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Time',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () => _showTimePicker(context),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.06,
+                                vertical: screenHeight * 0.015,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                spacing: 10,
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    formattedTime,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  Icon(Icons.keyboard_arrow_down_outlined,
+                                      color: Colors.grey),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: screenHeight * 0.05),
+                  Text(
+                    'Select  stall',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                  SizedBox(height: screenHeight * 0.03),
+                  gridViewItem(context),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.blue, shape: BoxShape.circle),
+                            height: screenHeight * 0.015,
+                            width: screenWidth * 0.1,
+                          ),
+                          Text(
+                            'Selected',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Color(0xff57EB63),
+                                shape: BoxShape.circle),
+                            height: screenHeight * 0.015,
+                            width: screenWidth * 0.1,
+                          ),
+                          Text(
+                            'Reserved',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                color: Colors.white,
+                                shape: BoxShape.circle),
+                            height: screenHeight * 0.015,
+                            width: screenWidth * 0.1,
+                          ),
+                          Text(
+                            'Available',
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const Spacer(),
-              Column(
-                children: [
-                  Text(
-                    'Time',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: screenHeight * 0.13),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: Colors.white,
+                          title: Icon(Icons.check_circle,
+                              color: Colors.green, size: 40),
+                          content: const Text(
+                            'Your stall has been confirmed!',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          actions: [
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: const Color(0xFF2D5A5A)),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2D5A5A),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.3,
+                    vertical: screenHeight * 0.015,
                   ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => _showTimePicker(context),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth * 0.04,
-                        vertical: screenHeight * 0.015,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(formattedDate),
-                          const Icon(Icons.calendar_today, size: 18),
-                        ],
-                      ),
-                    ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                ],
+                ),
+                child: const Text(
+                  'Confirm Stall',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
   }
+
+  Widget gridViewItem(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    return SizedBox(
+        height: screenHeight * 0.4,
+        child: Row(
+          children: [
+            //Stall part 1
+            Expanded(
+              child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 9,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 1,
+                ),
+                itemCount: 24,
+                itemBuilder: (context, index) {
+                  Color getTopColorForIndex(int index) {
+                    int row = index ~/ 4;
+                    int col = index % 4;
+                    //this is according to the selected unselected and available pattern if made from the backend
+                    if (row == 0) {
+                      if (col == 1) return Colors.blue;
+                      return Colors.white;
+                    } else if (row == 1) {
+                      return Colors.white;
+                    } else if (row == 2) {
+                      if (col == 3) return Colors.blue;
+                      return Colors.white;
+                    } else if (row == 3) {
+                      if (col == 0) return Colors.blue;
+                      return Colors.white;
+                    }
+                    return Colors.white;
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        //on tap logic here
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: getTopColorForIndex(index),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(width: screenWidth * 0.09),
+
+            //Stall part 2
+            Expanded(
+              child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 9,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 1,
+                ),
+                itemCount: 24,
+                itemBuilder: (context, index) {
+                  Color getBottomColorForIndex(int index) {
+                    int row = index ~/ 2;
+                    int col = index % 4;
+
+                    if (row == 0) {
+                      return Color(0xff57EB63);
+                    } else if (row == 1) {
+                      return Colors.blue;
+                    } else if (row == 2) {
+                      if (col == 0) return Color(0xff57EB63);
+                      return Colors.white;
+                    }
+                    return Colors.white;
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        //on tap logic here
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: getBottomColorForIndex(index),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ));
+  }
 }
-
-// class StallPage extends StatefulWidget {
-//   const StallPage({super.key});
-
-//   @override
-//   State<StallPage> createState() => _StallPageState();
-// }
-
-// class _StallPageState extends State<StallPage> {
-//   String formatDateManually(DateTime dateTime) {
-//     String day = dateTime.day.toString().padLeft(2, '0');
-
-//     List<String> months = [
-//       'Jan',
-//       'Feb',
-//       'Mar',
-//       'Apr',
-//       'May',
-//       'Jun',
-//       'Jul',
-//       'Aug',
-//       'Sep',
-//       'Oct',
-//       'Nov',
-//       'Dec'
-//     ];
-//     String month = months[dateTime.month - 1];
-
-//     // Get last two digits of year
-//     String year = (dateTime.year % 100).toString().padLeft(2, '0');
-
-//     return '$day $month, $year';
-//   }
-
-//   DateTime selectedDate = DateTime.now();
-//   TimeOfDay selectedTime = TimeOfDay(hour: 13, minute: 0); // 1:00 PM
-
-//   // Stall status: 0 = available, 1 = selected, 2 = reserved, 3 = unavailable
-//   List<List<int>> stallGrid = [
-//     [1, 0, 0, 0, 0, 0, 0, 2],
-//     [0, 0, 0, 0, 0, 0, 0, 0],
-//     [0, 0, 1, 1, 0, 0, 0, 0],
-//     [2, 2, 2, 2, 2, 2, 2, 2],
-//     [2, 2, 2, 2, 2, 2, 2, 3],
-//   ];
-
-//   Future<void> _selectDate(BuildContext context) async {
-//     final DateTime? picked = await showDatePicker(
-//       context: context,
-//       initialDate: selectedDate,
-//       firstDate: DateTime(2020),
-//       lastDate: DateTime(2025),
-//     );
-//     if (picked != null && picked != selectedDate) {
-//       setState(() {
-//         selectedDate = picked;
-//       });
-//     }
-//   }
-
-//   Future<void> _selectTime(BuildContext context) async {
-//     final TimeOfDay? picked = await showTimePicker(
-//       context: context,
-//       initialTime: selectedTime,
-//     );
-//     if (picked != null && picked != selectedTime) {
-//       setState(() {
-//         selectedTime = picked;
-//       });
-//     }
-//   }
-
-//   Color _getStallColor(int status) {
-//     switch (status) {
-//       case 0:
-//         return Colors.white; // Available
-//       case 1:
-//         return Colors.blue; // Selected
-//       case 2:
-//         return Colors.green; // Reserved
-//       case 3:
-//         return Colors.red; // Unavailable
-//       default:
-//         return Colors.white;
-//     }
-//   }
-
-//   void _toggleStall(int row, int col) {
-//     setState(() {
-//       // Only toggle if the stall is available or already selected
-//       if (stallGrid[row][col] == 0) {
-//         stallGrid[row][col] = 1; // Select
-//       } else if (stallGrid[row][col] == 1) {
-//         stallGrid[row][col] = 0; // Unselect
-//       }
-//       // Do nothing if the stall is reserved or unavailable
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//         leading: IconButton(
-//           icon: Container(
-//             decoration: BoxDecoration(
-//               color: Colors.purple.shade100,
-//               borderRadius: BorderRadius.circular(4),
-//             ),
-//             padding: const EdgeInsets.all(8),
-//             child: const Icon(Icons.arrow_back, color: Colors.purple),
-//           ),
-//           onPressed: () {},
-//         ),
-//         title: const Text(
-//           'Select Stall',
-//           style: TextStyle(
-//             color: Colors.black,
-//             fontSize: 18,
-//             fontWeight: FontWeight.bold,
-//           ),
-//         ),
-//         centerTitle: true,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             const Text(
-//               'Date',
-//               style: TextStyle(
-//                 fontSize: 14,
-//                 fontWeight: FontWeight.w500,
-//               ),
-//             ),
-//             const SizedBox(height: 8),
-//             Row(
-//               children: [
-//                 Expanded(
-//                   child: GestureDetector(
-//                     onTap: () => _selectDate(context),
-//                     child: Container(
-//                       padding: const EdgeInsets.symmetric(
-//                           horizontal: 16, vertical: 12),
-//                       decoration: BoxDecoration(
-//                         border: Border.all(color: Colors.grey.shade300),
-//                         borderRadius: BorderRadius.circular(8),
-//                       ),
-//                       child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Text(
-//                             formatDateManually(DateTime.timestamp()),
-//                             style: const TextStyle(fontSize: 14),
-//                           ),
-//                           const Icon(Icons.arrow_drop_down, color: Colors.grey),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(width: 16),
-//                 Expanded(
-//                   child: GestureDetector(
-//                     onTap: () => _selectTime(context),
-//                     child: Container(
-//                       padding: const EdgeInsets.symmetric(
-//                           horizontal: 16, vertical: 12),
-//                       decoration: BoxDecoration(
-//                         border: Border.all(color: Colors.grey.shade300),
-//                         borderRadius: BorderRadius.circular(8),
-//                       ),
-//                       child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Text(
-//                             selectedTime.format(context),
-//                             style: const TextStyle(fontSize: 14),
-//                           ),
-//                           const Icon(Icons.arrow_drop_down, color: Colors.grey),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 24),
-//             const Text(
-//               'Select Your Stall',
-//               style: TextStyle(
-//                 fontSize: 14,
-//                 fontWeight: FontWeight.w500,
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             Expanded(
-//               child: Column(
-//                 children: [
-//                   Expanded(
-//                     child: GridView.builder(
-//                       gridDelegate:
-//                           const SliverGridDelegateWithFixedCrossAxisCount(
-//                         crossAxisCount: 8,
-//                         crossAxisSpacing: 8.0,
-//                         mainAxisSpacing: 8.0,
-//                       ),
-//                       itemCount: stallGrid.length * stallGrid[0].length,
-//                       itemBuilder: (context, index) {
-//                         final row = index ~/ stallGrid[0].length;
-//                         final col = index % stallGrid[0].length;
-//                         final stallStatus = stallGrid[row][col];
-
-//                         return GestureDetector(
-//                           onTap: () => _toggleStall(row, col),
-//                           child: Container(
-//                             decoration: BoxDecoration(
-//                               color: _getStallColor(stallStatus),
-//                               borderRadius: BorderRadius.circular(8),
-//                               border: Border.all(
-//                                 color: Colors.grey.shade300,
-//                                 width: stallStatus == 0 ? 1 : 0,
-//                               ),
-//                             ),
-//                           ),
-//                         );
-//                       },
-//                     ),
-//                   ),
-//                   const SizedBox(height: 16),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       _buildLegendItem(Colors.blue, 'Selected'),
-//                       const SizedBox(width: 16),
-//                       _buildLegendItem(Colors.green, 'Reserved'),
-//                       const SizedBox(width: 16),
-//                       _buildLegendItem(Colors.white, 'Available', border: true),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             SizedBox(
-//               width: double.infinity,
-//               child: ElevatedButton(
-//                 onPressed: () {},
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: Colors.blue,
-//                   padding: const EdgeInsets.symmetric(vertical: 16),
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(8),
-//                   ),
-//                 ),
-//                 child: const Text(
-//                   'Checkout',
-//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildLegendItem(Color color, String label, {bool border = false}) {
-//     return Row(
-//       children: [
-//         Container(
-//           width: 12,
-//           height: 12,
-//           decoration: BoxDecoration(
-//             color: color,
-//             borderRadius: BorderRadius.circular(4),
-//             border: border ? Border.all(color: Colors.grey.shade300) : null,
-//           ),
-//         ),
-//         const SizedBox(width: 4),
-//         Text(
-//           label,
-//           style: TextStyle(
-//             fontSize: 12,
-//             color: Colors.grey.shade600,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }

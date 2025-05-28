@@ -7,7 +7,6 @@ import 'package:eventsolutions/view/ticket_qr.dart';
 import 'package:eventsolutions/view/ongoing_events.dart';
 import 'package:eventsolutions/view/faq.dart';
 import 'package:eventsolutions/view/loginpage.dart';
-import 'package:eventsolutions/view/privacypolicy.dart';
 import 'package:eventsolutions/view/stall_page.dart';
 import 'package:eventsolutions/view/upcoming_events.dart';
 import 'package:flutter/material.dart';
@@ -198,16 +197,6 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
                 _drawer(
                   context,
-                  2,
-                  'Privacy Policy',
-                  const Icon(
-                    Icons.play_lesson,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
-                ),
-                _drawer(
-                  context,
                   3,
                   'FAQ',
                   const Icon(
@@ -232,7 +221,7 @@ class _HomePageState extends ConsumerState<HomePage>
           appBar: AppBar(
             toolbarHeight: screenHeight * 0.08,
             centerTitle: true,
-            elevation: 1,
+            elevation: 0,
             actions: [
               if (isSearching)
                 Expanded(
@@ -395,14 +384,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       builder: (context) => const ContactUsPage()),
                 );
                 break;
-              case 2:
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const Privacypolicy()),
-                );
-                break;
+
               case 3:
                 Navigator.pop(context);
                 Navigator.push(

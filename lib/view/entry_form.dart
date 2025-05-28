@@ -268,6 +268,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                               return null;
                             },
                             decoration: InputDecoration(
+                              fillColor: Colors.white,
                               filled: true,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -409,177 +410,280 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   qrCode(),
                   const SizedBox(height: 25),
                   buildImageUploadSection(context, ref, selectedImage),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      elevation: 2,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            if (_formKey.currentState!.validate()) {
-                              if (selectedImage == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        'Please upload a payment screenshot'),
-                                  ),
-                                );
-                                return;
-                              }
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        elevation: 2,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: _isLoading
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
+                                if (selectedImage == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content: Text(
+                                          'Please upload a payment screenshot'),
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                              // // Validate file type
-                              // final fileExtension = selectedImage.path
-                              //     .toLowerCase()
-                              //     .split('.')
-                              //     .last;
-                              // if (!['png', 'jpg', 'jpeg']
-                              //     .contains(fileExtension)) {
-                              //   ScaffoldMessenger.of(context).showSnackBar(
-                              //     const SnackBar(
-                              //       backgroundColor: Colors.red,
-                              //       content: Text(
-                              //           'Payment screenshot must be a PNG or JPEG image'),
-                              //     ),
-                              //   );
-                              //   return;
-                              // }
+                                // // Validate file type
+                                // final fileExtension = selectedImage.path
+                                //     .toLowerCase()
+                                //     .split('.')
+                                //     .last;
+                                // if (!['png', 'jpg', 'jpeg']
+                                //     .contains(fileExtension)) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     const SnackBar(
+                                //       backgroundColor: Colors.red,
+                                //       content: Text(
+                                //           'Payment screenshot must be a PNG or JPEG image'),
+                                //     ),
+                                //   );
+                                //   return;
+                                // }
 
-                              final selectedTier =
-                                  ref.read(selectedTierProvider);
-                              if (selectedTier == null &&
-                                  widget.eventData.ticketTiers.isNotEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content:
-                                        Text('Please select a ticket tier'),
-                                  ),
-                                );
-                                return;
-                              }
+                                final selectedTier =
+                                    ref.read(selectedTierProvider);
+                                if (selectedTier == null &&
+                                    widget.eventData.ticketTiers.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content:
+                                          Text('Please select a ticket tier'),
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                              if (widget.eventData.ticketTiers.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    backgroundColor: Colors.red,
-                                    content: Text(
-                                        'No ticket tiers available for this event'),
-                                  ),
-                                );
-                                return;
-                              }
+                                if (widget.eventData.ticketTiers.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content: Text(
+                                          'No ticket tiers available for this event'),
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                              // Step 2: Show loading state
-                              setState(() {
-                                _isLoading = true;
-                              });
+                                // Step 2: Show loading state
+                                setState(() {
+                                  _isLoading = true;
+                                });
 
-                              try {
-                                // Step 3: Prepare registration data
-                                final registrationData = {
-                                  'email': emailController.text,
-                                  'name': fullNameController.text,
-                                  'number': phoneController.text,
-                                  'tierName': selectedTier ??
-                                      widget.eventData.ticketTiers[0].name,
-                                  'paymentScreenshot': File(selectedImage.path),
-                                  'eventId': widget.eventData.eventId,
-                                };
+                                try {
+                                  // Step 3: Prepare registration data
+                                  final registrationData = {
+                                    'email': emailController.text,
+                                    'name': fullNameController.text,
+                                    'number': phoneController.text,
+                                    'tierName': selectedTier ??
+                                        widget.eventData.ticketTiers[0].name,
+                                    'paymentScreenshot':
+                                        File(selectedImage.path),
+                                    'eventId': widget.eventData.eventId,
+                                  };
 
-                                // Step 4: Send registration request
-                                final response = await ref.read(
-                                  registerEventProvider(registrationData)
-                                      .future,
-                                );
+                                  // Step 4: Send registration request
+                                  final response = await ref.read(
+                                    registerEventProvider(registrationData)
+                                        .future,
+                                  );
 
-                                // Step 5: Save ticketId to Shared Preferences
-                                await _saveTicketId(response.ticketId);
+                                  // Step 5: Save ticketId to Shared Preferences
+                                  await _saveTicketId(response.ticketId);
 
-                                // Step 6: Clear form fields after successful registration
-                                fullNameController.clear();
-                                emailController.clear();
-                                phoneController.clear();
-                                ref
-                                    .read(imagePickerProvider.notifier)
-                                    .clearImage();
-                                ref.read(selectedTierProvider.notifier).state =
-                                    null;
+                                  // Step 6: Clear form fields after successful registration
+                                  fullNameController.clear();
+                                  emailController.clear();
+                                  phoneController.clear();
+                                  ref
+                                      .read(imagePickerProvider.notifier)
+                                      .clearImage();
+                                  ref
+                                      .read(selectedTierProvider.notifier)
+                                      .state = null;
 
-                                // Step 7: Show success dialog
-                                showAdaptiveDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      contentPadding: const EdgeInsets.all(20),
-                                      titlePadding: const EdgeInsets.all(10),
-                                      title: const Text(
-                                        'Registration Successful!',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green,
+                                  // Step 7: Show success dialog
+                                  showAdaptiveDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
                                         ),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.check_circle_outline,
-                                            size: 60,
+                                        backgroundColor: Colors.white,
+                                        contentPadding:
+                                            const EdgeInsets.all(20),
+                                        titlePadding: const EdgeInsets.all(10),
+                                        title: const Text(
+                                          'Registration Successful!',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
                                             color: Colors.green,
                                           ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            'Ticket ID: ${response.ticketId}',
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.blue,
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.check_circle_outline,
+                                              size: 60,
+                                              color: Colors.green,
                                             ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'Status: ${response.status.toUpperCase()}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color:
-                                                  response.status == 'pending'
-                                                      ? Colors.orange
-                                                      : Colors.green,
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'Ticket ID: ${response.ticketId}',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.blue,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            response.status == 'pending'
-                                                ? 'Your registration is pending payment verification. You will receive the ticket once verified.'
-                                                : 'Your registration is confirmed! Check for the ticket.',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Status: ${response.status.toUpperCase()}',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    response.status == 'pending'
+                                                        ? Colors.orange
+                                                        : Colors.green,
+                                              ),
                                             ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              response.status == 'pending'
+                                                  ? 'Your registration is pending payment verification. You will receive the ticket once verified.'
+                                                  : 'Your registration is confirmed! Check for the ticket.',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context); // Close dialog
+                                                  Navigator.pop(
+                                                      context); // Navigate back to event list
+                                                },
+                                                child: const Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: response.status ==
+                                                        'approved'
+                                                    ? () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    TicketQr(
+                                                              ticketId: response
+                                                                  .ticketId,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    : null, // Disable if not approved
+                                                child: Text(
+                                                  'View QR',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: response.status ==
+                                                            'approved'
+                                                        ? Colors.blue
+                                                        : Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
-                                      ),
-                                      actions: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                      );
+                                    },
+                                  );
+                                } catch (e) {
+                                  // Step 8: Handle errors with a failure dialog
+                                  String errorMessage = 'Something went wrong';
+                                  if (e.toString().contains('Exception:')) {
+                                    errorMessage = e
+                                        .toString()
+                                        .replaceFirst('Exception: ', '');
+                                  }
+
+                                  showAdaptiveDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                        ),
+                                        backgroundColor: Colors.white,
+                                        contentPadding:
+                                            const EdgeInsets.all(20),
+                                        titlePadding: const EdgeInsets.all(10),
+                                        title: const Text(
+                                          'Registration Failed',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            ElevatedButton(
+                                            const Icon(
+                                              Icons.error_outline,
+                                              size: 60,
+                                              color: Colors.red,
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              errorMessage,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          Center(
+                                            child: ElevatedButton(
                                               onPressed: () {
-                                                Navigator.pop(
-                                                    context); // Close dialog
-                                                Navigator.pop(
-                                                    context); // Navigate back to event list
+                                                Navigator.pop(context);
                                               },
                                               child: const Text(
                                                 'OK',
@@ -590,144 +694,51 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                                 ),
                                               ),
                                             ),
-                                            ElevatedButton(
-                                              onPressed: response.status ==
-                                                      'approved'
-                                                  ? () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              TicketQr(
-                                                                  ticketId: response
-                                                                      .ticketId),
-                                                        ),
-                                                      );
-                                                    }
-                                                  : null, // Disable if not approved
-                                              child: Text(
-                                                'View QR',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: response.status ==
-                                                          'approved'
-                                                      ? Colors.blue
-                                                      : Colors.grey,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } catch (e) {
-                                // Step 8: Handle errors with a failure dialog
-                                String errorMessage = 'Something went wrong';
-                                if (e.toString().contains('Exception:')) {
-                                  errorMessage = e
-                                      .toString()
-                                      .replaceFirst('Exception: ', '');
-                                }
-
-                                showAdaptiveDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      backgroundColor: Colors.white,
-                                      contentPadding: const EdgeInsets.all(20),
-                                      titlePadding: const EdgeInsets.all(10),
-                                      title: const Text(
-                                        'Registration Failed',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.error_outline,
-                                            size: 60,
-                                            color: Colors.red,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            errorMessage,
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
                                           ),
                                         ],
-                                      ),
-                                      actions: [
-                                        Center(
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              'OK',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.blue,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } finally {
-                                // Step 9: Reset loading state
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              }
-                            } else {
-                              // Scroll to the first error field
-                              final errorFields = [
-                                fullNameKey,
-                                emailKey,
-                                phoneKey,
-                                tierKey
-                              ];
-                              for (var key in errorFields) {
-                                if (key.currentState?.hasError ?? false) {
-                                  final context = key.currentContext;
-                                  if (context != null) {
-                                    Scrollable.ensureVisible(
-                                      context,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
+                                      );
+                                    },
+                                  );
+                                } finally {
+                                  // Step 9: Reset loading state
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                }
+                              } else {
+                                // Scroll to the first error field
+                                final errorFields = [
+                                  fullNameKey,
+                                  emailKey,
+                                  phoneKey,
+                                  tierKey
+                                ];
+                                for (var key in errorFields) {
+                                  if (key.currentState?.hasError ?? false) {
+                                    final context = key.currentContext;
+                                    if (context != null) {
+                                      Scrollable.ensureVisible(
+                                        context,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
+                                    break;
                                   }
-                                  break;
                                 }
                               }
-                            }
-                          },
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Proceed',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            },
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Proceed',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
+                    ),
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -922,6 +933,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                 }
               : null,
           decoration: InputDecoration(
+            fillColor: Colors.white,
             hintText: hintText,
             hintStyle: const TextStyle(
               color: Colors.grey,
@@ -965,7 +977,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
               width: dropdownWidth.clamp(100.0, 140.0),
               child: Container(
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: DropdownButtonHideUnderline(
@@ -1006,6 +1020,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                     fontSize: 14,
                   ),
                   filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

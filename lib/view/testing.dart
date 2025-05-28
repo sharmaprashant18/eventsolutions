@@ -485,9 +485,6 @@
 //   }
 // }
 
-
-
-
 // // // import 'package:flutter/material.dart';
 // // // import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -1024,7 +1021,6 @@
 // //     );
 // //   }
 // // }
-
 
 // //entryform part
 // // // ignore_for_file: use_build_context_synchronously
@@ -2005,7 +2001,6 @@
 // //   }
 // // }
 
-
 // //ticketQR
 // // import 'package:eventsolutions/provider/event/event_provider.dart';
 // // // import 'package:flutter/material.dart';
@@ -2127,7 +2122,6 @@
 // //   }
 // // }
 
-
 // // class OngoingEventModel {
 // //   final bool success;
 // //   final String? error;
@@ -2227,7 +2221,6 @@
 // //   }
 // // }
 
-
 // // class UpcomingEventModel {
 // //   final bool success;
 // //   final String? error;
@@ -2326,10 +2319,6 @@
 // //     };
 // //   }
 // // }
-
-
-
-
 
 // // // import 'package:flutter/material.dart';
 // // // import 'package:flutter_riverpod/flutter_riverpod.dart';
