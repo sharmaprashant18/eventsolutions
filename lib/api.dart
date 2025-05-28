@@ -9,4 +9,5 @@ class ApiServices {
   static const forgotPassword = '$baseUrl/forget-password';
   static const verify = '$baseUrl/verify-code';
   static const registerEvent = '$baseUrl//change-password';
+  static const mydetails = '$baseUrl/users/me';
 }

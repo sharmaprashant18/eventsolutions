@@ -3,6 +3,7 @@ import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
 import 'package:eventsolutions/view/contact_us_page.dart';
 import 'package:eventsolutions/view/our_service_page.dart';
+import 'package:eventsolutions/view/profile.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
 import 'package:eventsolutions/view/ongoing_events.dart';
 import 'package:eventsolutions/view/faq.dart';
@@ -145,6 +146,16 @@ class _HomePageState extends ConsumerState<HomePage>
                   padding: const EdgeInsets.only(top: 100, bottom: 20),
                 ),
                 const SizedBox(height: 10),
+                _drawer(
+                  context,
+                  8,
+                  ' Profile',
+                  const Icon(
+                    Icons.account_circle,
+                    color: Color(0xff5F73F3),
+                    size: 25,
+                  ),
+                ),
                 _drawer(
                   context,
                   7,
@@ -454,6 +465,11 @@ class _HomePageState extends ConsumerState<HomePage>
                     context,
                     MaterialPageRoute(
                         builder: (context) => TicketQr(ticketId: null)));
+                break;
+              case 8:
+                Navigator.pop(context);
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => ProfileScreen()));
                 break;
             }
           },

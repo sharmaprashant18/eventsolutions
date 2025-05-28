@@ -31,6 +31,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _loadSavedCredentials();
   }
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   // Modified to use try-catch for error handling
   void _loadSavedCredentials() async {
     try {
@@ -173,16 +180,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           autofillHints:
                               rememberMe ? [AutofillHints.email] : null,
                           decoration: const InputDecoration(
+                            filled: false,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 10),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                                borderSide: BorderSide(color: Colors.green)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                           ),
                           controller: emailController,
                           validator: (value) =>
@@ -203,16 +210,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 rememberMe ? [AutofillHints.password] : null,
                             obscureText: isObscure,
                             decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
+                                filled: false,
+                                contentPadding: EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 10),
-                                focusedBorder: const OutlineInputBorder(
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.green)),
+                                enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.grey)),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                disabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                border: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
                                 suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() {
@@ -329,28 +337,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         Align(
                           alignment: Alignment.center,
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              // backgroundColor: Colors.pinkAccent,
-                              backgroundColor: Colors.green,
-                              minimumSize: const Size(0, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 4,
-                            ),
-                            onPressed: () {},
-                            icon: Image.asset(
-                              'assets/google.png',
+                          child: Container(
+                            decoration: BoxDecoration(
                               color: Colors.white,
-                              fit: BoxFit.contain,
-                              height: screenHeight * 0.02,
-                              width: screenWidth * 0.07,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            label: const Text(
-                              'Login with Google',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 15),
+                            width: screenWidth * 0.7,
+                            height: screenHeight * 0.05,
+                            child: TextButton.icon(
+                              onPressed: () {},
+                              icon: Image.asset(
+                                'assets/google.png',
+                                height: screenHeight * 0.02,
+                                width: screenWidth * 0.07,
+                              ),
+                              label: Text(
+                                'Continue with Google',
+                                style: const TextStyle(
+                                  color: Color(0xFF2D5A5A),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -366,7 +374,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>

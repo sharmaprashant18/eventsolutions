@@ -5,6 +5,7 @@ import 'package:eventsolutions/view/home_page.dart';
 import 'package:eventsolutions/view/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -18,9 +19,36 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  bool isObscure = false;
+  bool isObscure = true;
   bool rememberMe = false;
+  bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> saveCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (rememberMe) {
+        await prefs.setString('email', emailController.text.trim());
+        await prefs.setString('password', passwordController.text.trim());
+        await prefs.setBool('rememberMe', true);
+      } else {
+        await prefs.remove('email');
+        await prefs.remove('password');
+        await prefs.setBool('rememberMe', false);
+      }
+    } catch (e) {
+      debugPrint('Error saving credentials: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -46,7 +74,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     height: screenHeight * 0.08,
                   ),
                   SizedBox(
-                    height: screenHeight * 0.08,
+                    height: screenHeight * 0.04,
                   ),
                   Form(
                     key: _formKey,
@@ -73,16 +101,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
+                            filled: false,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 10),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                                borderSide: BorderSide(color: Colors.green)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                           ),
                           controller: nameController,
                           validator: (value) =>
@@ -100,16 +128,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
+                            filled: false,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 10),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                                borderSide: BorderSide(color: Colors.green)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                           ),
                           controller: phoneController,
                           validator: (value) =>
@@ -126,17 +154,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           height: screenHeight * 0.009,
                         ),
                         TextFormField(
+                          autofillHints:
+                              rememberMe ? [AutofillHints.email] : null,
                           decoration: InputDecoration(
+                            filled: false,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 10),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                                borderSide: BorderSide(color: Colors.green)),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                           ),
                           controller: emailController,
                           validator: (value) =>
@@ -153,18 +183,21 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           height: screenHeight * 0.009,
                         ),
                         TextFormField(
+                            autofillHints:
+                                rememberMe ? [AutofillHints.password] : null,
                             obscureText: isObscure,
                             decoration: InputDecoration(
+                                filled: false,
                                 contentPadding: EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 10),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
+                                    borderSide:
+                                        BorderSide(color: Colors.green)),
                                 enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.grey)),
-                                disabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
                                 border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
                                 suffixIcon: IconButton(
                                     onPressed: () {
                                       setState(() {
@@ -182,46 +215,107 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                               return MyValidation.validatePassword(value);
                             }),
                         SizedBox(
-                          height: screenHeight * 0.03,
+                          height: screenHeight * 0.01,
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  rememberMe = value!;
+                                });
+                              },
+                              activeColor: Colors.green,
+                            ),
+                            const Text(
+                              'Remember me?',
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.02,
                         ),
                         ElevatedButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                final authService =
-                                    ref.read(authServiceProvider);
-                                await authService.register(
-                                  nameController.text.trim(),
-                                  phoneController.text.trim(),
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                );
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    try {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
 
-                                // Optionally, you can log the user in directly after signup or navigate to login page
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()),
-                                );
-                              } catch (e) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: Text('Registration Failed'),
-                                    content: Text(e.toString()),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: Text('OK'))
-                                    ],
-                                  ),
-                                );
-                              }
-                            }
-                          },
+                                      final authService =
+                                          ref.read(authServiceProvider);
+
+                                      // Step 1: Register the user
+                                      debugPrint('Starting registration...');
+                                      final registerResult =
+                                          await authService.register(
+                                        emailController.text.trim(),
+                                        passwordController.text.trim(),
+                                        nameController.text.trim(),
+                                        phoneController.text.trim(),
+                                      );
+
+                                      debugPrint(
+                                          'Registration successful: ${registerResult.message}');
+
+                                      await saveCredentials();
+
+                                      debugPrint(
+                                          'Auto-logging in after registration...');
+                                      await authService.login(
+                                        emailController.text.trim(),
+                                        passwordController.text.trim(),
+                                      );
+
+                                      debugPrint(
+                                          'Auto-login successful, navigating to home...');
+
+                                      if (mounted) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => HomePage()),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      debugPrint('Signup error: $e');
+                                      if (mounted) {
+                                        String errorMessage = e.toString();
+                                        if (errorMessage
+                                            .startsWith('Exception: ')) {
+                                          errorMessage = errorMessage
+                                              .replaceFirst('Exception: ', '');
+                                        }
+
+                                        showDialog(
+                                          context: context,
+                                          builder: (_) => AlertDialog(
+                                            title: Text('Registration Failed'),
+                                            content: Text(errorMessage),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text('OK'))
+                                            ],
+                                          ),
+                                        );
+                                      }
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    }
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
-                            // backgroundColor: Colors.pinkAccent,
                             backgroundColor: Colors.green,
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
@@ -229,14 +323,23 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             ),
                             elevation: 4,
                           ),
-                          child: Text(
-                            'SIGN UP',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'SIGN UP',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
                         ),
                         SizedBox(
                           height: screenHeight * 0.03,
