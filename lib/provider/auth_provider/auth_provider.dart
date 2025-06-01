@@ -1,4 +1,6 @@
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/user_details_model.dart';
+import 'package:eventsolutions/model/user_update_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
 import 'package:eventsolutions/model/auth_model/register_model.dart';
@@ -31,9 +33,48 @@ final forgotPasswordProvider =
   return authService.forgotPassword(email);
 });
 
-// final forgotPasswordProvider =
-//     FutureProvider.family<void, String>((ref, email) {
-//   final authService = ref.read(authServiceProvider);
+final userDetailsProvider = FutureProvider<UserDetailsModel>((ref) async {
+  final authService = ref.read(authServiceProvider);
 
-//   return authService.forgotPassword(email);
-// });
+  final isLoggedIn = await authService.isLoggedIn();
+  if (!isLoggedIn) {
+    throw Exception('User is not logged in');
+  }
+  return await authService.getUserDetails();
+});
+
+// Add this StateNotifier for managing update state
+final userUpdateStateProvider =
+    StateNotifierProvider<UserUpdateNotifier, AsyncValue<UpdateResponseModel?>>(
+        (ref) {
+  return UserUpdateNotifier(ref);
+});
+
+class UserUpdateNotifier
+    extends StateNotifier<AsyncValue<UpdateResponseModel?>> {
+  final Ref ref;
+
+  UserUpdateNotifier(this.ref) : super(const AsyncValue.data(null));
+
+  Future<bool> updateUser(UserUpdateModel userUpdate) async {
+    state = const AsyncValue.loading();
+
+    try {
+      final authService = ref.read(authServiceProvider);
+      final response = await authService.updateUserDetails(userUpdate);
+
+      state = AsyncValue.data(response);
+
+      if (response.success) {
+        // Refresh user details after successful update
+        ref.invalidate(userDetailsProvider);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+      return false;
+    }
+  }
+}

@@ -1010,6 +1010,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
             const SizedBox(width: 12),
             Expanded(
               child: TextFormField(
+                maxLength: 13,
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
                 validator: MyValidation.validateMobile,

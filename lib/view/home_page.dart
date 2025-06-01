@@ -150,81 +150,49 @@ class _HomePageState extends ConsumerState<HomePage>
                   context,
                   8,
                   ' Profile',
-                  const Icon(
-                    Icons.account_circle,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.account_circle,
                 ),
                 _drawer(
                   context,
                   7,
                   ' My Ticket',
-                  const Icon(
-                    Icons.local_activity,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.local_activity,
                 ),
                 _drawer(
                   context,
                   6,
                   'Our Services',
-                  const Icon(
-                    Icons.miscellaneous_services_rounded,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.miscellaneous_services_rounded,
                 ),
                 _drawer(
                   context,
                   5,
                   'Stall',
-                  const Icon(
-                    Icons.festival_rounded,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.festival_rounded,
                 ),
                 _drawer(
                   context,
                   0,
                   'About Us',
-                  const Icon(
-                    Icons.info,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.info,
                 ),
                 _drawer(
                   context,
                   1,
                   'Contact Us',
-                  const Icon(
-                    Icons.contact_page,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.contact_page,
                 ),
                 _drawer(
                   context,
                   3,
                   'FAQ',
-                  const Icon(
-                    Icons.support_agent,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.support_agent,
                 ),
                 _drawer(
                   context,
                   4,
                   'Log Out',
-                  const Icon(
-                    Icons.logout,
-                    color: Color(0xff5F73F3),
-                    size: 25,
-                  ),
+                  Icons.logout,
                 ),
               ],
             ),
@@ -368,7 +336,7 @@ class _HomePageState extends ConsumerState<HomePage>
     );
   }
 
-  Widget _drawer(BuildContext context, int id, String title, Icon icon) {
+  Widget _drawer(BuildContext context, int id, String title, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
@@ -468,15 +436,19 @@ class _HomePageState extends ConsumerState<HomePage>
                 break;
               case 8:
                 Navigator.pop(context);
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => ProfileScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
                 break;
             }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              icon,
+              Icon(
+                icon,
+                size: 25,
+                color: Colors.green,
+              ),
               Text(
                 title,
                 style: const TextStyle(

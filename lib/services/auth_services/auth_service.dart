@@ -118,7 +118,9 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/api.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/user_details_model.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
+import 'package:eventsolutions/model/user_update_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
@@ -174,22 +176,20 @@ class AuthService {
   }
 
   Future<LoginRegisterModel> register(
-    String email,
-    String password,
     String fullName,
     String phone,
+    String email,
+    String password,
   ) async {
     try {
-      // DON'T send token for registration - this is a public endpoint
       final response = await Dio().post(
         ApiServices.register,
         data: {
+          'fullName': fullName,
+          'phone': phone,
           'email': email,
           'password': password,
-          'fullName': fullName,
-          'phone': phone, // Make sure this matches your API expectation
         },
-        // Remove the Authorization header for registration
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -272,6 +272,67 @@ class AuthService {
       } else {
         throw Exception('Network error: ${e.message}');
       }
+    }
+  }
+
+  Future<UserDetailsModel> getUserDetails() async {
+    try {
+      final token = await _tokenStorage.getAccessToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token found');
+      }
+
+      final response = await Dio().get(
+        ApiServices.mydetails,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      debugPrint("User details response: ${response.data}");
+
+      return UserDetailsModel.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      debugPrint('Get user details error: ${e.response?.data}');
+      if (e.response != null) {
+        throw Exception(
+            e.response?.data['message'] ?? 'Failed to fetch user details');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      throw Exception('Failed to fetch user details: $e');
+    }
+  }
+
+  Future<UpdateResponseModel> updateUserDetails(
+      UserUpdateModel userUpdate) async {
+    try {
+      final token = await _tokenStorage.getAccessToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token found');
+      }
+
+      final response = await Dio().post(ApiServices.changeDetails,
+          data: userUpdate.toJson(),
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          }));
+      debugPrint("User details response: ${response.data}");
+
+      return UpdateResponseModel.fromJson(response.data);
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        return UpdateResponseModel.fromJson(e.response!.data);
+      }
+      throw Exception('Network error: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
     }
   }
 }

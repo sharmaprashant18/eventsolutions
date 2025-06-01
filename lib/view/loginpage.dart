@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, this.clearFields = false});
+  final bool clearFields;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
@@ -27,8 +28,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-
-    _loadSavedCredentials();
+    if (widget.clearFields) {
+      emailController.clear();
+      passwordController.clear();
+    } else {
+      _loadSavedCredentials();
+    }
   }
 
   @override
@@ -93,6 +98,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         await _saveCredentials();
 
         await Future.delayed(const Duration(milliseconds: 500));
+        ref.refresh(userDetailsProvider);
+        // Check if the widget is still mounted before navigating
+        if (!mounted) return;
+        // Navigate to HomePage after successful login
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login Successful'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
 
         if (mounted) {
           Navigator.pushReplacement(

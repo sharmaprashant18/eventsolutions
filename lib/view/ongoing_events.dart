@@ -110,160 +110,170 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
               return const Center(child: Text('No events match your search.'));
             }
 
-            return Padding(
-              padding: EdgeInsets.only(
-                top: screenHeight * 0.008,
-                right: screenWidth * 0.03,
-                left: screenWidth * 0.03,
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: screenHeight * 0.8,
+                maxWidth: screenWidth,
               ),
-              child: ListView.builder(
-                // itemCount: event.length,
-                itemCount: filteredEvents.length,
-                itemBuilder: (context, index) {
-                  // final events = event[index];
-                  final events = filteredEvents[index];
-                  return Card(
-                    // color: Colors.blueGrey,
-                    color: Colors.white,
-                    shadowColor: Colors.grey.withAlpha(10),
-                    margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                        side: BorderSide(
-                            width: 0,
-                            style: BorderStyle.solid,
-                            color: Colors.grey)),
-                    clipBehavior: Clip.antiAlias,
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          //Event Image
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: (events.poster != null &&
-                                    events.poster!.isNotEmpty)
-                                ? Image.network(
-                                    '$baseUrlImage${events.poster}',
-                                    height: screenHeight * 0.2,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.asset('assets/event1.png');
-                                    },
-                                  )
-                                : Image.asset(
-                                    'assets/event1.png',
-                                    height: screenHeight * 0.2,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: screenHeight * 0.008,
+                  right: screenWidth * 0.03,
+                  left: screenWidth * 0.03,
+                ),
+                child: ListView.builder(
+                  // itemCount: event.length,
+                  itemCount: filteredEvents.length,
+                  itemBuilder: (context, index) {
+                    // final events = event[index];
+                    final events = filteredEvents[index];
+                    return Card(
+                      // color: Colors.blueGrey,
+                      color: Colors.white,
+                      shadowColor: Colors.grey.withAlpha(10),
+                      margin:
+                          EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          side: BorderSide(
+                              width: 0,
+                              style: BorderStyle.solid,
+                              color: Colors.grey)),
+                      clipBehavior: Clip.antiAlias,
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //Event Image
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: (events.poster != null &&
+                                      events.poster!.isNotEmpty)
+                                  ? Image.network(
+                                      '$baseUrlImage${events.poster}',
+                                      height: screenHeight * 0.2,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset('assets/event1.png');
+                                      },
+                                    )
+                                  : Image.asset(
+                                      'assets/event1.png',
+                                      height: screenHeight * 0.2,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
 
-                          // Content
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Title
-                              SizedBox(
-                                height: 6,
-                              ),
-                              FittedBox(
-                                child: Text(
-                                  events.title,
-                                  softWrap: true,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                      fontSize: 16,
-                                      color: Colors.black87),
+                            // Content
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Title
+                                SizedBox(
+                                  height: 6,
                                 ),
-                              ),
-                              SizedBox(height: 12),
-                              // Date and Location row
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Date
-                                  Row(
-                                    children: [
-                                      Icon(Icons.calendar_month,
-                                          color: Color(0xffF66B10)),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        '${formatDateManually(DateTime.parse(events.startDate))}-${formatDateManually(DateTime.parse(events.endDate))}',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
+                                FittedBox(
+                                  child: Text(
+                                    events.title,
+                                    softWrap: true,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                        fontSize: 16,
+                                        color: Colors.black87),
                                   ),
+                                ),
+                                SizedBox(height: 12),
+                                // Date and Location row
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Date
+                                    Row(
+                                      children: [
+                                        Icon(Icons.calendar_month,
+                                            color: Color(0xffF66B10)),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          '${formatDateManually(DateTime.parse(events.startDate))}-${formatDateManually(DateTime.parse(events.endDate))}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
 
-                                  // Location
-                                  Row(
-                                    children: [
-                                      Icon(Icons.location_on,
-                                          color: Color(0xffF77018)),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        events.location,
+                                    // Location
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on,
+                                            color: Color(0xffF77018)),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          events.location,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Price: Rs${events.ticketTiers[0].price.toStringAsFixed(2)}',
+                                      style:
+                                          TextStyle(color: Colors.deepOrange),
+                                    ),
+                                    Spacer(),
+                                    // Join button
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => EntryForm(
+                                                    eventData: events)));
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        // backgroundColor: Color(0xff35353E),
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 26, vertical: 0),
+                                      ),
+                                      child: Text(
+                                        'JOIN NOW',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Price: Rs${events.ticketTiers[0].price.toStringAsFixed(2)}',
-                                    style: TextStyle(color: Colors.deepOrange),
-                                  ),
-                                  Spacer(),
-                                  // Join button
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => EntryForm(
-                                                  eventData: events)));
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      // backgroundColor: Color(0xff35353E),
-                                      backgroundColor: Colors.green,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 26, vertical: 0),
                                     ),
-                                    child: Text(
-                                      'JOIN NOW',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             );
           },

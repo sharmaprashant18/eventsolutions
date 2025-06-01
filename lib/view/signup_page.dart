@@ -127,6 +127,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           height: screenHeight * 0.009,
                         ),
                         TextFormField(
+                          maxLength: 13,
                           decoration: InputDecoration(
                             filled: false,
                             contentPadding: EdgeInsets.symmetric(
@@ -144,7 +145,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                               MyValidation.validateMobile(value),
                         ),
                         SizedBox(
-                          height: screenHeight * 0.025,
+                          height: screenHeight * 0.01,
                         ),
                         Text(
                           'Email',
@@ -254,10 +255,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                       debugPrint('Starting registration...');
                                       final registerResult =
                                           await authService.register(
-                                        emailController.text.trim(),
-                                        passwordController.text.trim(),
                                         nameController.text.trim(),
                                         phoneController.text.trim(),
+                                        emailController.text.trim(),
+                                        passwordController.text.trim(),
                                       );
 
                                       debugPrint(
@@ -274,6 +275,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
                                       debugPrint(
                                           'Auto-login successful, navigating to home...');
+
+                                      ref.refresh(userDetailsProvider);
 
                                       if (mounted) {
                                         Navigator.pushReplacement(
@@ -366,58 +369,114 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),
+                        // Align(
+                        //   alignment: Alignment.center,
+                        //   child: ElevatedButton.icon(
+                        //       style: ElevatedButton.styleFrom(
+                        //         // backgroundColor: Colors.pinkAccent,
+                        //         backgroundColor: Colors.green,
+                        //         minimumSize: Size(0, 50),
+                        //         shape: RoundedRectangleBorder(
+                        //           borderRadius: BorderRadius.circular(12),
+                        //         ),
+                        //         elevation: 4,
+                        //       ),
+                        //       onPressed: () {},
+                        //       icon: Image.asset('assets/google.png',
+                        //           color: Colors.white,
+                        //           fit: BoxFit.contain,
+                        //           height: screenHeight * 0.02),
+                        //       label: Text(
+                        //         'Signup with Google',
+                        //         style: TextStyle(color: Colors.white),
+                        //       )),
+                        // ),
                         Align(
                           alignment: Alignment.center,
-                          child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                // backgroundColor: Colors.pinkAccent,
-                                backgroundColor: Colors.green,
-                                minimumSize: Size(0, 50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 4,
-                              ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            width: screenWidth * 0.7,
+                            height: screenHeight * 0.05,
+                            child: TextButton.icon(
                               onPressed: () {},
-                              icon: Image.asset('assets/google.png',
-                                  color: Colors.white,
-                                  fit: BoxFit.contain,
-                                  height: screenHeight * 0.02),
+                              icon: Image.asset(
+                                'assets/google.png',
+                                height: screenHeight * 0.02,
+                                width: screenWidth * 0.07,
+                              ),
                               label: Text(
-                                'Signup with Google',
-                                style: TextStyle(color: Colors.white),
-                              )),
+                                'Continue with Google',
+                                style: const TextStyle(
+                                  color: Color(0xFF2D5A5A),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                         SizedBox(
                           height: screenHeight * 0.018,
                         ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     Text(
+                        //       'Already a user?',
+                        //       style: TextStyle(
+                        //         fontSize: 18,
+                        //       ),
+                        //     ),
+                        //     TextButton(
+                        //         onPressed: () {
+                        //           Navigator.pushReplacement(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) => LoginPage(),
+                        //               ));
+                        //         },
+                        //         style: TextButton.styleFrom(
+                        //           padding: EdgeInsets.symmetric(horizontal: 6),
+                        //         ),
+                        //         child: Text(
+                        //           'LOGIN',
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             fontFamily: 'Montserrat',
+                        //             color: Colors.black,
+                        //             decoration: TextDecoration.underline,
+                        //           ),
+                        //         ))
+                        //   ],
+                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               'Already a user?',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
                             ),
                             TextButton(
                                 onPressed: () {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LoginPage(),
+                                        builder: (context) => const LoginPage(),
                                       ));
                                 },
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 6),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'LOGIN',
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    decoration: TextDecoration.underline,
-                                  ),
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.black),
                                 ))
                           ],
                         ),

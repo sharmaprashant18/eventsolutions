@@ -10,4 +10,7 @@ class ApiServices {
   static const verify = '$baseUrl/verify-code';
   static const registerEvent = '$baseUrl//change-password';
   static const mydetails = '$baseUrl/users/me';
+  static const changePassword = '$baseUrl/change-password';
+  static const changeDetails = '$baseUrl/update-user';
+  static const googleSign = '$baseUrl/login';
 }

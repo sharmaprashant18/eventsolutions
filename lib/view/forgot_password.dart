@@ -2,6 +2,7 @@
 
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
+import 'package:eventsolutions/view/loginpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -98,6 +99,16 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Password Reset Successfully')));
+      await Future.delayed(Duration(seconds: 1));
+      if (mounted) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(
+                clearFields: true,
+              ),
+            ));
+      }
     } catch (e) {
       if (!mounted) return;
 
