@@ -42,9 +42,12 @@ class OngoingData implements EventData {
   final String eventId;
   @override
   final String location;
+  @override
+  final bool hasStalls;
 
   OngoingData(
       {this.poster,
+      required this.hasStalls,
       required this.eventId,
       required this.title,
       required this.description,
@@ -64,7 +67,8 @@ class OngoingData implements EventData {
         ticketTiers: List<OngoingTicketTier>.from(
           json['ticketTiers'].map((e) => OngoingTicketTier.fromJson(e)),
         ),
-        location: json['location']);
+        location: json['location'],
+        hasStalls: json['hasStalls'] ?? false);
   }
 
   Map<String, dynamic> toJson() {
@@ -76,7 +80,8 @@ class OngoingData implements EventData {
       'endDateTime': endDate,
       'ticketTiers': ticketTiers.map((e) => e.toJson()).toList(),
       'eventId': eventId,
-      'location': location
+      'location': location,
+      'hasStalls': hasStalls,
     };
   }
 }

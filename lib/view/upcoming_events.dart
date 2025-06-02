@@ -66,13 +66,15 @@ class UpcomingEvents extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final upcomingevent = upcomingevents[index];
                 return ongoingEvents(
-                    context,
-                    '$baseUrlImage${upcomingevent.poster!}',
-                    upcomingevent.title,
-                    '${formatDateManually(DateTime.parse(upcomingevent.startDate))}-${formatDateManually(DateTime.parse(upcomingevent.endDate))}',
-                    upcomingevent.location,
-                    upcomingevent.ticketTiers[0].price.toString(),
-                    upcomingevent);
+                  context,
+                  '$baseUrlImage${upcomingevent.poster!}',
+                  upcomingevent.title,
+                  '${formatDateManually(DateTime.parse(upcomingevent.startDate))}-${formatDateManually(DateTime.parse(upcomingevent.endDate))}',
+                  upcomingevent.location,
+                  upcomingevent.ticketTiers[0].price.toString(),
+                  upcomingevent.hasStalls,
+                  upcomingevent,
+                );
               },
             );
           },
@@ -81,24 +83,162 @@ class UpcomingEvents extends ConsumerWidget {
         ));
   }
 
+  // Widget ongoingEvents(
+  //     BuildContext context,
+  //     String image,
+  //     String title,
+  //     String date,
+  //     String locationText,
+  //     String price,
+  //     bool hasStalls,
+  //     UpcomingData upcomingEvent) {
+  //   return ConstrainedBox(
+  //     constraints: const BoxConstraints(
+  //       minHeight: 100,
+  //     ),
+  //     child: Card(
+  //       margin: const EdgeInsets.only(bottom: 25),
+  //       color: Colors.white,
+  //       elevation: 0,
+  //       shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //           side: BorderSide(color: Colors.transparent)),
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(8.0),
+  //         child: Row(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             ClipRRect(
+  //               borderRadius: BorderRadius.circular(15),
+  //               child: Image.network(
+  //                 image,
+  //                 width: 72,
+  //                 height: 72,
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //             Expanded(
+  //               child: Padding(
+  //                 padding:
+  //                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Text(
+  //                       title,
+  //                       style: const TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         fontSize: 15,
+  //                       ),
+  //                       maxLines: 1,
+  //                       overflow: TextOverflow.ellipsis,
+  //                     ),
+  //                     Expanded(
+  //                       child: Row(
+  //                         children: [
+  //                           Text(
+  //                             date,
+  //                             style: TextStyle(
+  //                               fontSize: 13,
+  //                               color: Colors.grey.shade600,
+  //                             ),
+  //                             maxLines: 2,
+  //                             overflow: TextOverflow.ellipsis,
+  //                           ),
+  //                           Spacer(),
+  //                           Padding(
+  //                             padding: const EdgeInsets.only(top: 6),
+  //                             child: Container(
+  //                               height: 30,
+  //                               width: 4,
+  //                               color: Colors.grey.shade200,
+  //                             ),
+  //                           ),
+  //                           Spacer(),
+  //                           Text(
+  //                             price,
+  //                             style: TextStyle(
+  //                                 color: Colors.orange,
+  //                                 fontWeight: FontWeight.w700),
+  //                           )
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     SizedBox(
+  //                       height: 5,
+  //                     ),
+  //                     Column(
+  //                       children: [
+  //                         Row(
+  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                           children: [
+  //                             Row(
+  //                               children: [
+  //                                 Icon(
+  //                                   Icons.location_on,
+  //                                   color: Colors.orange,
+  //                                   size: 20,
+  //                                 ),
+  //                                 Text(
+  //                                   locationText,
+  //                                   style:
+  //                                       TextStyle(color: Colors.grey.shade700),
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                             InkWell(
+  //                               onTap: () {
+  //                                 Navigator.push(context,
+  //                                     MaterialPageRoute(builder: (context) {
+  //                                   return EntryForm(eventData: upcomingEvent);
+  //                                 }));
+  //                               },
+  //                               child: Text(
+  //                                 'JOIN NOW',
+  //                                 style: TextStyle(
+  //                                   color: Colors.black,
+  //                                   fontSize: 13,
+  //                                   fontWeight: FontWeight.bold,
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget ongoingEvents(
-      BuildContext context,
-      String image,
-      String title,
-      String date,
-      String locationText,
-      String price,
-      UpcomingData upcomingEvent) {
+    BuildContext context,
+    String image,
+    String title,
+    String date,
+    String locationText,
+    String price,
+    bool hasStalls,
+    UpcomingData upcomingEvent,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 25),
       color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.transparent)),
-      child: SizedBox(
-        height: 79,
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: Colors.transparent),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -109,96 +249,107 @@ class UpcomingEvents extends ConsumerWidget {
                 fit: BoxFit.cover,
               ),
             ),
+            const SizedBox(width: 12),
             Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            date,
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: Colors.grey.shade600,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Container(
-                          width: 5,
-                          height: 5,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.orange),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          locationText,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey.shade600,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            VerticalDivider(
-              indent: 10,
-              endIndent: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 4),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    price,
+                    title,
                     style: const TextStyle(
-                      color: Colors.orange,
-                      fontSize: 14,
                       fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return EntryForm(eventData: upcomingEvent);
-                      }));
-                    },
-                    child: Text(
-                      'JOIN NOW',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        date,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  )
+                      const Spacer(),
+                      Container(
+                        height: 30,
+                        width: 4,
+                        color: Colors.grey.shade200,
+                      ),
+                      const Spacer(),
+                      Text(
+                        price,
+                        style: const TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.orange,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            locationText,
+                            style: TextStyle(color: Colors.grey.shade700),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return EntryForm(eventData: upcomingEvent);
+                                }),
+                              );
+                            },
+                            child: const Text(
+                              'JOIN NOW',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(10, 25),
+                              elevation: 0,
+                              backgroundColor: const Color(0xff667EEA),
+                            ),
+                            onPressed: () {
+                              // Action for stall button
+                            },
+                            child: Text(
+                              hasStalls ? 'Stalls Available' : 'Stalls N/A',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

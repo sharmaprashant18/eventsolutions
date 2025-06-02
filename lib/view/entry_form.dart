@@ -83,7 +83,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final baseUrlImage = 'http://182.93.94.210:8000';
-    final selectedImage = ref.watch(imagePickerProvider);
+    final selectedImage = ref.watch(entryFormImagePickerProvider);
 
     return Scaffold(
       resizeToAvoidBottomInset: true, // Allow keyboard to adjust layout
@@ -506,7 +506,8 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                   emailController.clear();
                                   phoneController.clear();
                                   ref
-                                      .read(imagePickerProvider.notifier)
+                                      .read(
+                                          entryFormImagePickerProvider.notifier)
                                       .clearImage();
                                   ref
                                       .read(selectedTierProvider.notifier)
@@ -853,7 +854,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                 onTap: () async {
                   Navigator.of(context).pop();
                   try {
-                    await ref.read(imagePickerProvider.notifier).fromCamera();
+                    await ref
+                        .read(entryFormImagePickerProvider.notifier)
+                        .fromCamera();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Camera error: $e')),
@@ -867,7 +870,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                 onTap: () async {
                   Navigator.of(context).pop();
                   try {
-                    await ref.read(imagePickerProvider.notifier).fromGallery();
+                    await ref
+                        .read(entryFormImagePickerProvider.notifier)
+                        .fromGallery();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Gallery error: $e')),

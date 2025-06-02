@@ -18,9 +18,40 @@ class OngoingEvents extends ConsumerStatefulWidget {
 
 class _UpcomingPageState extends ConsumerState<OngoingEvents> {
   final baseUrlImage = 'http://182.93.94.210:8000';
-  String formatDateManually(DateTime dateTime) {
-    String day = dateTime.day.toString().padLeft(2, '');
 
+  // String formatDateManually(DateTime dateTime, {bool includeYear = false}) {
+  //   String day = dateTime.day.toString().padLeft(2, '0');
+
+  //   List<String> months = [
+  //     'Jan',
+  //     'Feb',
+  //     'Mar',
+  //     'Apr',
+  //     'May',
+  //     'Jun',
+  //     'Jul',
+  //     'Aug',
+  //     'Sep',
+  //     'Oct',
+  //     'Nov',
+  //     'Dec'
+  //   ];
+  //   String month = months[dateTime.month - 1];
+
+  //   if (includeYear) {
+  //     String year = (dateTime.year).toString();
+  //     return '$day $month, $year';
+  //   }
+
+  //   return '$day $month';
+  // }
+  String formatDateManually(DateTime dateTime,
+      {bool includeYear = false, bool yearOnly = false}) {
+    if (yearOnly) {
+      return dateTime.year.toString();
+    }
+
+    String day = dateTime.day.toString().padLeft(2, '0');
     List<String> months = [
       'Jan',
       'Feb',
@@ -37,8 +68,10 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
     ];
     String month = months[dateTime.month - 1];
 
-    // // Get last two digits of year
-    // String year = (dateTime.year % 100).toString().padLeft(2, '0');
+    if (includeYear) {
+      String year = dateTime.year.toString();
+      return '$day $month, $year';
+    }
 
     return '$day $month';
   }
@@ -85,9 +118,6 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final event = ref.watch(ongoingEventProvider);
-    // final filteredEvents = allEvents
-    // .where((event) => event.title.toLowerCase().contains(searchQuery.toLowerCase()))
-    // .toList();
     return Scaffold(
       body: event.when(
           data: (event) {
@@ -141,135 +171,277 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                               color: Colors.grey)),
                       clipBehavior: Clip.antiAlias,
                       elevation: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //Event Image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: (events.poster != null &&
-                                      events.poster!.isNotEmpty)
-                                  ? Image.network(
-                                      '$baseUrlImage${events.poster}',
-                                      height: screenHeight * 0.2,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset('assets/event1.png');
-                                      },
-                                    )
-                                  : Image.asset(
-                                      'assets/event1.png',
-                                      height: screenHeight * 0.2,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //Event Image
+                          ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(15)),
+                            child: (events.poster != null &&
+                                    events.poster!.isNotEmpty)
+                                ? Image.network(
+                                    '$baseUrlImage${events.poster}',
+                                    height: screenHeight * 0.2,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset('assets/event1.png');
+                                    },
+                                  )
+                                : Image.asset(
+                                    'assets/event1.png',
+                                    height: screenHeight * 0.2,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
 
-                            // Content
-                            Column(
+                          // Content
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Title
                                 SizedBox(
                                   height: 6,
                                 ),
-                                FittedBox(
-                                  child: Text(
-                                    events.title,
-                                    softWrap: true,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 0.5,
-                                        fontSize: 16,
-                                        color: Colors.black87),
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                // Date and Location row
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // Date
-                                    Row(
-                                      children: [
-                                        Icon(Icons.calendar_month,
-                                            color: Color(0xffF66B10)),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${formatDateManually(DateTime.parse(events.startDate))}-${formatDateManually(DateTime.parse(events.endDate))}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                      ],
+                                    FittedBox(
+                                      child: Text(
+                                        events.title,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                            fontSize: 18,
+                                            color: Colors.black87),
+                                      ),
                                     ),
-
-                                    // Location
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_on,
-                                            color: Color(0xffF77018)),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          events.location,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    events.hasStalls
+                                        ? ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                minimumSize: Size(0, 35),
+                                                elevation: 0,
+                                                backgroundColor:
+                                                    Color(0xff667EEA)),
+                                            onPressed: () {},
+                                            child: Text(
+                                              'Stalls Available',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ))
+                                        : Text('')
                                   ],
                                 ),
-                                SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Price: Rs${events.ticketTiers[0].price.toStringAsFixed(2)}',
-                                      style:
-                                          TextStyle(color: Colors.deepOrange),
-                                    ),
-                                    Spacer(),
-                                    // Join button
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => EntryForm(
-                                                    eventData: events)));
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        // backgroundColor: Color(0xff35353E),
-                                        backgroundColor: Colors.green,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+
+                                SizedBox(height: 20),
+                                // Date and Location row
+                                IntrinsicHeight(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Date
+                                      Expanded(
+                                        child: Container(
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            border: Border.all(
+                                                width: 6,
+                                                color: Color(
+                                                  0xffF4F5FC,
+                                                )),
+                                            color: Color(0xffF4F5FC),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 4.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(6),
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xFF667EEA)
+                                                            .withAlpha(30),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      child: Icon(
+                                                          Icons.calendar_month,
+                                                          color: Color(
+                                                              0xff667EEA)),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 7,
+                                                    ),
+                                                    Text(
+                                                      'Date',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Color(
+                                                              0xff667EEA)),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${formatDateManually(DateTime.parse(events.startDate))}-${formatDateManually(
+                                                        DateTime.parse(
+                                                          events.endDate,
+                                                        ),
+                                                      )}',
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    Text(
+                                                      formatDateManually(
+                                                        DateTime.parse(events
+                                                            .endDate
+                                                            .replaceFirst(
+                                                                ',', '')),
+                                                        yearOnly: true,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 26, vertical: 0),
                                       ),
-                                      child: Text(
-                                        'JOIN NOW',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
+                                      // Location
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            border: Border.all(
+                                              width: 6,
+                                              color: Color(0xffF9F2F3),
+                                            ),
+                                            // color: Color(0xffF4F5FC),
+                                            color: Color(0xffF9F2F3),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 4.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(6),
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xFFF56565)
+                                                            .withAlpha(30),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                      ),
+                                                      child: Icon(
+                                                          Icons
+                                                              .location_on_outlined,
+                                                          color: Color(
+                                                              0xffF77018)),
+                                                    ),
+                                                    SizedBox(width: 7),
+                                                    Text(
+                                                      'Location',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Color(
+                                                              0xffF77018)),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  events.location,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
                                       ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 18),
+
+                                // Join button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EntryForm(eventData: events)));
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xff44B574),
+                                    // backgroundColor: Colors.green,
+                                    minimumSize: Size(double.infinity, 50),
+
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                  ],
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 26, vertical: 0),
+                                  ),
+                                  child: Text(
+                                    'JOIN NOW',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },

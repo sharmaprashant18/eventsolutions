@@ -528,38 +528,6 @@ class _TicketQrState extends ConsumerState<TicketQr> {
                                                       context, ticket),
                                                   icon: Icon(Icons.download)),
                                               Spacer(),
-                                              // IconButton(
-                                              //     onPressed: () {
-                                              //       showDialog(
-                                              //         context: context,
-                                              //         builder: (context) {
-                                              //           return AlertDialog(
-                                              //             content: Text(
-                                              //                 'Are you sure you want to delete this ticket?'),
-                                              //             actions: [
-                                              //               TextButton(
-                                              //                   onPressed: () {
-                                              //                     tickets.remove(
-                                              //                         ticket);
-                                              //                     debugPrint(
-                                              //                         'Ticket with ID ${ticket.ticketId} deleted');
-                                              //                   },
-                                              //                   child: Text(
-                                              //                       'Yes')),
-                                              //               TextButton(
-                                              //                   onPressed: () {
-                                              //                     Navigator.pop(
-                                              //                         context);
-                                              //                   },
-                                              //                   child:
-                                              //                       Text('No'))
-                                              //             ],
-                                              //           );
-                                              //         },
-                                              //       );
-                                              //     },
-                                              //     icon: Icon(
-                                              //         Icons.delete_outline))
                                               IconButton(
                                                 onPressed: () async {
                                                   // Show confirmation dialog
