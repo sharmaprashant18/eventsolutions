@@ -2,6 +2,7 @@
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
+import 'package:eventsolutions/view/stall_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -83,140 +84,6 @@ class UpcomingEvents extends ConsumerWidget {
         ));
   }
 
-  // Widget ongoingEvents(
-  //     BuildContext context,
-  //     String image,
-  //     String title,
-  //     String date,
-  //     String locationText,
-  //     String price,
-  //     bool hasStalls,
-  //     UpcomingData upcomingEvent) {
-  //   return ConstrainedBox(
-  //     constraints: const BoxConstraints(
-  //       minHeight: 100,
-  //     ),
-  //     child: Card(
-  //       margin: const EdgeInsets.only(bottom: 25),
-  //       color: Colors.white,
-  //       elevation: 0,
-  //       shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //           side: BorderSide(color: Colors.transparent)),
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Row(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             ClipRRect(
-  //               borderRadius: BorderRadius.circular(15),
-  //               child: Image.network(
-  //                 image,
-  //                 width: 72,
-  //                 height: 72,
-  //                 fit: BoxFit.cover,
-  //               ),
-  //             ),
-  //             Expanded(
-  //               child: Padding(
-  //                 padding:
-  //                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-  //                 child: Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Text(
-  //                       title,
-  //                       style: const TextStyle(
-  //                         fontWeight: FontWeight.bold,
-  //                         fontSize: 15,
-  //                       ),
-  //                       maxLines: 1,
-  //                       overflow: TextOverflow.ellipsis,
-  //                     ),
-  //                     Expanded(
-  //                       child: Row(
-  //                         children: [
-  //                           Text(
-  //                             date,
-  //                             style: TextStyle(
-  //                               fontSize: 13,
-  //                               color: Colors.grey.shade600,
-  //                             ),
-  //                             maxLines: 2,
-  //                             overflow: TextOverflow.ellipsis,
-  //                           ),
-  //                           Spacer(),
-  //                           Padding(
-  //                             padding: const EdgeInsets.only(top: 6),
-  //                             child: Container(
-  //                               height: 30,
-  //                               width: 4,
-  //                               color: Colors.grey.shade200,
-  //                             ),
-  //                           ),
-  //                           Spacer(),
-  //                           Text(
-  //                             price,
-  //                             style: TextStyle(
-  //                                 color: Colors.orange,
-  //                                 fontWeight: FontWeight.w700),
-  //                           )
-  //                         ],
-  //                       ),
-  //                     ),
-  //                     SizedBox(
-  //                       height: 5,
-  //                     ),
-  //                     Column(
-  //                       children: [
-  //                         Row(
-  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                           children: [
-  //                             Row(
-  //                               children: [
-  //                                 Icon(
-  //                                   Icons.location_on,
-  //                                   color: Colors.orange,
-  //                                   size: 20,
-  //                                 ),
-  //                                 Text(
-  //                                   locationText,
-  //                                   style:
-  //                                       TextStyle(color: Colors.grey.shade700),
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                             InkWell(
-  //                               onTap: () {
-  //                                 Navigator.push(context,
-  //                                     MaterialPageRoute(builder: (context) {
-  //                                   return EntryForm(eventData: upcomingEvent);
-  //                                 }));
-  //                               },
-  //                               child: Text(
-  //                                 'JOIN NOW',
-  //                                 style: TextStyle(
-  //                                   color: Colors.black,
-  //                                   fontSize: 13,
-  //                                   fontWeight: FontWeight.bold,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget ongoingEvents(
     BuildContext context,
     String image,
@@ -240,14 +107,34 @@ class UpcomingEvents extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.network(
-                image,
-                width: 72,
-                height: 72,
-                fit: BoxFit.cover,
-              ),
+            Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    image,
+                    width: 72,
+                    height: 72,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return StallPage();
+                    }));
+                  },
+                  child: Text(
+                    'BOOK STALL',
+                    style: TextStyle(
+                      color: Color(0xff667EEA),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -297,7 +184,7 @@ class UpcomingEvents extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_on,
                             color: Colors.orange,
                             size: 20,
@@ -309,44 +196,23 @@ class UpcomingEvents extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return EntryForm(eventData: upcomingEvent);
-                                }),
-                              );
-                            },
-                            child: const Text(
-                              'JOIN NOW',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return EntryForm(eventData: upcomingEvent);
+                            }),
+                          );
+                        },
+                        child: const Text(
+                          'JOIN NOW',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(10, 25),
-                              elevation: 0,
-                              backgroundColor: const Color(0xff667EEA),
-                            ),
-                            onPressed: () {
-                              // Action for stall button
-                            },
-                            child: Text(
-                              hasStalls ? 'Stalls Available' : 'Stalls N/A',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        ],
+                        ),
                       ),
                     ],
                   ),

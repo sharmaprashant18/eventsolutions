@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/view/entry_form.dart';
+import 'package:eventsolutions/view/stall_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -224,21 +225,6 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                                             color: Colors.black87),
                                       ),
                                     ),
-                                    events.hasStalls
-                                        ? ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                minimumSize: Size(0, 35),
-                                                elevation: 0,
-                                                backgroundColor:
-                                                    Color(0xff667EEA)),
-                                            onPressed: () {},
-                                            child: Text(
-                                              'Stalls Available',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ))
-                                        : Text('')
                                   ],
                                 ),
 
@@ -410,34 +396,115 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                                 SizedBox(height: 18),
 
                                 // Join button
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EntryForm(eventData: events)));
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff44B574),
-                                    // backgroundColor: Colors.green,
-                                    minimumSize: Size(double.infinity, 50),
+                                events.hasStalls
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EntryForm(
+                                                              eventData:
+                                                                  events)));
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Color(0xff44B574),
+                                              // backgroundColor: Colors.green,
+                                              minimumSize: Size(
+                                                  events.hasStalls
+                                                      ? 0
+                                                      : double.infinity,
+                                                  50),
 
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 26, vertical: 0),
-                                  ),
-                                  child: Text(
-                                    'JOIN NOW',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 26,
+                                                      vertical: 0),
+                                            ),
+                                            child: Text(
+                                              'JOIN NOW',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return StallPage();
+                                              }));
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Color(0xff667EEA),
+                                              minimumSize: Size(0, 50),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 26,
+                                                      vertical: 0),
+                                            ),
+                                            child: Text(
+                                              'BOOK STALL',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EntryForm(
+                                                          eventData: events)));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xff44B574),
+                                          // backgroundColor: Colors.green,
+                                          minimumSize: Size(
+                                              events.hasStalls
+                                                  ? 0
+                                                  : double.infinity,
+                                              50),
+
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 26, vertical: 0),
+                                        ),
+                                        child: Text(
+                                          'JOIN NOW',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
                               ],
                             ),
                           ),
