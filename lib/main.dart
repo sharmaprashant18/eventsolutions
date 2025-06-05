@@ -12,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  // runApp(DevicePreview(
-  //     enabled: kDebugMode,
-  //     builder: (BuildContext context) => ProviderScope(child: Home())));
-  runApp(ProviderScope(child: Home()));
+  runApp(DevicePreview(
+      enabled: kDebugMode,
+      builder: (BuildContext context) => ProviderScope(child: Home())));
+  // runApp(ProviderScope(child: Home()));
 }
 
 class Home extends ConsumerWidget {

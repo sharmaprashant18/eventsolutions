@@ -12,6 +12,37 @@ class HoldStallPage extends ConsumerStatefulWidget {
 }
 
 class _HoldStallPageState extends ConsumerState<HoldStallPage> {
+  String formatDateManually(DateTime dateTime,
+      {bool includeYear = false, bool yearOnly = false}) {
+    if (yearOnly) {
+      return dateTime.year.toString();
+    }
+
+    String day = dateTime.day.toString().padLeft(2, '0');
+    List<String> months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    String month = months[dateTime.month - 1];
+
+    if (includeYear) {
+      String year = dateTime.year.toString();
+      return '$day $month, $year';
+    }
+
+    return '$day $month';
+  }
+
   final _formKey = GlobalKey<FormState>();
   final stallIdKey = GlobalKey<FormFieldState>();
   final businessNameKey = GlobalKey<FormFieldState>();
@@ -35,6 +66,17 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Hold Stall',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xff50d99b),
+        // backgroundColor: Color(0xffc7e9c0),
+      ),
       body: stallById.when(
         data: (stall) {
           stallIdController.text = stall.stallId;
@@ -54,8 +96,12 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
                     infoRow('Price per sqft', 'Rs ${stall.price}'),
                     infoRow(
                         'Total Price', 'Rs ${stall.price * stall.sizeInSqFt}'),
-                    infoRow('Status', stall.status, valueColor: Colors.green),
-                    infoRow('Expiry Date', stall.expiryDate),
+                    infoRow('Status', stall.status.toUpperCase(),
+                        style: TextStyle(
+                            color: stall.status == 'available'
+                                ? Colors.green
+                                : Colors.red)),
+                    infoRow('Expiry Date', stall.expiryDate.toString()),
                   ],
                 ),
                 buildInfoCard(
@@ -187,9 +233,9 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
                                   return AlertDialog(
                                     backgroundColor: Colors.white,
                                     title: const Icon(Icons.check_circle,
-                                        color: Colors.green, size: 40),
+                                        color: Colors.blue, size: 40),
                                     content: Text(
-                                      'Your stall has been holded. Please do you payment within ${stall.expiryDate} for booking otherwise the holding will be withdrawn!',
+                                      'Your stall has been holded. Please do your payment within ${formatDateManually(DateTime.parse(booking.holdExpiry))} for booking otherwise the holding will be withdrawn!',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -258,7 +304,7 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
     );
   }
 
-  Widget infoRow(String label, String value, {Color? valueColor}) {
+  Widget infoRow(String label, String value, {TextStyle? style}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -385,12 +431,14 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              'Stall ID: ${stall.stallId}',
-              style: const TextStyle(
-                fontSize: 13,
-                fontFamily: 'monospace',
-                color: Colors.black54,
+            FittedBox(
+              child: Text(
+                'Stall ID: ${stall.stallId}',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontFamily: 'monospace',
+                  color: Colors.black54,
+                ),
               ),
             ),
           ],

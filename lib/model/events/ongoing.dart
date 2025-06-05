@@ -44,6 +44,8 @@ class OngoingData implements EventData {
   final String location;
   @override
   final bool hasStalls;
+  @override
+  final List<String> floorPlans;
 
   OngoingData(
       {this.poster,
@@ -54,7 +56,8 @@ class OngoingData implements EventData {
       required this.startDate,
       required this.endDate,
       required this.ticketTiers,
-      required this.location});
+      required this.location,
+      required this.floorPlans});
 
   factory OngoingData.fromJson(Map<String, dynamic> json) {
     return OngoingData(
@@ -62,6 +65,7 @@ class OngoingData implements EventData {
         eventId: json['eventId'],
         poster: json['poster'],
         description: json['description'],
+        floorPlans: List<String>.from(json['floorPlans'] ?? []),
         startDate: json['startDateTime'],
         endDate: json['endDateTime'],
         ticketTiers: List<OngoingTicketTier>.from(
@@ -82,6 +86,7 @@ class OngoingData implements EventData {
       'eventId': eventId,
       'location': location,
       'hasStalls': hasStalls,
+      'floorPlans': floorPlans.map((e) => e).toList(),
     };
   }
 }

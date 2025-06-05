@@ -8,6 +8,7 @@ abstract class EventData {
   String get eventId;
   String get location;
   bool get hasStalls;
+  List<String> get floorPlans;
 }
 
 abstract class EventTicketTier {

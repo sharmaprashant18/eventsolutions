@@ -51,38 +51,38 @@ class _StallPageState extends ConsumerState<StallPage> {
     return months[month - 1];
   }
 
-  Future<void> _showDatePicker(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2026, 12, 31),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        selectedDate = pickedDate;
-      });
-    }
-  }
+  // Future<void> _showDatePicker(BuildContext context) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: selectedDate,
+  //     firstDate: DateTime.now(),
+  //     lastDate: DateTime(2026, 12, 31),
+  //   );
+  //   if (pickedDate != null) {
+  //     setState(() {
+  //       selectedDate = pickedDate;
+  //     });
+  //   }
+  // }
 
-  Future<void> _showTimePicker(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      initialEntryMode: TimePickerEntryMode.input,
-      builder: (BuildContext context, Widget? child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        );
-      },
-    );
-    if (pickedTime != null) {
-      setState(() {
-        selectedTime = pickedTime;
-      });
-    }
-  }
+  // Future<void> _showTimePicker(BuildContext context) async {
+  //   final TimeOfDay? pickedTime = await showTimePicker(
+  //     context: context,
+  //     initialTime: TimeOfDay.now(),
+  //     initialEntryMode: TimePickerEntryMode.input,
+  //     builder: (BuildContext context, Widget? child) {
+  //       return MediaQuery(
+  //         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+  //         child: child!,
+  //       );
+  //     },
+  //   );
+  //   if (pickedTime != null) {
+  //     setState(() {
+  //       selectedTime = pickedTime;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,37 +114,84 @@ class _StallPageState extends ConsumerState<StallPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: SizedBox(
-                        height: screenHeight * 0.3,
-                        width: screenWidth,
-                        child: PhotoView(
-                          imageProvider: NetworkImage(
-                            '$baseUrlImage${stalls.floorPlan}',
-                          ),
-                          backgroundDecoration: const BoxDecoration(
-                            color: Colors.transparent,
-                          ),
-                          loadingBuilder: (context, event) =>
-                              const Center(child: CircularProgressIndicator()),
-                          errorBuilder: (context, error, stackTrace) => Column(
-                            children: [
-                              Image.asset(
-                                'assets/error.png',
-                                fit: BoxFit.contain,
+                    // ClipRRect(
+                    //   borderRadius: BorderRadius.circular(15),
+                    //   child: SizedBox(
+                    //     height: screenHeight * 0.3,
+                    //     width: screenWidth,
+                    //     child: PhotoView(
+                    //       imageProvider: NetworkImage(
+                    //         '$baseUrlImage${stalls.floorPlans.toList()}',
+                    //       ),
+                    //       backgroundDecoration: const BoxDecoration(
+                    //         color: Colors.transparent,
+                    //       ),
+                    //       loadingBuilder: (context, event) =>
+                    //           const Center(child: CircularProgressIndicator()),
+                    //       errorBuilder: (context, error, stackTrace) => Column(
+                    //         children: [
+                    //           Image.asset(
+                    //             'assets/error.png',
+                    //             fit: BoxFit.contain,
+                    //           ),
+                    //           Text('No Image Found',
+                    //               style: TextStyle(
+                    //                 color: Colors.red,
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.bold,
+                    //               )),
+                    //         ],
+                    //       ),
+                    //       minScale: PhotoViewComputedScale.contained * 0.5,
+                    //       maxScale: PhotoViewComputedScale.covered * 6.0,
+                    //     ),
+                    //   ),
+                    // ),
+
+                    SizedBox(
+                      height: screenHeight * 0.3,
+                      width: screenWidth,
+                      child: PageView.builder(
+                        controller: PageController(viewportFraction: 1),
+                        itemCount: stalls.floorPlans.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: PhotoView(
+                                imageProvider: NetworkImage(
+                                    '$baseUrlImage${stalls.floorPlans[index]}'),
+                                backgroundDecoration: const BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                loadingBuilder: (context, event) =>
+                                    const Center(
+                                        child: CircularProgressIndicator()),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Column(
+                                  children: [
+                                    Image.asset('assets/error.png',
+                                        fit: BoxFit.cover),
+                                    const Text(
+                                      'No Image Found',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                minScale:
+                                    PhotoViewComputedScale.contained * 0.5,
+                                maxScale: PhotoViewComputedScale.covered * 6.0,
                               ),
-                              Text('No Image Found',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                            ],
-                          ),
-                          minScale: PhotoViewComputedScale.contained * 0.5,
-                          maxScale: PhotoViewComputedScale.covered * 6.0,
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ),
 

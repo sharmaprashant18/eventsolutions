@@ -44,6 +44,8 @@ class UpcomingData implements EventData {
   final String location;
   @override
   final bool hasStalls;
+  @override
+  final List<String> floorPlans;
 
   UpcomingData(
       {this.poster,
@@ -54,7 +56,8 @@ class UpcomingData implements EventData {
       required this.endDate,
       required this.ticketTiers,
       required this.location,
-      required this.hasStalls});
+      required this.hasStalls,
+      required this.floorPlans});
 
   factory UpcomingData.fromJson(Map<String, dynamic> json) {
     return UpcomingData(
@@ -64,6 +67,7 @@ class UpcomingData implements EventData {
         description: json['description'],
         startDate: json['startDateTime'],
         endDate: json['endDateTime'],
+        floorPlans: List<String>.from(json['floorPlans'] ?? []),
         ticketTiers: List<UpcomingTicketTier>.from(
           json['ticketTiers'].map((e) => UpcomingTicketTier.fromJson(e)),
         ),
@@ -82,6 +86,7 @@ class UpcomingData implements EventData {
       'eventId': eventId,
       'location': location,
       'hasStalls': hasStalls,
+      'floorPlans': floorPlans.map((e) => e).toList(),
     };
   }
 }

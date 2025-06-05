@@ -3,11 +3,13 @@ class StallData {
   final String title;
   final String floorPlan;
   final List<StallModel> stall;
+  final List<String> floorPlans;
   StallData({
     required this.eventId,
     required this.title,
     required this.floorPlan,
     required this.stall,
+    required this.floorPlans,
   });
 
   factory StallData.fromJson(Map<String, dynamic> json) {
@@ -15,6 +17,9 @@ class StallData {
       eventId: json['eventId'] ?? '',
       title: json['title'] ?? '',
       floorPlan: json['floorPlan'] ?? '',
+      floorPlans: (json['floorPlans'] as List<dynamic>)
+          .map((item) => item.toString())
+          .toList(),
       stall: (json['stalls'] as List)
           .map((item) => StallModel.fromJson(item))
           .toList(),
@@ -27,6 +32,7 @@ class StallData {
       'title': title,
       'floorPlan': floorPlan,
       'stalls': stall.map((item) => item.toJson()).toList(),
+      'floorPlans': floorPlans.map((item) => item.toString()).toList(),
     };
   }
 }

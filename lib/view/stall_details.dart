@@ -46,8 +46,12 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text('Stall Details'),
+        title: const Text(
+          'Stall Details',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: Color(0xff50d99b),
         // backgroundColor: Color(0xffc7e9c0),

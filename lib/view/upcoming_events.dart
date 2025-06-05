@@ -196,9 +196,12 @@ class UpcomingEvents extends ConsumerWidget {
                             size: 20,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            locationText,
-                            style: TextStyle(color: Colors.grey.shade700),
+                          FittedBox(
+                            child: Text(
+                              locationText,
+                              style: TextStyle(
+                                  color: Colors.grey.shade700, fontSize: 10),
+                            ),
                           ),
                         ],
                       ),
