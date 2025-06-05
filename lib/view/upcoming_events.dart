@@ -118,22 +118,28 @@ class UpcomingEvents extends ConsumerWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return StallPage();
-                    }));
-                  },
-                  child: Text(
-                    'BOOK STALL',
-                    style: TextStyle(
-                      color: Color(0xff667EEA),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                if (hasStalls)
+                  Row(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return StallPage(
+                                eventId: upcomingEvent.eventId.toString());
+                          }));
+                        },
+                        child: Text(
+                          'BOOK STALL',
+                          style: TextStyle(
+                            color: Color(0xff667EEA),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
               ],
             ),
             const SizedBox(width: 12),
@@ -170,7 +176,7 @@ class UpcomingEvents extends ConsumerWidget {
                       ),
                       const Spacer(),
                       Text(
-                        price,
+                        'Rs:$price',
                         style: const TextStyle(
                           color: Colors.orange,
                           fontWeight: FontWeight.w700,

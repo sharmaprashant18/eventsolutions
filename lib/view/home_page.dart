@@ -414,7 +414,8 @@ class _HomePageState extends ConsumerState<HomePage>
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const StallPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const StallPage(eventId: '')),
                 );
                 break;
               case 6:

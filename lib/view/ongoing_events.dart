@@ -444,7 +444,10 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
-                                                return StallPage();
+                                                return StallPage(
+                                                  eventId:
+                                                      events.eventId.toString(),
+                                                );
                                               }));
                                             },
                                             style: ElevatedButton.styleFrom(

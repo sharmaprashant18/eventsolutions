@@ -13,6 +13,9 @@ class ApiServices {
   static const changePassword = '$baseUrl/change-password';
   static const changeDetails = '$baseUrl/update-user';
   static const googleSign = '$baseUrl/login';
-  static const availableStalls =
-      '$baseUrl/stalls/event/032345c6-837d-48d4-a6b2-0108fb234e48';
+  static String availableStalls(String eventId) =>
+      '$baseUrl/stalls/event/$eventId';
+  static String stallById(String stallId) => '$baseUrl/stalls/$stallId';
+  static String stallBooking = '$baseUrl/bookings';
+  static String holdStall = '$baseUrl/bookings/hold';
 }
