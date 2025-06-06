@@ -114,40 +114,6 @@ class _StallPageState extends ConsumerState<StallPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(15),
-                    //   child: SizedBox(
-                    //     height: screenHeight * 0.3,
-                    //     width: screenWidth,
-                    //     child: PhotoView(
-                    //       imageProvider: NetworkImage(
-                    //         '$baseUrlImage${stalls.floorPlans.toList()}',
-                    //       ),
-                    //       backgroundDecoration: const BoxDecoration(
-                    //         color: Colors.transparent,
-                    //       ),
-                    //       loadingBuilder: (context, event) =>
-                    //           const Center(child: CircularProgressIndicator()),
-                    //       errorBuilder: (context, error, stackTrace) => Column(
-                    //         children: [
-                    //           Image.asset(
-                    //             'assets/error.png',
-                    //             fit: BoxFit.contain,
-                    //           ),
-                    //           Text('No Image Found',
-                    //               style: TextStyle(
-                    //                 color: Colors.red,
-                    //                 fontSize: 16,
-                    //                 fontWeight: FontWeight.bold,
-                    //               )),
-                    //         ],
-                    //       ),
-                    //       minScale: PhotoViewComputedScale.contained * 0.5,
-                    //       maxScale: PhotoViewComputedScale.covered * 6.0,
-                    //     ),
-                    //   ),
-                    // ),
-
                     SizedBox(
                       height: screenHeight * 0.3,
                       width: screenWidth,
@@ -275,123 +241,113 @@ class _StallPageState extends ConsumerState<StallPage> {
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
-    return SizedBox(
-        height: screenHeight * 0.4,
-        child: Row(
-          children: [
-            Expanded(
-              child: GridView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 8,
-                  crossAxisSpacing: 7,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 0.9,
-                ),
-                itemCount: stalls.stall.length,
-                itemBuilder: (context, index) {
-                  final stall = stalls.stall[index];
-                  Color color;
-                  if (stall.status == 'hold') {
-                    color = Colors.blue;
-                  } else if (stall.status == 'booked') {
-                    color = Color(0xff57EB63);
-                  } else if (stall.status == 'available') {
-                    color = Colors.white;
-                  } else {
-                    color = Colors.black;
-                  }
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 8,
+        crossAxisSpacing: 7,
+        mainAxisSpacing: 15,
+        childAspectRatio: 0.9,
+      ),
+      itemCount: stalls.stall.length,
+      itemBuilder: (context, index) {
+        final stall = stalls.stall[index];
+        Color color;
+        if (stall.status == 'hold') {
+          color = Colors.blue;
+        } else if (stall.status == 'booked') {
+          color = Color(0xff57EB63);
+        } else if (stall.status == 'available') {
+          color = Colors.white;
+        } else {
+          color = Colors.black;
+        }
 
-                  return GestureDetector(
-                    onTap: () {
-                      final status = stall.status.toLowerCase();
+        return GestureDetector(
+          onTap: () {
+            final status = stall.status.toLowerCase();
 
-                      if (status == 'available') {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Choose Action'),
-                              content: const Text(
-                                  'Do you want to hold or book this stall?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return HoldStallPage(
-                                          stallId: stall.stallId);
-                                    }));
-                                  },
-                                  child: const Text('Hold'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => StallDetails(
-                                            stallId: stall.stallId),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Book'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Stall Not Available'),
-                              content: Text('This stall is $status.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 1,
-                        ),
+            if (status == 'available') {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Choose Action'),
+                    content:
+                        const Text('Do you want to hold or book this stall?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return HoldStallPage(stallId: stall.stallId);
+                          }));
+                        },
+                        child: const Text('Hold'),
                       ),
-                      child: stall.name.isNotEmpty
-                          ? Center(
-                              child: Text(
-                                stall.name,
-                                style: TextStyle(
-                                  color: color == Colors.white
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  StallDetails(stallId: stall.stallId),
+                            ),
+                          );
+                        },
+                        child: const Text('Book'),
+                      ),
+                    ],
                   );
                 },
+              );
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Stall Not Available'),
+                    content: Text('This stall is $status.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Colors.grey.shade300,
+                width: 1,
               ),
             ),
-            SizedBox(width: screenWidth * 0.09),
-          ],
-        ));
+            child: stall.name.isNotEmpty
+                ? Center(
+                    child: Text(
+                      stall.name,
+                      style: TextStyle(
+                        color:
+                            color == Colors.white ? Colors.black : Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        );
+      },
+    );
   }
 }
 

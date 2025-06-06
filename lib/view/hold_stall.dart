@@ -12,12 +12,9 @@ class HoldStallPage extends ConsumerStatefulWidget {
 }
 
 class _HoldStallPageState extends ConsumerState<HoldStallPage> {
-  String formatDateManually(DateTime dateTime,
-      {bool includeYear = false, bool yearOnly = false}) {
-    if (yearOnly) {
-      return dateTime.year.toString();
-    }
-
+  String formatDateManually(
+    DateTime dateTime,
+  ) {
     String day = dateTime.day.toString().padLeft(2, '0');
     List<String> months = [
       'Jan',
@@ -35,12 +32,9 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
     ];
     String month = months[dateTime.month - 1];
 
-    if (includeYear) {
-      String year = dateTime.year.toString();
-      return '$day $month, $year';
-    }
+    String year = dateTime.year.toString();
 
-    return '$day $month';
+    return '$day $month,$year';
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -93,15 +87,21 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
                     infoRow('Size', stall.size),
                     infoRow('Size in SqFt', '${stall.sizeInSqFt}'),
                     infoRow('Type', stall.stallTypeName),
-                    infoRow('Price per sqft', 'Rs ${stall.price}'),
+                    infoRow('Price per sqft',
+                        'Rs ${stall.price.toStringAsFixed(2)}'),
                     infoRow(
-                        'Total Price', 'Rs ${stall.price * stall.sizeInSqFt}'),
-                    infoRow('Status', stall.status.toUpperCase(),
-                        style: TextStyle(
-                            color: stall.status == 'available'
-                                ? Colors.green
-                                : Colors.red)),
-                    infoRow('Expiry Date', stall.expiryDate.toString()),
+                      'Total Price with VAT',
+                      'Rs ${(stall.price * stall.sizeInSqFt + (13 / 100 * stall.price * stall.sizeInSqFt)).toStringAsFixed(2)}',
+                    ),
+                    infoRow(
+                      'Status',
+                      stall.status[0].toUpperCase() + stall.status.substring(1),
+                      valueStyle: TextStyle(
+                          color: stall.status == 'available'
+                              ? Colors.blue
+                              : Colors.red),
+                    ),
+                    // infoRow('Expiry Date', stall.expiryDate.toString()),
                   ],
                 ),
                 buildInfoCard(
@@ -304,7 +304,7 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
     );
   }
 
-  Widget infoRow(String label, String value, {TextStyle? style}) {
+  Widget infoRow(String label, String value, {TextStyle? valueStyle}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -317,7 +317,10 @@ class _HoldStallPageState extends ConsumerState<HoldStallPage> {
               )),
           Expanded(
             flex: 3,
-            child: Text(value, style: const TextStyle(color: Colors.black87)),
+            child: Text(
+              value,
+              style: valueStyle ?? const TextStyle(color: Colors.black87),
+            ),
           ),
         ],
       ),

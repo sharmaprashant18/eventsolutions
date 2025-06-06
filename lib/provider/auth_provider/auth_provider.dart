@@ -1,3 +1,4 @@
+import 'package:eventsolutions/model/auth_model/change_password_model.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:eventsolutions/model/auth_model/user_details_model.dart';
 import 'package:eventsolutions/model/user_update_model.dart';
@@ -31,6 +32,17 @@ final forgotPasswordProvider =
     FutureProvider.family<ForgotPasswordModel, String>((ref, email) {
   final authService = ref.read(authServiceProvider);
   return authService.forgotPassword(email);
+});
+
+final changePasswordProvider =
+    FutureProvider.family<ChangePasswordModel, Map<String, String>>(
+        (ref, data) {
+  final authService = ref.read(authServiceProvider);
+  return authService.changePassword(
+    data['oldPassword']!,
+    data['newPassword']!,
+    data['confirmPassword']!,
+  );
 });
 
 final userDetailsProvider = FutureProvider<UserDetailsModel>((ref) async {

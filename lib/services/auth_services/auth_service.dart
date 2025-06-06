@@ -117,10 +117,13 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/api.dart';
+import 'package:eventsolutions/model/auth_model/change_password_model.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
 import 'package:eventsolutions/model/auth_model/user_details_model.dart';
+import 'package:eventsolutions/model/auth_model/verify_email_signup.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
 import 'package:eventsolutions/model/user_update_model.dart';
+import 'package:eventsolutions/view/change_password.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
@@ -244,6 +247,74 @@ class AuthService {
     }
   }
 
+  // Future<ChangePasswordModel> changePassword(
+  //     String oldPassword, String newPassword, String confirmPassword) async {
+  //   try {
+  //     final response = await Dio().post(
+  //       ApiServices.changePassword,
+  //       data: {
+  //         'oldPassword': oldPassword,
+  //         'newPassword': newPassword,
+  //         'confirmPassword': confirmPassword,
+  //       },
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       ),
+  //     );
+
+  //     return ChangePasswordModel.fromJson(response.data);
+  //   } on DioException catch (e) {
+  //     debugPrint('Change password error: ${e.response?.data}');
+  //     throw Exception(
+  //         e.response?.data['message'] ?? 'Failed to change password');
+  //   }
+  // }
+
+  Future<ChangePasswordModel> changePassword(
+      String oldPassword, String newPassword, String confirmPassword) async {
+    try {
+      // Get the access token for authentication
+      final token = await _tokenStorage.getAccessToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token found. Please login again.');
+      }
+
+      final response = await Dio().post(
+        ApiServices.changePassword,
+        data: {
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token', // Add authorization header
+          },
+        ),
+      );
+
+      debugPrint('Change password response: ${response.data}');
+      return ChangePasswordModel.fromJson(response.data);
+    } on DioException catch (e) {
+      debugPrint('Change password error: ${e.response?.data}');
+      if (e.response != null) {
+        // Handle specific error messages from the server
+        final errorMessage = e.response?.data['message'] ??
+            e.response?.data['error'] ??
+            'Failed to change password';
+        throw Exception(errorMessage);
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Unexpected change password error: $e');
+      throw Exception('Failed to change password: $e');
+    }
+  }
+
   Future<VerifyModel> verifyCode({
     required String email,
     required String code,
@@ -269,6 +340,35 @@ class AuthService {
       debugPrint('Verify code error: ${e.response?.data}');
       if (e.response != null) {
         throw Exception(e.response?.data['message'] ?? 'Password reset failed');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    }
+  }
+
+  Future<VerifyEmailSignupModel> verifyEmailCodeSignup({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final response = await Dio().post(
+        ApiServices.verifyEmail,
+        data: {
+          'email': email,
+          'code': code,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      return VerifyEmailSignupModel.fromJson(response.data);
+    } on DioException catch (e) {
+      debugPrint('Verify code error: ${e.response?.data}');
+      if (e.response != null) {
+        throw Exception(e.response?.data['message'] ?? 'Verification failed');
       } else {
         throw Exception('Network error: ${e.message}');
       }
@@ -309,6 +409,32 @@ class AuthService {
     }
   }
 
+  // Future<UpdateResponseModel> updateUserDetails(
+  //     UserUpdateModel userUpdate) async {
+  //   try {
+  //     final token = await _tokenStorage.getAccessToken();
+  //     if (token == null || token.isEmpty) {
+  //       throw Exception('No access token found');
+  //     }
+
+  //     final response = await Dio().post(ApiServices.changeDetails,
+  //         data: userUpdate.toJson(),
+  //         options: Options(headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': 'Bearer $token',
+  //         }));
+  //     debugPrint("User details response: ${response.data}");
+
+  //     return UpdateResponseModel.fromJson(response.data);
+  //   } on DioException catch (e) {
+  //     if (e.response?.data != null) {
+  //       return UpdateResponseModel.fromJson(e.response!.data);
+  //     }
+  //     throw Exception('Network error: ${e.message}');
+  //   } catch (e) {
+  //     throw Exception('Unexpected error: $e');
+  //   }
+  // }
   Future<UpdateResponseModel> updateUserDetails(
       UserUpdateModel userUpdate) async {
     try {
@@ -317,13 +443,20 @@ class AuthService {
         throw Exception('No access token found');
       }
 
-      final response = await Dio().post(ApiServices.changeDetails,
-          data: userUpdate.toJson(),
-          options: Options(headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          }));
-      debugPrint("User details response: ${response.data}");
+      final response = await Dio().post(
+        ApiServices.changeDetails,
+        data: userUpdate.toJson(),
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      // Check if the server provided a new token (after email update)
+      if (response.data['accessToken'] != null) {
+        await saveToken(
+            response.data['accessToken'], response.data['accessToken']);
+      }
 
       return UpdateResponseModel.fromJson(response.data);
     } on DioException catch (e) {
@@ -336,3 +469,44 @@ class AuthService {
     }
   }
 }
+
+// Future<LoginRegisterModel> sendRegistrationOtp(
+//   String fullName,
+//   String phone,
+//   String email,
+//   String password,
+// ) async {
+//   try {
+//     final response = await Dio().post(
+//       ApiServices.register, // This should trigger OTP sending
+//       data: {
+//         'fullName': fullName,
+//         'phone': phone,
+//         'email': email,
+//         'password': password,
+//       },
+//       options: Options(
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       ),
+//     );
+
+//     debugPrint('Registration OTP response: ${response.data}');
+//     return LoginRegisterModel.fromJson(response.data);
+//   } on DioException catch (e) {
+//     debugPrint('Registration OTP DioException: ${e.response?.data}');
+//     if (e.response != null) {
+//       // Check if this is an expected "OTP sent" response
+//       if (e.response!.statusCode == 200 || e.response!.statusCode == 201) {
+//         return LoginRegisterModel.fromJson(e.response!.data);
+//       }
+//       throw Exception(e.response?.data['message'] ?? 'Failed to send OTP');
+//     } else {
+//       throw Exception('Network error: ${e.message}');
+//     }
+//   } catch (e) {
+//     debugPrint('Registration OTP general error: $e');
+//     throw Exception('Failed to send OTP: $e');
+//   }
+// }

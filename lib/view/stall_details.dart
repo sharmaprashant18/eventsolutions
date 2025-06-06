@@ -72,18 +72,28 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
                     infoRow('Size', stall.size),
                     infoRow('Size in SqFt', '${stall.sizeInSqFt}'),
                     infoRow('Type', stall.stallTypeName),
-                    infoRow('Price per sqft', 'Rs ${stall.price}'),
+                    infoRow('Price per sqft',
+                        'Rs ${stall.price.toStringAsFixed(2)}'),
                     infoRow(
-                        'Total Price', 'Rs ${stall.price * stall.sizeInSqFt}'),
-                    infoRow('Status', stall.status, valueColor: Colors.green),
-                    infoRow('Expiry Date', stall.expiryDate),
+                      'Total Price with VAT',
+                      'Rs ${(stall.price * stall.sizeInSqFt + (13 / 100 * stall.price * stall.sizeInSqFt)).toStringAsFixed(2)}',
+                    ),
+                    infoRow(
+                      'Status',
+                      stall.status[0].toUpperCase() + stall.status.substring(1),
+                      valueStyle: TextStyle(
+                          color: stall.status == 'available'
+                              ? Colors.blue
+                              : Colors.red),
+                    ),
                   ],
                 ),
                 buildInfoCard(
                   title: 'Location & Event',
                   children: [
                     infoRow('Location', stall.location),
-                    infoRow('Event ID', stall.eventId),
+                    infoRow('Event ID', stall.eventId,
+                        valueStyle: const TextStyle(fontSize: 10)),
                   ],
                 ),
                 buildInfoCard(
@@ -512,7 +522,7 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
     );
   }
 
-  Widget infoRow(String label, String value, {Color? valueColor}) {
+  Widget infoRow(String label, String value, {TextStyle? valueStyle}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -521,11 +531,16 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
               flex: 2,
               child: Text(
                 label,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               )),
           Expanded(
             flex: 3,
-            child: Text(value, style: const TextStyle(color: Colors.black87)),
+            child: Text(
+              value,
+              style: valueStyle ?? const TextStyle(color: Colors.black87),
+            ),
           ),
         ],
       ),

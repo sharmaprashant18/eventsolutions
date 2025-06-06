@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:eventsolutions/model/abstract/event_data.dart';
@@ -56,11 +57,29 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     super.dispose();
   }
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     ref.read(selectedTierProvider.notifier).state = null;
+  //     ref.read(entryFormImagePickerProvider.notifier).clearImage();
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(selectedTierProvider.notifier).state = null;
+
+    Future.microtask(() {
+      if (mounted) {
+        try {
+          ref.read(selectedTierProvider.notifier).state = null;
+          ref.read(entryFormImagePickerProvider.notifier).clearImage();
+          log('Form state cleared successfully');
+        } catch (e) {
+          log('Error clearing form state: $e');
+        }
+      }
     });
   }
 

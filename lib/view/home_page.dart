@@ -164,12 +164,12 @@ class _HomePageState extends ConsumerState<HomePage>
                   'Our Services',
                   Icons.miscellaneous_services_rounded,
                 ),
-                _drawer(
-                  context,
-                  5,
-                  'Stall',
-                  Icons.festival_rounded,
-                ),
+                // _drawer(
+                //   context,
+                //   5,
+                //   'Stall',
+                //   Icons.festival_rounded,
+                // ),
                 _drawer(
                   context,
                   0,
@@ -410,14 +410,14 @@ class _HomePageState extends ConsumerState<HomePage>
                   },
                 );
                 break;
-              case 5:
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const StallPage(eventId: '')),
-                );
-                break;
+              // case 5:
+              //   Navigator.pop(context);
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => const StallPage(eventId: '')),
+              //   );
+              //   break;
               case 6:
                 Navigator.pop(context);
                 Navigator.push(

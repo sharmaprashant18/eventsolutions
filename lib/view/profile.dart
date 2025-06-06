@@ -108,46 +108,60 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _saveChanges() async {
     if (_formKey.currentState?.validate() ?? false) {
-      debugPrint('Name: ${nameController.text.trim()}');
-      debugPrint('Phone: ${phoneController.text.trim()}');
-      debugPrint('Email: ${emailController.text.trim()}');
+      final user = ref.read(userDetailsProvider).value;
+      if (user == null) return;
+
+      final newName = nameController.text.trim();
+      final newEmail = emailController.text.trim();
+      final newPhone = phoneController.text.trim();
+
+      final nameChanged = newName != (user.fullName);
+      final emailChanged = newEmail != (user.email);
+      final phoneChanged = newPhone != (user.phone);
+
+      if (!nameChanged && !emailChanged && !phoneChanged) {
+        setState(() {
+          _isEditing = false;
+        });
+        return;
+      }
 
       final userUpdate = UserUpdateModel(
-        name: nameController.text.trim(),
-        number: phoneController.text.trim(),
-        email: emailController.text.trim(),
+        name: newName,
+        number: newPhone,
+        email: newEmail,
       );
-
-      debugPrint('Sending UserUpdateModel: ${userUpdate.toJson()}');
 
       final success = await ref
           .read(userUpdateStateProvider.notifier)
           .updateUser(userUpdate);
 
       if (success) {
-        await TokenStorage().clearAllTokens();
         setState(() {
           _isEditing = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated. Please log in again.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(
-        //     content: Text('Profile updated successfully!'),
-        //     backgroundColor: Colors.green,
-        //   ),
-        // );
 
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-          (Route<dynamic> route) => false,
-        );
-
-        return;
+        if (emailChanged) {
+          await TokenStorage().getAccessToken();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email updated. Please log in again.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          // Show success and stay on page
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile updated successfully.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else {
         final updateState = ref.read(userUpdateStateProvider);
         String errorMessage = 'Failed to update profile';

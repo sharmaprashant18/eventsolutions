@@ -21,3 +21,13 @@ class ForgotPasswordModel {
     };
   }
 }
+
+
+// {
+//     "status": 200,
+//     "success": true,
+//     "data": null,
+//     "error": null,
+//     "message": "Email sent!",
+//     "timestamp": "2025-06-06T07:15:16.279Z"
+// }
