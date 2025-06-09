@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "752024923352",
+    "project_id": "eventsolution-561cd",
+    "storage_bucket": "eventsolution-561cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752024923352:android:a03f604263c9d495d57bad",
+        "android_client_info": {
+          "package_name": "com.example.eventsolutions"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752024923352-rellkp4vdi5grgp7folvq4bojh41e0ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUSRkMuHZkpH0_cB6wwmLGimI51SG185E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752024923352-rellkp4vdi5grgp7folvq4bojh41e0ns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,102 +1,184 @@
-class HoldstallModel {
+class MultipleStallHoldingModel {
   final String eventId;
-  final String stallId;
+  final String eventName;
+  final List<StallInfo> stallInfo;
+  // final String stallId;
   final String userId;
-  final String holdExpiry;
-  final int totalAmount;
   final bool isHold;
+  final String? holdExpiry;
+  final double totalAmount;
+  final double pendingAmount;
   final String paymentStatus;
   final List<String> paymentProof;
+
   final String status;
-  final HoldBusinessInfo businessInfo;
-  final HoldContactPerson contactPerson;
+  final MultipleBusinessInfo businessInfo;
+  final MultipleContactPerson contactPerson;
   final String bookingId;
-  HoldstallModel(
-      {required this.eventId,
-      required this.stallId,
-      required this.userId,
-      required this.holdExpiry,
-      required this.totalAmount,
-      required this.isHold,
-      required this.paymentStatus,
-      required this.paymentProof,
-      required this.status,
-      required this.businessInfo,
-      required this.contactPerson,
-      required this.bookingId});
-  factory HoldstallModel.fromJson(Map<String, dynamic> json) {
-    return HoldstallModel(
-        eventId: json['eventId'],
-        stallId: json['stallId'],
-        userId: json['userId'],
-        holdExpiry: json['holdExpiry'],
-        totalAmount: json['totalAmount'],
-        isHold: json['isHold'],
-        paymentStatus: json['paymentStatus'],
-        paymentProof: List<String>.from(json['paymentProof'] ?? []),
-        status: json['status'],
-        businessInfo: HoldBusinessInfo.fromJson(
-          json['businessInfo'],
-        ),
-        contactPerson: HoldContactPerson.fromJson(json['contactPerson']),
-        bookingId: json['bookingId']);
+  final String createdAt;
+  final String updatedAt;
+
+  MultipleStallHoldingModel({
+    required this.eventId,
+    required this.eventName,
+    required this.stallInfo,
+    // required this.stallId,
+    required this.userId,
+    required this.isHold,
+    required this.holdExpiry,
+    required this.totalAmount,
+    required this.pendingAmount,
+    required this.paymentStatus,
+    required this.paymentProof,
+    required this.status,
+    required this.businessInfo,
+    required this.contactPerson,
+    required this.bookingId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory MultipleStallHoldingModel.fromJson(Map<String, dynamic> json) {
+    return MultipleStallHoldingModel(
+      eventId: json['eventId'],
+      eventName: json['eventName'],
+      stallInfo: (json['stallInfo'] as List)
+          .map((e) => StallInfo.fromJson(e))
+          .toList(),
+      // stallId: json['stallId'] ?? '',
+      userId: json['userId'],
+      isHold: json['isHold'],
+      holdExpiry: json['holdExpiry'],
+      totalAmount: (json['totalAmount'] ?? 0).toDouble(),
+      pendingAmount: (json['pendingAmount'] ?? 0).toDouble(),
+      paymentStatus: json['paymentStatus'],
+      paymentProof: List<String>.from(json['paymentProof'] ?? []),
+
+      status: json['status'],
+      businessInfo: MultipleBusinessInfo.fromJson(json['businessInfo']),
+      contactPerson: MultipleContactPerson.fromJson(json['contactPerson']),
+      bookingId: json['bookingId'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'eventId': eventId,
-      'stallId': stallId,
+      'eventName': eventName,
+      'stallInfo': stallInfo.map((e) => e.toJson()).toList(),
+      // 'stallId': stallId,
+      'userId': userId,
       'isHold': isHold,
+      // 'holdExpiry': holdExpiry,
+      'totalAmount': totalAmount,
+      'pendingAmount': pendingAmount,
       'paymentStatus': paymentStatus,
       'paymentProof': paymentProof,
+
       'status': status,
-      'userId': userId,
-      'holdExpiry': holdExpiry,
-      'totalAmount': totalAmount,
       'businessInfo': businessInfo.toJson(),
       'contactPerson': contactPerson.toJson(),
-      'bookingId': bookingId
+      'bookingId': bookingId,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 }
 
-class HoldBusinessInfo {
+class StallInfo {
+  final String stallName;
+  final String stallType;
+  final String stallId;
+  final int rate;
+  final int sizeInSqFt;
+  final int upchargeInPercent;
+
+  StallInfo({
+    required this.stallName,
+    required this.stallType,
+    required this.stallId,
+    required this.rate,
+    required this.sizeInSqFt,
+    required this.upchargeInPercent,
+  });
+
+  factory StallInfo.fromJson(Map<String, dynamic> json) {
+    return StallInfo(
+      stallName: json['stallName'],
+      stallType: json['stallType'],
+      stallId: json['stallId'],
+      rate: json['rate'] ?? 0,
+      sizeInSqFt: json['sizeInSqFt'] ?? 0,
+      upchargeInPercent: json['upchargeInPercent'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'stallName': stallName,
+      'stallType': stallType,
+      'stallId': stallId,
+      'rate': rate,
+      'sizeInSqFt': sizeInSqFt,
+      'upchargeInPercent': upchargeInPercent,
+    };
+  }
+}
+
+class MultipleBusinessInfo {
   final String businessName;
   final String businessPhone;
   final String businessEmail;
-  HoldBusinessInfo(
-      {required this.businessName,
-      required this.businessPhone,
-      required this.businessEmail});
-  factory HoldBusinessInfo.fromJson(Map<String, dynamic> json) {
-    return HoldBusinessInfo(
-        businessName: json['name'] ?? '',
-        businessPhone: json['phone'] ?? '',
-        businessEmail: json['email'] ?? '');
+
+  MultipleBusinessInfo({
+    required this.businessName,
+    required this.businessPhone,
+    required this.businessEmail,
+  });
+
+  factory MultipleBusinessInfo.fromJson(Map<String, dynamic> json) {
+    return MultipleBusinessInfo(
+      businessName: json['name'] ?? '',
+      businessPhone: json['phone'] ?? '',
+      businessEmail: json['email'] ?? '',
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'name': businessName,
       'phone': businessPhone,
-      'email': businessEmail
+      'email': businessEmail,
     };
   }
 }
 
-class HoldContactPerson {
+class MultipleContactPerson {
   final String name;
   final String phone;
   final String email;
-  HoldContactPerson(
-      {required this.name, required this.phone, required this.email});
-  factory HoldContactPerson.fromJson(Map<String, dynamic> json) {
-    return HoldContactPerson(
-        name: json['name'] ?? '',
-        phone: json['phone'] ?? '',
-        email: json['email'] ?? '');
+
+  MultipleContactPerson({
+    required this.name,
+    required this.phone,
+    required this.email,
+  });
+
+  factory MultipleContactPerson.fromJson(Map<String, dynamic> json) {
+    return MultipleContactPerson(
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'] ?? '',
+    );
   }
+
   Map<String, dynamic> toJson() {
-    return {'name': name, 'phone': phone, 'email': email};
+    return {
+      'name': name,
+      'phone': phone,
+      'email': email,
+    };
   }
 }

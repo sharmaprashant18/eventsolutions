@@ -58,20 +58,92 @@ class StallsServices {
     }
   }
 
-  Future<StallBookingModel> bookStall(
-    String stallId,
-    String businessName,
-    String businessPhone,
-    String businessEmail,
+  // Future<MultipleStallHoldingModel> holdMultipleStall(
+  //   List<String> stallIds,
+  //   String contactPersonName,
+  //   String contactPersonPhone,
+  //   String contactPersonEmail,
+  // ) async {
+  //   try {
+  //     final holdingData = {
+  //       'stallIds': stallIds,
+  //       'contactPersonName': contactPersonName,
+  //       'contactPersonNumber': contactPersonPhone,
+  //       'contactPersonEmail': contactPersonEmail,
+  //     };
+  //     final token = await TokenStorage().getAccessToken();
+  //     final response = await dio.post(
+  //       ApiServices.multipleStallHold,
+  //       data: holdingData,
+  //       options: Options(
+  //           contentType: 'application/json',
+  //           headers: {"Authorization": "Bearer $token"}),
+  //     );
+  //     if (response.statusCode == 201) {
+  //       final bookingData =
+  //           MultipleStallHoldingModel.fromJson(response.data['data']);
+  //       log('Stall hold successfully: ${bookingData.bookingId}');
+  //       return bookingData;
+  //     } else {
+  //       throw Exception('Failed to hold stall');
+  //     }
+  //   } catch (e) {
+  //     log('Error holding stall: $e');
+  //     throw Exception('Failed to hold stall: $e');
+  //   }
+  // }
+
+  Future<MultipleStallHoldingModel> holdMultipleStall(
+    List<String> stallIds,
     String contactPersonName,
-    String contactPersonPhone,
+    String contactPersonNumber,
     String contactPersonEmail,
-    File paymentProof,
   ) async {
+    try {
+      final holdingData = {
+        'stallIds': stallIds,
+        'contactPersonName': contactPersonName,
+        'contactPersonNumber': contactPersonNumber,
+        'contactPersonEmail': contactPersonEmail,
+      };
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.post(
+        ApiServices.multipleStallHold,
+        data: holdingData,
+        options: Options(
+          contentType: 'application/json',
+          headers: {"Authorization": "Bearer $token"},
+        ),
+      );
+      if (response.statusCode == 201) {
+        final bookingData =
+            MultipleStallHoldingModel.fromJson(response.data['data']);
+        log('Stall hold successfully: ${bookingData.bookingId}');
+        return bookingData;
+      } else {
+        throw Exception('Failed to hold stall');
+      }
+    } catch (e) {
+      log('Error holding stall: $e');
+      throw Exception('Failed to hold stall: $e');
+    }
+  }
+
+  Future<MultipleStallBookingModel> bookStall(
+      List<String> stallIds,
+      String businessName,
+      String businessPhone,
+      String businessEmail,
+      String contactPersonName,
+      String contactPersonPhone,
+      String contactPersonEmail,
+      File paymentProof,
+      String paidAmount,
+      String paymentMethod) async {
     try {
       String fileName = paymentProof.path.split('/').last;
       FormData formData = FormData.fromMap({
-        'stallId': stallId,
+        'stallIds': stallIds,
         'businessName': businessName,
         'businessPhone': businessPhone,
         'businessEmail': businessEmail,
@@ -80,15 +152,21 @@ class StallsServices {
         'contactPersonEmail': contactPersonEmail,
         'paymentProof':
             await MultipartFile.fromFile(paymentProof.path, filename: fileName),
+        'paidAmount': paidAmount,
+        'paymentMethod': 'bank'
       });
       final token = await TokenStorage().getAccessToken();
-      final response = await dio.post(ApiServices.stallBooking,
-          data: formData,
-          options: Options(
-              contentType: 'multipart/form-data',
-              headers: {"Authorization": "Bearer $token"}));
+      final response = await dio.post(
+        ApiServices.stallBooking, // Ensure API supports multiple stallIds
+        data: formData,
+        options: Options(
+          contentType: 'multipart/form-data',
+          headers: {"Authorization": "Bearer $token"},
+        ),
+      );
       if (response.statusCode == 201) {
-        final bookingData = StallBookingModel.fromJson(response.data['data']);
+        final bookingData =
+            MultipleStallBookingModel.fromJson(response.data['data']);
         log('Stall booked successfully: ${bookingData.bookingId}');
         return bookingData;
       } else {
@@ -100,43 +178,43 @@ class StallsServices {
     }
   }
 
-  Future<HoldstallModel> holdStall(
-    String stallId,
-    String businessName,
-    String businessPhone,
-    String businessEmail,
-    String contactPersonName,
-    String contactPersonEmail,
-    String contactPersonPhone,
-  ) async {
-    try {
-      final payload = {
-        'stallId': stallId,
-        'businessName': businessName,
-        'businessPhone': businessPhone,
-        'businessEmail': businessEmail,
-        'contactPersonName': contactPersonName,
-        'contactPersonEmail': contactPersonEmail,
-        'contactPersonPhone': contactPersonPhone,
-      };
-      final token = await TokenStorage().getAccessToken();
-      final response = await dio.post(
-        ApiServices.holdStall,
-        data: payload,
-        options: Options(
-            contentType: 'application/json',
-            headers: {"Authorization": "Bearer $token"}),
-      );
-      if (response.statusCode == 201) {
-        final bookingData = HoldstallModel.fromJson(response.data['data']);
-        log('Stall hold successfully: ${bookingData.bookingId}');
-        return bookingData;
-      } else {
-        throw Exception('Failed to hold stall');
-      }
-    } catch (e) {
-      log('Error holding stall: $e');
-      throw Exception('Failed to hold stall: $e');
-    }
-  }
+  // Future<HoldstallModel> holdStall(
+  //   String stallId,
+  //   String businessName,
+  //   String businessPhone,
+  //   String businessEmail,
+  //   String contactPersonName,
+  //   String contactPersonEmail,
+  //   String contactPersonPhone,
+  // ) async {
+  //   try {
+  //     final holdingData = {
+  //       'stallId': stallId,
+  //       'businessName': businessName,
+  //       'businessPhone': businessPhone,
+  //       'businessEmail': businessEmail,
+  //       'contactPersonName': contactPersonName,
+  //       'contactPersonEmail': contactPersonEmail,
+  //       'contactPersonPhone': contactPersonPhone,
+  //     };
+  //     final token = await TokenStorage().getAccessToken();
+  //     final response = await dio.post(
+  //       ApiServices.holdStall,
+  //       data: holdingData,
+  //       options: Options(
+  //           contentType: 'application/json',
+  //           headers: {"Authorization": "Bearer $token"}),
+  //     );
+  //     if (response.statusCode == 201) {
+  //       final bookingData = HoldstallModel.fromJson(response.data['data']);
+  //       log('Stall hold successfully: ${bookingData.bookingId}');
+  //       return bookingData;
+  //     } else {
+  //       throw Exception('Failed to hold stall');
+  //     }
+  //   } catch (e) {
+  //     log('Error holding stall: $e');
+  //     throw Exception('Failed to hold stall: $e');
+  //   }
+  // }
 }

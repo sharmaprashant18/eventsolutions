@@ -1,129 +1,16 @@
-// import 'dart:developer';
-
-// import 'package:dio/dio.dart';
-// import 'package:eventsolutions/api.dart';
-// import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
-// import 'package:eventsolutions/model/auth_model/verify_model.dart';
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:eventsolutions/model/auth_model/login_model.dart';
-// import 'package:eventsolutions/model/auth_model/register_model.dart';
-
-// import 'package:eventsolutions/services/token_storage.dart';
-
-// class AuthService {
-//   // final Dio _dio = DioClient().dio;
-//   final TokenStorage _tokenStorage = TokenStorage();
-
-//   Future<void> saveToken(String accessToken, String refreshToken) async {
-//     // ignore: unused_local_variable
-//     final prefs = await SharedPreferences.getInstance();
-//     await _tokenStorage.saveAccessToken(accessToken);
-//     await _tokenStorage.saveRefreshToken(refreshToken);
-//     debugPrint('Access and refresh tokens saved');
-//   }
-
-//   Future<LoginModel> login(String email, String password) async {
-//     try {
-//       final token = await _tokenStorage.getAccessToken();
-//       final response = await Dio().post(ApiServices.login,
-//           data: {
-//             'email': email,
-//             'password': password,
-//           },
-//           options: Options(headers: {'Authorization': 'Bearer $token'}));
-//       final loginModel = LoginModel.fromJson(response.data);
-//       debugPrint("Access Token: ${loginModel.accessToken}");
-
-//       await saveToken(loginModel.accessToken, loginModel.accessToken);
-//       log(loginModel.accessToken);
-//       return loginModel;
-//     } on DioException catch (e) {
-//       if (e.response != null) {
-//         throw Exception(e.response?.data['message'] ?? 'Login failed');
-//       } else {
-//         throw Exception('Network error');
-//       }
-//     }
-//   }
-
-//   Future<LoginRegisterModel> register(
-//     String email,
-//     String password,
-//     String fullName,
-//     String phone,
-//   ) async {
-//     try {
-//       final token = await _tokenStorage.getAccessToken();
-//       final response = await Dio().post(ApiServices.register,
-//           data: {
-//             'email': email,
-//             'password': password,
-//             'fullName': fullName,
-//             'phone': phone
-//           },
-//           options: Options(headers: {'Authorization': 'Bearer $token'}));
-//       return LoginRegisterModel.fromJson(response.data);
-//     } on DioException catch (e) {
-//       if (e.response != null) {
-//         throw Exception(e.response?.data['message'] ?? 'Registration failed');
-//       } else {
-//         throw Exception('Network error');
-//       }
-//     }
-//   }
-
-//   Future<void> logout() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.remove('access_token');
-//   }
-
-//   Future<ForgotPasswordModel> forgotPassword(String email) async {
-//     try {
-//       final response = await Dio().post(ApiServices.forgotPassword, data: {
-//         'email': email,
-//       });
-
-//       return ForgotPasswordModel.fromJson(response.data);
-//     } on DioException catch (e) {
-//       throw Exception(e.response?.data['message'] ?? 'Failed to send OTP');
-//     }
-//   }
-
-//   Future<VerifyModel> verifyCode({
-//     required String email,
-//     required String code,
-//     required String newPassword,
-//   }) async {
-//     try {
-//       final response = await Dio().post(ApiServices.verify, data: {
-//         'email': email,
-//         'enteredCode': code,
-//         'newPassword': newPassword,
-//       });
-
-//       return VerifyModel.fromJson(response.data);
-//     } on DioException catch (e) {
-//       if (e.response != null) {
-//         throw Exception(e.response?.data['message'] ?? 'Password reset failed');
-//       } else {
-//         throw Exception('Network error');
-//       }
-//     }
-//   }
-// }
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/api.dart';
 import 'package:eventsolutions/model/auth_model/change_password_model.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/google_model.dart';
+import 'package:eventsolutions/model/auth_model/organization_google_model.dart';
+import 'package:eventsolutions/model/auth_model/organization_register_model.dart';
 import 'package:eventsolutions/model/auth_model/user_details_model.dart';
 import 'package:eventsolutions/model/auth_model/verify_email_signup.dart';
 import 'package:eventsolutions/model/auth_model/verify_model.dart';
 import 'package:eventsolutions/model/user_update_model.dart';
-import 'package:eventsolutions/view/change_password.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eventsolutions/model/auth_model/login_model.dart';
@@ -215,6 +102,43 @@ class AuthService {
     }
   }
 
+  Future<OrganizationRegisterModel> organizationRegister(
+    String fullName,
+    String phone,
+    String email,
+    String password,
+  ) async {
+    try {
+      final response = await Dio().post(
+        ApiServices.orgRegister,
+        data: {
+          'email': email,
+          'password': password,
+          'name': fullName,
+          'phone': phone,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      debugPrint('Registration response: ${response.data}');
+      return OrganizationRegisterModel.fromJson(response.data);
+    } on DioException catch (e) {
+      debugPrint('Organization Registration DioException: ${e.response?.data}');
+      if (e.response != null) {
+        throw Exception(e.response?.data['message'] ?? 'Registration failed');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Organization Registration general error: $e');
+      throw Exception('Organization Registration failed: $e');
+    }
+  }
+
   Future<void> logout() async {
     await _tokenStorage.clearAllTokens();
     debugPrint('User logged out - all tokens cleared');
@@ -246,31 +170,6 @@ class AuthService {
       throw Exception(e.response?.data['message'] ?? 'Failed to send OTP');
     }
   }
-
-  // Future<ChangePasswordModel> changePassword(
-  //     String oldPassword, String newPassword, String confirmPassword) async {
-  //   try {
-  //     final response = await Dio().post(
-  //       ApiServices.changePassword,
-  //       data: {
-  //         'oldPassword': oldPassword,
-  //         'newPassword': newPassword,
-  //         'confirmPassword': confirmPassword,
-  //       },
-  //       options: Options(
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       ),
-  //     );
-
-  //     return ChangePasswordModel.fromJson(response.data);
-  //   } on DioException catch (e) {
-  //     debugPrint('Change password error: ${e.response?.data}');
-  //     throw Exception(
-  //         e.response?.data['message'] ?? 'Failed to change password');
-  //   }
-  // }
 
   Future<ChangePasswordModel> changePassword(
       String oldPassword, String newPassword, String confirmPassword) async {
@@ -409,32 +308,6 @@ class AuthService {
     }
   }
 
-  // Future<UpdateResponseModel> updateUserDetails(
-  //     UserUpdateModel userUpdate) async {
-  //   try {
-  //     final token = await _tokenStorage.getAccessToken();
-  //     if (token == null || token.isEmpty) {
-  //       throw Exception('No access token found');
-  //     }
-
-  //     final response = await Dio().post(ApiServices.changeDetails,
-  //         data: userUpdate.toJson(),
-  //         options: Options(headers: {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': 'Bearer $token',
-  //         }));
-  //     debugPrint("User details response: ${response.data}");
-
-  //     return UpdateResponseModel.fromJson(response.data);
-  //   } on DioException catch (e) {
-  //     if (e.response?.data != null) {
-  //       return UpdateResponseModel.fromJson(e.response!.data);
-  //     }
-  //     throw Exception('Network error: ${e.message}');
-  //   } catch (e) {
-  //     throw Exception('Unexpected error: $e');
-  //   }
-  // }
   Future<UpdateResponseModel> updateUserDetails(
       UserUpdateModel userUpdate) async {
     try {
@@ -468,45 +341,111 @@ class AuthService {
       throw Exception('Unexpected error: $e');
     }
   }
+
+  Future<GoogleData> googleSignIn({
+    required String email,
+    required String fullName,
+    required String googleId,
+  }) async {
+    try {
+      final response = await Dio().post(
+        ApiServices.googleSign,
+        data: {
+          'email': email,
+          'fullName': fullName,
+          'uid': googleId,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      final googleData = GoogleData.fromJson(response.data);
+      await saveToken(googleData.accessToken, googleData.accessToken);
+      return googleData;
+    } on DioException catch (e) {
+      debugPrint('Google sign-in error: ${e.response?.data}');
+      if (e.response != null) {
+        throw Exception(e.response?.data['message'] ?? 'Google sign-in failed');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    }
+  }
+
+  Future<OrganizationGoogleData> organizationGoogleSignIn({
+    required String email,
+    required String fullName,
+    required String googleId,
+  }) async {
+    try {
+      final response = await Dio().post(
+        ApiServices.orgGoogleSign,
+        data: {
+          'email': email,
+          'fullName': fullName,
+          'uid': googleId,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      debugPrint('Google sign-in response: ${response.data}');
+
+      final googleData = OrganizationGoogleData.fromJson(response.data);
+
+      // Save token for both access and refresh (if same)
+      await saveToken(googleData.accessToken, googleData.accessToken);
+
+      return googleData;
+    } on DioException catch (e) {
+      debugPrint('Google sign-in DioException: ${e.response?.data}');
+      if (e.response != null) {
+        throw Exception(e.response?.data['message'] ?? 'Google sign-in failed');
+      } else {
+        throw Exception('Network error: ${e.message}');
+      }
+    } catch (e) {
+      debugPrint('Google sign-in general error: $e');
+      throw Exception('Google sign-in failed: $e');
+    }
+  }
 }
 
-// Future<LoginRegisterModel> sendRegistrationOtp(
-//   String fullName,
-//   String phone,
-//   String email,
-//   String password,
-// ) async {
-//   try {
-//     final response = await Dio().post(
-//       ApiServices.register, // This should trigger OTP sending
-//       data: {
-//         'fullName': fullName,
-//         'phone': phone,
-//         'email': email,
-//         'password': password,
-//       },
-//       options: Options(
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       ),
-//     );
+  // Future<OrganizationGoogleData> organizationGoogleSignIn({
+  //   required String email,
+  //   required String fullName,
+  //   required String googleId,
+  // }) async {
+  //   try {
+  //     final response = await Dio().post(
+  //       ApiServices.orgGoogleSign,
+  //       data: {
+  //         'email': email,
+  //         'fullName': fullName,
+  //         'uid': googleId,
+  //       },
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       ),
+  //     );
 
-//     debugPrint('Registration OTP response: ${response.data}');
-//     return LoginRegisterModel.fromJson(response.data);
-//   } on DioException catch (e) {
-//     debugPrint('Registration OTP DioException: ${e.response?.data}');
-//     if (e.response != null) {
-//       // Check if this is an expected "OTP sent" response
-//       if (e.response!.statusCode == 200 || e.response!.statusCode == 201) {
-//         return LoginRegisterModel.fromJson(e.response!.data);
-//       }
-//       throw Exception(e.response?.data['message'] ?? 'Failed to send OTP');
-//     } else {
-//       throw Exception('Network error: ${e.message}');
-//     }
-//   } catch (e) {
-//     debugPrint('Registration OTP general error: $e');
-//     throw Exception('Failed to send OTP: $e');
-//   }
-// }
+  //     final googleData = OrganizationGoogleData.fromJson(response.data);
+  //     await saveToken(googleData.accessToken, googleData.accessToken);
+  //     return googleData;
+  //   } on DioException catch (e) {
+  //     debugPrint('Google sign-in error: ${e.response?.data}');
+  //     if (e.response != null) {
+  //       throw Exception(e.response?.data['message'] ?? 'Google sign-in failed');
+  //     } else {
+  //       throw Exception('Network error: ${e.message}');
+  //     }
+  //   }
+  // }

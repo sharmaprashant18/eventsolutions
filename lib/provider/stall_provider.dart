@@ -35,44 +35,36 @@ final stallByIdProvider =
   }
 });
 
-final stallBookingProvider =
-    FutureProvider.family<StallBookingModel, Map<String, dynamic>>(
-        (ref, data) async {
-  final stallService = ref.watch(stallServiceProvider);
-  try {
-    return await stallService.bookStall(
-      data['stallId']!,
-      data['businessName']!,
-      data['businessPhone']!,
-      data['businessEmail']!,
-      data['contactPersonName']!,
-      data['contactPersonPhone']!,
-      data['contactPersonEmail']!,
-      data['paymentProof']!,
-    );
-  } catch (e) {
-    log('Error booking stall: $e', name: 'StallBookingProvider');
-    throw Exception('Error booking stall: $e');
-  }
-});
+final multipleStallBookingProvider =
+    FutureProvider.family<MultipleStallBookingModel, Map<String, dynamic>>(
+  (ref, data) async {
+    final stallService = ref.watch(stallServiceProvider);
+    try {
+      return await stallService.bookStall(
+          data['stallIds'] as List<String>,
+          data['businessName']!,
+          data['businessPhone']!,
+          data['businessEmail']!,
+          data['contactPersonName']!,
+          data['contactPersonPhone']!,
+          data['contactPersonEmail']!,
+          data['paymentProof']!,
+          data['paidAmount']!,
+          data['paymentMethod']!);
+    } catch (e) {
+      log('Error booking stall: $e', name: 'StallBookingProvider');
+      throw Exception('Error booking stall: $e');
+    }
+  },
+);
 
-final stallHoldProvider =
-    FutureProvider.family<HoldstallModel, Map<String, dynamic>>(
-        (ref, data) async {
-  final stallService = ref.watch(stallServiceProvider);
-
-  try {
-    return await stallService.holdStall(
-      data['stallId']!,
-      data['businessName']!,
-      data['businessPhone']!,
-      data['businessEmail']!,
-      data['contactPersonName']!,
-      data['contactPersonEmail']!,
-      data['contactPersonPhone']!,
-    );
-  } catch (e) {
-    log('Error holding stall: $e', name: 'StallHoldProvider');
-    throw Exception('Error holding stall: $e');
-  }
+final multipleStallHoldProvider =
+    FutureProvider.family<MultipleStallHoldingModel, Map<String, dynamic>>(
+        (ref, holdingData) async {
+  return await StallsServices().holdMultipleStall(
+    holdingData['stallIds'] as List<String>,
+    holdingData['contactPersonName']!,
+    holdingData['contactPersonNumber']!,
+    holdingData['contactPersonEmail']!,
+  );
 });

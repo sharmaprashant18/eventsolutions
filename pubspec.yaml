@@ -21,6 +21,10 @@ dependencies:
   pdf: ^3.11.3
   url_launcher: ^6.3.1
   photo_view: ^0.15.0
+  google_sign_in: ^6.3.0
+  firebase_core: ^3.13.1
+  flutter_local_notifications: ^19.2.1
+  timezone: ^0.10.1
   
 dev_dependencies:
   flutter_test:

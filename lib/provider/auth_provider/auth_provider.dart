@@ -1,5 +1,7 @@
 import 'package:eventsolutions/model/auth_model/change_password_model.dart';
 import 'package:eventsolutions/model/auth_model/forgot_password_model.dart';
+import 'package:eventsolutions/model/auth_model/google_model.dart';
+import 'package:eventsolutions/model/auth_model/organization_google_model.dart';
 import 'package:eventsolutions/model/auth_model/user_details_model.dart';
 import 'package:eventsolutions/model/user_update_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +28,26 @@ final registerProvider =
   final authService = ref.read(authServiceProvider);
   return authService.register(
       data['email']!, data['password']!, data['fullName']!, data['number']!);
+});
+
+final googleSignInProvider =
+    FutureProvider.family<GoogleData, Map<String, String>>((ref, data) {
+  final authService = ref.read(authServiceProvider);
+  return authService.googleSignIn(
+    email: data['email']!,
+    fullName: data['fullName']!,
+    googleId: data['uid']!,
+  );
+});
+final organizationGoogleSignInProvider =
+    FutureProvider.family<OrganizationGoogleData, Map<String, String>>(
+        (ref, data) {
+  final authService = ref.read(authServiceProvider);
+  return authService.organizationGoogleSignIn(
+    email: data['email']!,
+    fullName: data['fullName']!,
+    googleId: data['uid']!,
+  );
 });
 
 final forgotPasswordProvider =
@@ -55,7 +77,6 @@ final userDetailsProvider = FutureProvider<UserDetailsModel>((ref) async {
   return await authService.getUserDetails();
 });
 
-// Add this StateNotifier for managing update state
 final userUpdateStateProvider =
     StateNotifierProvider<UserUpdateNotifier, AsyncValue<UpdateResponseModel?>>(
         (ref) {

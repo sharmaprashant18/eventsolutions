@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
+import 'package:eventsolutions/firebase_options.dart';
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/forgot_password.dart';
@@ -7,6 +8,7 @@ import 'package:eventsolutions/view/home_page.dart';
 import 'package:eventsolutions/view/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -352,32 +354,269 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
+                        Center(
+                          child: Text(
+                            'Continue with Google',
+                            style: TextStyle(
+                              color: Color(0xFF2D5A5A),
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
                             ),
-                            width: screenWidth * 0.7,
-                            height: screenHeight * 0.05,
-                            child: TextButton.icon(
-                              onPressed: () {},
-                              icon: Image.asset(
-                                'assets/google.png',
-                                height: screenHeight * 0.02,
-                                width: screenWidth * 0.07,
-                              ),
-                              label: Text(
-                                'Continue with Google',
-                                style: const TextStyle(
-                                  color: Color(0xFF2D5A5A),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          children: [
+                            //for normal user
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                width: screenWidth * 0.7,
+                                height: screenHeight * 0.05,
+                                child: TextButton.icon(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () async {
+                                          try {
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+
+                                            // Initialize GoogleSignIn to always show account picker
+                                            final GoogleSignIn googleSignIn =
+                                                GoogleSignIn(
+                                              clientId: DefaultFirebaseOptions
+                                                  .currentPlatform.iosClientId,
+                                              scopes: ['email', 'profile'],
+                                              forceCodeForRefreshToken: true,
+                                            );
+
+                                            // Disconnect and sign out to force account selection
+                                            await googleSignIn.disconnect();
+                                            await googleSignIn.signOut();
+
+                                            // Trigger Google Sign-In flow - this will now show account picker
+                                            final GoogleSignInAccount?
+                                                googleUser =
+                                                await googleSignIn.signIn();
+
+                                            if (googleUser == null) {
+                                              // User cancelled the sign-in
+                                              setState(() {
+                                                isLoading = false;
+                                              });
+                                              return;
+                                            }
+
+                                            // Get user data
+                                            final userEmail = googleUser.email;
+                                            final userName =
+                                                googleUser.displayName ?? '';
+                                            final userId = googleUser.id;
+
+                                            final googleSignInResult = await ref
+                                                .read(googleSignInProvider({
+                                              'email': userEmail,
+                                              'fullName': userName,
+                                              'uid': userId,
+                                            }).future);
+
+                                            // Save credentials if rememberMe is checked
+                                            if (rememberMe) {
+                                              final prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              await prefs.setString(
+                                                  'email', userEmail);
+                                              await prefs.setBool(
+                                                  'rememberMe', true);
+                                            }
+
+                                            // Refresh user details and navigate to HomePage
+                                            ref.refresh(userDetailsProvider);
+                                            if (mounted) {
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const HomePage()),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+
+                                            if (mounted) {
+                                              String errorMessage =
+                                                  e.toString();
+                                              if (errorMessage
+                                                  .startsWith('Exception: ')) {
+                                                errorMessage =
+                                                    errorMessage.replaceFirst(
+                                                        'Exception: ', '');
+                                              }
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Google Sign-In failed: $errorMessage'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                  icon: Image.asset(
+                                    'assets/google.png',
+                                    height: screenHeight * 0.02,
+                                    width: screenWidth * 0.07,
+                                  ),
+                                  label: const Text(
+                                    'As User',
+                                    style: TextStyle(
+                                      color: Color(0xFF2D5A5A),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            SizedBox(
+                              height: 10,
+                            ),
+
+                            // For Organization Google Sign-In
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                width: screenWidth * 0.7,
+                                height: screenHeight * 0.05,
+                                child: TextButton.icon(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () async {
+                                          try {
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+
+                                            // Initialize GoogleSignIn with forceCodeForRefreshToken to show account picker
+                                            final GoogleSignIn googleSignIn =
+                                                GoogleSignIn(
+                                              clientId: DefaultFirebaseOptions
+                                                  .currentPlatform.iosClientId,
+                                              scopes: ['email', 'profile'],
+                                              // Force account selection dialog
+                                              forceCodeForRefreshToken: true,
+                                            );
+
+                                            // Sign out first to ensure account picker shows
+                                            await googleSignIn.signOut();
+
+                                            // Trigger Google Sign-In flow - this will now show account picker
+                                            final GoogleSignInAccount?
+                                                googleUser =
+                                                await googleSignIn.signIn();
+
+                                            if (googleUser == null) {
+                                              // User cancelled the sign-in
+                                              setState(() {
+                                                isLoading = false;
+                                              });
+                                              return;
+                                            }
+
+                                            // Get user data
+                                            final userEmail = googleUser.email;
+                                            final userName =
+                                                googleUser.displayName ?? '';
+                                            final userId = googleUser.id;
+
+                                            final googleSignInResult =
+                                                await ref.read(
+                                                    organizationGoogleSignInProvider({
+                                              'email': userEmail,
+                                              'fullName': userName,
+                                              'uid': userId,
+                                            }).future);
+
+                                            // Save credentials if rememberMe is checked
+                                            if (rememberMe) {
+                                              final prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              await prefs.setString(
+                                                  'email', userEmail);
+                                              await prefs.setBool(
+                                                  'rememberMe', true);
+                                            }
+
+                                            // Refresh user details and navigate to HomePage
+                                            ref.refresh(userDetailsProvider);
+                                            if (mounted) {
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const HomePage()),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+
+                                            if (mounted) {
+                                              String errorMessage =
+                                                  e.toString();
+                                              if (errorMessage
+                                                  .startsWith('Exception: ')) {
+                                                errorMessage =
+                                                    errorMessage.replaceFirst(
+                                                        'Exception: ', '');
+                                              }
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Google Sign-In failed: $errorMessage'),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                  icon: Image.asset(
+                                    'assets/google.png',
+                                    height: screenHeight * 0.02,
+                                    width: screenWidth * 0.07,
+                                  ),
+                                  label: const Text(
+                                    'As Organization',
+                                    style: TextStyle(
+                                      color: Color(0xFF2D5A5A),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           height: screenHeight * 0.018,
