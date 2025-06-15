@@ -1,34 +1,49 @@
 {
   "project_info": {
-    "project_number": "752024923352",
-    "project_id": "eventsolution-561cd",
-    "storage_bucket": "eventsolution-561cd.firebasestorage.app"
+    "project_number": "372415156547",
+    "project_id": "eventsolutions-ba453",
+    "storage_bucket": "eventsolutions-ba453.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:752024923352:android:a03f604263c9d495d57bad",
+        "mobilesdk_app_id": "1:372415156547:android:1989a437294af51e669ff6",
         "android_client_info": {
-          "package_name": "com.example.eventsolutions"
+          "package_name": "com.nepatronix.eventsolutions"
         }
       },
       "oauth_client": [
         {
-          "client_id": "752024923352-rellkp4vdi5grgp7folvq4bojh41e0ns.apps.googleusercontent.com",
+          "client_id": "372415156547-m21uvd2demrc7bo0c4d0ecvp61p6akk9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nepatronix.eventsolutions",
+            "certificate_hash": "1896b8d878996acc23c5aecbfb725c9fd02f7648"
+          }
+        },
+        {
+          "client_id": "372415156547-d5ni54dj71d6g9rds6mqa2iu09fpqgla.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCUSRkMuHZkpH0_cB6wwmLGimI51SG185E"
+          "current_key": "AIzaSyCE_rbxUdZSsLPnRSrb615uJOy_pimlE7I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "752024923352-rellkp4vdi5grgp7folvq4bojh41e0ns.apps.googleusercontent.com",
+              "client_id": "372415156547-d5ni54dj71d6g9rds6mqa2iu09fpqgla.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "372415156547-1686e1r6no6vdo9mtn4gj01qcl8msgan.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.eventsolutions"
+              }
             }
           ]
         }

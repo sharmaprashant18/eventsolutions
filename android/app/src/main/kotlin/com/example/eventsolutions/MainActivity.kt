@@ -1,4 +1,4 @@
-package com.example.eventsolutions
+package com.nepatronix.eventsolutions
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'package:eventsolutions/firebase_options.dart';
+import 'package:eventsolutions/model/user_update_model.dart';
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/forgot_password.dart';
@@ -45,7 +46,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  // Modified to use try-catch for error handling
+  // Helper method to check if user needs phone number input
+  Future<bool> _shouldShowPhoneInput(String email, WidgetRef ref) async {
+    try {
+      final userDetailsAsync = await ref.refresh(userDetailsProvider.future);
+
+      // Check if user has a phone number
+      //  return userDetailsAsync.phone == null || userDetailsAsync.phone.isEmpty;
+      return userDetailsAsync.phone.isEmpty;
+    } catch (e) {
+      // If there's an error fetching user details, show phone input as fallback
+      debugPrint('Error checking user phone status: $e');
+      return true;
+    }
+  }
+
   void _loadSavedCredentials() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -96,19 +111,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           passwordController.text.trim(),
         );
 
-        // Only save credentials if login was successful
         await _saveCredentials();
 
         await Future.delayed(const Duration(milliseconds: 500));
         ref.refresh(userDetailsProvider);
-        // Check if the widget is still mounted before navigating
+
         if (!mounted) return;
         // Navigate to HomePage after successful login
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login Successful'),
-              backgroundColor: Colors.green,
+              backgroundColor: Color(0xff0a519d),
             ),
           );
         }
@@ -166,7 +180,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   Image.asset(
                     'assets/logo.png',
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
                     height: screenHeight * 0.08,
                   ),
                   SizedBox(
@@ -203,7 +218,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 10),
                             focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green)),
+                                borderSide:
+                                    BorderSide(color: Color(0xff0a519d))),
                             enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.grey)),
                             border: OutlineInputBorder(
@@ -234,7 +250,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     vertical: 12, horizontal: 10),
                                 focusedBorder: OutlineInputBorder(
                                     borderSide:
-                                        BorderSide(color: Colors.green)),
+                                        BorderSide(color: Color(0xff0a519d))),
                                 enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.grey)),
                                 border: OutlineInputBorder(
@@ -269,7 +285,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 });
                               },
                               // activeColor: const Color(0xffED5684),
-                              activeColor: Colors.green,
+                              activeColor: Color(0xff0a519d),
                             ),
                             const Text(
                               'Remember me?',
@@ -283,7 +299,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             // backgroundColor: Colors.pinkAccent,
-                            backgroundColor: Colors.green,
+                            backgroundColor: Color(0xff0a519d),
                             minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -300,7 +316,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   'LOGIN',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -380,6 +396,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 width: screenWidth * 0.7,
                                 height: screenHeight * 0.05,
                                 child: TextButton.icon(
+                                  // For normal user Google Sign-In
                                   onPressed: isLoading
                                       ? null
                                       : () async {
@@ -388,7 +405,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               isLoading = true;
                                             });
 
-                                            // Initialize GoogleSignIn to always show account picker
                                             final GoogleSignIn googleSignIn =
                                                 GoogleSignIn(
                                               clientId: DefaultFirebaseOptions
@@ -397,24 +413,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               forceCodeForRefreshToken: true,
                                             );
 
-                                            // Disconnect and sign out to force account selection
-                                            await googleSignIn.disconnect();
                                             await googleSignIn.signOut();
 
-                                            // Trigger Google Sign-In flow - this will now show account picker
                                             final GoogleSignInAccount?
                                                 googleUser =
                                                 await googleSignIn.signIn();
 
                                             if (googleUser == null) {
-                                              // User cancelled the sign-in
                                               setState(() {
                                                 isLoading = false;
                                               });
                                               return;
                                             }
 
-                                            // Get user data
                                             final userEmail = googleUser.email;
                                             final userName =
                                                 googleUser.displayName ?? '';
@@ -427,7 +438,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               'uid': userId,
                                             }).future);
 
-                                            // Save credentials if rememberMe is checked
                                             if (rememberMe) {
                                               final prefs =
                                                   await SharedPreferences
@@ -438,15 +448,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   'rememberMe', true);
                                             }
 
-                                            // Refresh user details and navigate to HomePage
-                                            ref.refresh(userDetailsProvider);
+                                            // Check if user needs to input phone number
+                                            final needsPhoneInput =
+                                                await _shouldShowPhoneInput(
+                                                    userEmail, ref);
+
                                             if (mounted) {
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
+                                              if (needsPhoneInput) {
+                                                // Navigate to phone input screen
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const HomePage()),
-                                              );
+                                                        PhoneNumberInputScreen(
+                                                      userEmail: userEmail,
+                                                      userName: userName,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                // User already has phone number, go directly to HomePage
+                                                ref.refresh(
+                                                    userDetailsProvider);
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const HomePage()),
+                                                );
+                                              }
                                             }
                                           } catch (e) {
                                             setState(() {
@@ -474,6 +504,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             }
                                           }
                                         },
+
                                   icon: Image.asset(
                                     'assets/google.png',
                                     height: screenHeight * 0.02,
@@ -505,6 +536,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 width: screenWidth * 0.7,
                                 height: screenHeight * 0.05,
                                 child: TextButton.icon(
+                                  // For organization Google Sign-In
                                   onPressed: isLoading
                                       ? null
                                       : () async {
@@ -513,33 +545,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               isLoading = true;
                                             });
 
-                                            // Initialize GoogleSignIn with forceCodeForRefreshToken to show account picker
                                             final GoogleSignIn googleSignIn =
                                                 GoogleSignIn(
                                               clientId: DefaultFirebaseOptions
                                                   .currentPlatform.iosClientId,
                                               scopes: ['email', 'profile'],
-                                              // Force account selection dialog
                                               forceCodeForRefreshToken: true,
                                             );
 
-                                            // Sign out first to ensure account picker shows
                                             await googleSignIn.signOut();
 
-                                            // Trigger Google Sign-In flow - this will now show account picker
                                             final GoogleSignInAccount?
                                                 googleUser =
                                                 await googleSignIn.signIn();
 
                                             if (googleUser == null) {
-                                              // User cancelled the sign-in
                                               setState(() {
                                                 isLoading = false;
                                               });
                                               return;
                                             }
 
-                                            // Get user data
                                             final userEmail = googleUser.email;
                                             final userName =
                                                 googleUser.displayName ?? '';
@@ -553,7 +579,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               'uid': userId,
                                             }).future);
 
-                                            // Save credentials if rememberMe is checked
                                             if (rememberMe) {
                                               final prefs =
                                                   await SharedPreferences
@@ -564,15 +589,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   'rememberMe', true);
                                             }
 
-                                            // Refresh user details and navigate to HomePage
-                                            ref.refresh(userDetailsProvider);
+                                            // Check if user needs to input phone number
+                                            final needsPhoneInput =
+                                                await _shouldShowPhoneInput(
+                                                    userEmail, ref);
+
                                             if (mounted) {
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
+                                              if (needsPhoneInput) {
+                                                // Navigate to phone input screen
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const HomePage()),
-                                              );
+                                                        PhoneNumberInputScreen(
+                                                      userEmail: userEmail,
+                                                      userName: userName,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                // User already has phone number, go directly to HomePage
+                                                ref.refresh(
+                                                    userDetailsProvider);
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const HomePage()),
+                                                );
+                                              }
                                             }
                                           } catch (e) {
                                             setState(() {
@@ -653,6 +698,298 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PhoneNumberInputScreen extends ConsumerStatefulWidget {
+  final String userEmail;
+  final String userName;
+
+  const PhoneNumberInputScreen({
+    super.key,
+    required this.userEmail,
+    required this.userName,
+  });
+
+  @override
+  ConsumerState<PhoneNumberInputScreen> createState() =>
+      _PhoneNumberInputScreenState();
+}
+
+class _PhoneNumberInputScreenState
+    extends ConsumerState<PhoneNumberInputScreen> {
+  final TextEditingController phoneController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handlePhoneUpdate() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+
+        final phoneNumber = phoneController.text.trim();
+
+        final userUpdate = UserUpdateModel(
+          name: widget.userName,
+          number: phoneNumber,
+          email: widget.userEmail,
+        );
+
+        final success = await ref
+            .read(userUpdateStateProvider.notifier)
+            .updateUser(userUpdate);
+
+        if (success) {
+          // Refresh user details after successful update
+          ref.refresh(userDetailsProvider);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully!'),
+                backgroundColor: Color(0xff0a519d),
+              ),
+            );
+
+            // Navigate to HomePage
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          }
+        } else {
+          if (mounted) {
+            final updateState = ref.read(userUpdateStateProvider);
+            String errorMessage = 'Failed to update profile';
+
+            updateState.when(
+              data: (response) {
+                if (response != null && !response.success) {
+                  errorMessage = response.message;
+                }
+              },
+              error: (error, _) => errorMessage = error.toString(),
+              loading: () {},
+            );
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error updating profile: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  void _skipPhoneInput() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    final updateState = ref.watch(userUpdateStateProvider);
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: screenHeight * 0.1,
+                right: screenWidth * 0.05,
+                left: screenWidth * 0.05,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // // Logo
+                    // Image.asset(
+                    //   'assets/logo.png',
+                    //   fit: BoxFit.contain,
+                    //   height: screenHeight * 0.08,
+                    // ),
+                    // SizedBox(height: screenHeight * 0.06),
+
+                    Text(
+                      'Welcome, ${widget.userName}!',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    Text(
+                      'Please add your phone number to complete your profile',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: screenHeight * 0.04),
+
+                    const Text(
+                      'Phone Number',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    SizedBox(height: screenHeight * 0.009),
+
+                    TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        filled: false,
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 10,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xff0a519d)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        hintText: 'Enter your phone number',
+                      ),
+                      validator: (value) {
+                        MyValidation.validateMobile(value);
+
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: screenHeight * 0.04),
+
+                    updateState.when(
+                      loading: () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff0a519d),
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        onPressed: null,
+                        child: const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      data: (_) => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff0a519d),
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        onPressed: isLoading ? null : _handlePhoneUpdate,
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'COMPLETE PROFILE',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                      error: (_, __) => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff0a519d),
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                        onPressed: isLoading ? null : _handlePhoneUpdate,
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'COMPLETE PROFILE',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Skip button
+                    TextButton(
+                      onPressed: isLoading ? null : _skipPhoneInput,
+                      child: const Text(
+                        'Skip for now',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

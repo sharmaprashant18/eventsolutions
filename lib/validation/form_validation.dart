@@ -46,18 +46,18 @@ class MyValidation {
   }
 
   // Name validation (checks if not empty)
-  static String? validateName(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your name';
-    }
+  // static String? validateName(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return 'Please enter your name';
+  //   }
 
-    String pattern = r'^[A-Za-z]+(?:\s[A-Za-z]+)?$';
-    RegExp regex = RegExp(pattern);
-    if (!regex.hasMatch(value)) {
-      return 'Please enter a valid name';
-    }
-    return null;
-  }
+  //   String pattern = r'^[A-Za-z]+(?:\s[A-Za-z]+)?$';
+  //   RegExp regex = RegExp(pattern);
+  //   if (!regex.hasMatch(value)) {
+  //     return 'Please enter a valid name';
+  //   }
+  //   return null;
+  // }
 
   // Mobile number format validation
   static String? validateMobile(String? value) {

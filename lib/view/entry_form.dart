@@ -57,15 +57,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     super.dispose();
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     ref.read(selectedTierProvider.notifier).state = null;
-  //     ref.read(entryFormImagePickerProvider.notifier).clearImage();
-  //   });
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -105,7 +96,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     final selectedImage = ref.watch(entryFormImagePickerProvider);
 
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Allow keyboard to adjust layout
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Padding(
@@ -124,11 +115,11 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                     child: Text(
                       widget.eventData.title,
                       style: const TextStyle(
-                        fontSize: 20,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
+                          fontSize: 20,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
+                          // color: Colors.red,
+                          color: Color(0xffe92429)),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -138,9 +129,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                             widget.eventData.poster!.isNotEmpty)
                         ? Image.network(
                             '$baseUrlImage${widget.eventData.poster}',
-                            height: screenHeight * 0.2,
+                            // height: screenHeight * 0.2,
                             width: double.infinity,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset('assets/event1.png');
                             },
@@ -193,13 +184,22 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           return Text(
                             'Price: $price',
                             style: const TextStyle(
-                              color: Colors.orange,
+                              // color: Colors.orange,
+                              color: Color(0xffe92429),
                               fontWeight: FontWeight.w500,
                             ),
                           );
                         },
                       ),
-                      Text(widget.eventData.location),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on,
+                              color:
+                                  //  Color(0xffF77018)
+                                  Color(0xffe92429)),
+                          Text(widget.eventData.location),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -313,7 +313,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           const Text(
                             'Features:',
                             style: TextStyle(
-                              color: Colors.orange,
+                              color: Color(0xffe92429),
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -355,7 +355,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                             const Text(
                                               '• ',
                                               style: TextStyle(
-                                                color: Colors.orange,
+                                                color: Color(0xffe92429),
                                                 fontSize: 16,
                                               ),
                                             ),
@@ -417,18 +417,24 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   SizedBox(
                     height: 20,
                   ),
-                  const Text(
-                    '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
-                    softWrap: true,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D5A5A),
+                  if (widget.eventData.ticketTiers.isNotEmpty &&
+                      widget.eventData.ticketTiers[0].price != 0)
+                    Column(
+                      children: [
+                        Text(
+                          '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
+                          softWrap: true,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2D5A5A),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        qrCode(),
+                        const SizedBox(height: 25),
+                        buildImageUploadSection(context, ref, selectedImage),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  qrCode(),
-                  const SizedBox(height: 25),
-                  buildImageUploadSection(context, ref, selectedImage),
                   Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(

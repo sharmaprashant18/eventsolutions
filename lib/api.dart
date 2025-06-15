@@ -18,8 +18,10 @@ class ApiServices {
   static String availableStalls(String eventId) =>
       '$baseUrl/stalls/event/$eventId';
   static String stallById(String stallId) => '$baseUrl/stalls/$stallId';
-  static String stallBooking = '$baseUrl/bookings';
-  static String multipleStallBooking = '$baseUrl/bookings/multiple';
-  static String holdStall = '$baseUrl/bookings/hold';
-  static String multipleStallHold = '$baseUrl/bookings/multiple/hold';
+  static const stallBooking = '$baseUrl/bookings';
+  static const multipleStallBooking = '$baseUrl/bookings/multiple';
+  static const holdStall = '$baseUrl/bookings/hold';
+  static const multipleStallHold = '$baseUrl/bookings/multiple/hold';
+  static const userBookingsDetails = '$baseUrl/bookings/user';
+  static const payAgain = '$baseUrl/payments/add';
 }

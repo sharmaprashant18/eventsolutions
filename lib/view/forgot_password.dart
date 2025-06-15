@@ -56,7 +56,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
             'Verification Code is sent to your registered email',
             style: TextStyle(fontSize: 12),
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.blue,
           behavior: SnackBarBehavior.floating,
           margin: EdgeInsets.all(10),
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -189,11 +189,24 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                           TextFormField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
+                            // decoration: const InputDecoration(
+                            //   hintText: 'Enter your email',
+                            //   contentPadding: EdgeInsets.symmetric(
+                            //       horizontal: 10, vertical: 12),
+                            //   border: OutlineInputBorder(),
+                            // ),
                             decoration: const InputDecoration(
-                              hintText: 'Enter your email',
+                              filled: false,
                               contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 12),
-                              border: OutlineInputBorder(),
+                                  vertical: 12, horizontal: 10),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0xff0a519d))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
                             ),
                             validator: MyValidation.validateEmail,
                           ),
@@ -202,7 +215,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                             onPressed: isSendingOtp ? null : sendOtp,
                             style: ElevatedButton.styleFrom(
                               // backgroundColor: Colors.pinkAccent,
-                              backgroundColor: Colors.green,
+                              backgroundColor: Color(0xff0a519d),
                               minimumSize: const Size(double.infinity, 45),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -233,10 +246,18 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                             controller: codeController,
                             keyboardType: TextInputType.text,
                             decoration: const InputDecoration(
-                              hintText: 'Enter the code sent to your email',
+                              filled: false,
                               contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 12),
-                              border: OutlineInputBorder(),
+                                  vertical: 12, horizontal: 10),
+                              hintText: 'Enter the code sent to your email',
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0xff0a519d))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -253,10 +274,18 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                             controller: passwordController,
                             obscureText: isObscure,
                             decoration: InputDecoration(
+                              filled: false,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 10),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0xff0a519d))),
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
                               hintText: 'Enter new password',
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 12),
-                              border: const OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   isObscure
@@ -279,7 +308,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
                                 isResettingPassword ? null : resetPassword,
                             style: ElevatedButton.styleFrom(
                               // backgroundColor: Colors.pinkAccent,
-                              backgroundColor: Colors.green,
+                              backgroundColor: Color(0xff0a519d),
                               minimumSize: const Size(double.infinity, 50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

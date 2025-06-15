@@ -46,6 +46,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     super.dispose();
   }
 
+  Future<bool> _shouldShowPhoneInput(String email, WidgetRef ref) async {
+    try {
+      final userDetailsAsync = await ref.refresh(userDetailsProvider.future);
+
+      // Check if user has a phone number
+      //  return userDetailsAsync.phone == null || userDetailsAsync.phone.isEmpty;
+      return userDetailsAsync.phone.isEmpty;
+    } catch (e) {
+      // If there's an error fetching user details, show phone input as fallback
+      debugPrint('Error checking user phone status: $e');
+      return true;
+    }
+  }
+
   Future<void> saveCredentials() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -224,7 +238,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: OutlineInputBorder(
@@ -259,14 +273,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
             ),
             controller: nameController,
-            validator: (value) => MyValidation.validateName(value),
+            // validator: (value) => MyValidation.validateName(value),
             enabled: !isOtpSent,
           ),
           SizedBox(height: screenHeight * 0.025),
@@ -279,7 +293,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: const OutlineInputBorder(
@@ -299,7 +313,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: const OutlineInputBorder(
@@ -320,7 +334,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: const OutlineInputBorder(
@@ -353,7 +367,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           rememberMe = value!;
                         });
                       },
-                activeColor: Colors.green,
+                activeColor: Color(0xff0a519d),
               ),
               const Text('Remember me?', style: TextStyle(fontSize: 15)),
             ],
@@ -362,7 +376,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           ElevatedButton(
             onPressed: (isLoading || isOtpSent) ? null : sendOtpForSignup,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: Color(0xff0a519d),
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -565,7 +579,100 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             width: screenWidth * 0.7,
                             height: screenHeight * 0.05,
                             child: TextButton.icon(
-                              onPressed: isLoading || isOtpSent
+                              // onPressed: isLoading || isOtpSent
+                              //     ? null
+                              //     : () async {
+                              //         try {
+                              //           setState(() {
+                              //             isLoading = true;
+                              //           });
+
+                              //           // Initialize GoogleSignIn to always show account picker
+                              //           final GoogleSignIn googleSignIn =
+                              //               GoogleSignIn(
+                              //             clientId: DefaultFirebaseOptions
+                              //                 .currentPlatform.iosClientId,
+                              //             scopes: ['email', 'profile'],
+                              //             forceCodeForRefreshToken: true,
+                              //           );
+
+                              //           // Disconnect and sign out to force account selection
+                              //           // await googleSignIn.disconnect();
+                              //           await googleSignIn.signOut();
+
+                              //           // Trigger Google Sign-In flow - this will now show account picker
+                              //           final GoogleSignInAccount? googleUser =
+                              //               await googleSignIn.signIn();
+
+                              //           if (googleUser == null) {
+                              //             // User cancelled the sign-in
+                              //             setState(() {
+                              //               isLoading = false;
+                              //             });
+                              //             return;
+                              //           }
+
+                              //           // Get user data
+                              //           final userEmail = googleUser.email;
+                              //           final userName =
+                              //               googleUser.displayName ?? '';
+                              //           final userId = googleUser.id;
+
+                              //           final googleSignInResult = await ref
+                              //               .read(googleSignInProvider({
+                              //             'email': userEmail,
+                              //             'fullName': userName,
+                              //             'uid': userId,
+                              //           }).future);
+
+                              //           // Save credentials if rememberMe is checked
+                              //           if (rememberMe) {
+                              //             final prefs = await SharedPreferences
+                              //                 .getInstance();
+                              //             await prefs.setString(
+                              //                 'email', userEmail);
+                              //             await prefs.setBool(
+                              //                 'rememberMe', true);
+                              //           }
+
+                              //           // Refresh user details and navigate to HomePage
+                              //           ref.refresh(userDetailsProvider);
+                              //           if (mounted) {
+                              //             Navigator.pushReplacement(
+                              //               context,
+                              //               MaterialPageRoute(
+                              //                   builder: (context) =>
+                              //                       const HomePage()),
+                              //             );
+                              //           }
+                              //         } catch (e) {
+                              //           setState(() {
+                              //             isLoading = false;
+                              //           });
+
+                              //           if (mounted) {
+                              //             String errorMessage = e.toString();
+                              //             if (errorMessage
+                              //                 .startsWith('Exception: ')) {
+                              //               errorMessage =
+                              //                   errorMessage.replaceFirst(
+                              //                       'Exception: ', '');
+                              //             }
+
+                              //             ScaffoldMessenger.of(context)
+                              //                 .showSnackBar(
+                              //               SnackBar(
+                              //                 content: Text(
+                              //                     'Google Sign-In failed: $errorMessage'),
+                              //                 backgroundColor: Colors.red,
+                              //               ),
+                              //             );
+                              //           }
+                              //         }
+                              //       },
+
+                              // For normal user Google Sign-In
+                              onPressed: isLoading
                                   ? null
                                   : () async {
                                       try {
@@ -573,7 +680,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                           isLoading = true;
                                         });
 
-                                        // Initialize GoogleSignIn to always show account picker
                                         final GoogleSignIn googleSignIn =
                                             GoogleSignIn(
                                           clientId: DefaultFirebaseOptions
@@ -582,23 +688,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                           forceCodeForRefreshToken: true,
                                         );
 
-                                        // Disconnect and sign out to force account selection
-                                        await googleSignIn.disconnect();
                                         await googleSignIn.signOut();
 
-                                        // Trigger Google Sign-In flow - this will now show account picker
                                         final GoogleSignInAccount? googleUser =
                                             await googleSignIn.signIn();
 
                                         if (googleUser == null) {
-                                          // User cancelled the sign-in
                                           setState(() {
                                             isLoading = false;
                                           });
                                           return;
                                         }
 
-                                        // Get user data
                                         final userEmail = googleUser.email;
                                         final userName =
                                             googleUser.displayName ?? '';
@@ -611,7 +712,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                           'uid': userId,
                                         }).future);
 
-                                        // Save credentials if rememberMe is checked
                                         if (rememberMe) {
                                           final prefs = await SharedPreferences
                                               .getInstance();
@@ -621,15 +721,34 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                               'rememberMe', true);
                                         }
 
-                                        // Refresh user details and navigate to HomePage
-                                        ref.refresh(userDetailsProvider);
+                                        // Check if user needs to input phone number
+                                        final needsPhoneInput =
+                                            await _shouldShowPhoneInput(
+                                                userEmail, ref);
+
                                         if (mounted) {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
+                                          if (needsPhoneInput) {
+                                            // Navigate to phone input screen
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const HomePage()),
-                                          );
+                                                    PhoneNumberInputScreen(
+                                                  userEmail: userEmail,
+                                                  userName: userName,
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            // User already has phone number, go directly to HomePage
+                                            ref.refresh(userDetailsProvider);
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomePage()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         setState(() {
@@ -656,6 +775,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                         }
                                       }
                                     },
+
                               icon: Image.asset(
                                 'assets/google.png',
                                 height: screenHeight * 0.02,
@@ -687,7 +807,99 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             width: screenWidth * 0.7,
                             height: screenHeight * 0.05,
                             child: TextButton.icon(
-                              onPressed: isLoading || isOtpSent
+                              // onPressed: isLoading || isOtpSent
+                              //     ? null
+                              //     : () async {
+                              //         try {
+                              //           setState(() {
+                              //             isLoading = true;
+                              //           });
+
+                              //           // Initialize GoogleSignIn with forceCodeForRefreshToken to show account picker
+                              //           final GoogleSignIn googleSignIn =
+                              //               GoogleSignIn(
+                              //             clientId: DefaultFirebaseOptions
+                              //                 .currentPlatform.iosClientId,
+                              //             scopes: ['email', 'profile'],
+                              //             // Force account selection dialog
+                              //             forceCodeForRefreshToken: true,
+                              //           );
+
+                              //           // Sign out first to ensure account picker shows
+                              //           await googleSignIn.signOut();
+
+                              //           // Trigger Google Sign-In flow - this will now show account picker
+                              //           final GoogleSignInAccount? googleUser =
+                              //               await googleSignIn.signIn();
+
+                              //           if (googleUser == null) {
+                              //             // User cancelled the sign-in
+                              //             setState(() {
+                              //               isLoading = false;
+                              //             });
+                              //             return;
+                              //           }
+
+                              //           // Get user data
+                              //           final userEmail = googleUser.email;
+                              //           final userName =
+                              //               googleUser.displayName ?? '';
+                              //           final userId = googleUser.id;
+
+                              //           final googleSignInResult = await ref.read(
+                              //               organizationGoogleSignInProvider({
+                              //             'email': userEmail,
+                              //             'fullName': userName,
+                              //             'uid': userId,
+                              //           }).future);
+
+                              //           // Save credentials if rememberMe is checked
+                              //           if (rememberMe) {
+                              //             final prefs = await SharedPreferences
+                              //                 .getInstance();
+                              //             await prefs.setString(
+                              //                 'email', userEmail);
+                              //             await prefs.setBool(
+                              //                 'rememberMe', true);
+                              //           }
+
+                              //           // Refresh user details and navigate to HomePage
+                              //           ref.refresh(userDetailsProvider);
+                              //           if (mounted) {
+                              //             Navigator.pushReplacement(
+                              //               context,
+                              //               MaterialPageRoute(
+                              //                   builder: (context) =>
+                              //                       const HomePage()),
+                              //             );
+                              //           }
+                              //         } catch (e) {
+                              //           setState(() {
+                              //             isLoading = false;
+                              //           });
+
+                              //           if (mounted) {
+                              //             String errorMessage = e.toString();
+                              //             if (errorMessage
+                              //                 .startsWith('Exception: ')) {
+                              //               errorMessage =
+                              //                   errorMessage.replaceFirst(
+                              //                       'Exception: ', '');
+                              //             }
+
+                              //             ScaffoldMessenger.of(context)
+                              //                 .showSnackBar(
+                              //               SnackBar(
+                              //                 content: Text(
+                              //                     'Google Sign-In failed: $errorMessage'),
+                              //                 backgroundColor: Colors.red,
+                              //               ),
+                              //             );
+                              //           }
+                              //         }
+                              //       },
+                              // For organization Google Sign-In
+                              onPressed: isLoading
                                   ? null
                                   : () async {
                                       try {
@@ -695,32 +907,26 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                           isLoading = true;
                                         });
 
-                                        // Initialize GoogleSignIn with forceCodeForRefreshToken to show account picker
                                         final GoogleSignIn googleSignIn =
                                             GoogleSignIn(
                                           clientId: DefaultFirebaseOptions
                                               .currentPlatform.iosClientId,
                                           scopes: ['email', 'profile'],
-                                          // Force account selection dialog
                                           forceCodeForRefreshToken: true,
                                         );
 
-                                        // Sign out first to ensure account picker shows
                                         await googleSignIn.signOut();
 
-                                        // Trigger Google Sign-In flow - this will now show account picker
                                         final GoogleSignInAccount? googleUser =
                                             await googleSignIn.signIn();
 
                                         if (googleUser == null) {
-                                          // User cancelled the sign-in
                                           setState(() {
                                             isLoading = false;
                                           });
                                           return;
                                         }
 
-                                        // Get user data
                                         final userEmail = googleUser.email;
                                         final userName =
                                             googleUser.displayName ?? '';
@@ -733,7 +939,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                           'uid': userId,
                                         }).future);
 
-                                        // Save credentials if rememberMe is checked
                                         if (rememberMe) {
                                           final prefs = await SharedPreferences
                                               .getInstance();
@@ -743,15 +948,34 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                               'rememberMe', true);
                                         }
 
-                                        // Refresh user details and navigate to HomePage
-                                        ref.refresh(userDetailsProvider);
+                                        // Check if user needs to input phone number
+                                        final needsPhoneInput =
+                                            await _shouldShowPhoneInput(
+                                                userEmail, ref);
+
                                         if (mounted) {
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
+                                          if (needsPhoneInput) {
+                                            // Navigate to phone input screen
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const HomePage()),
-                                          );
+                                                    PhoneNumberInputScreen(
+                                                  userEmail: userEmail,
+                                                  userName: userName,
+                                                ),
+                                              ),
+                                            );
+                                          } else {
+                                            // User already has phone number, go directly to HomePage
+                                            ref.refresh(userDetailsProvider);
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const HomePage()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         setState(() {

@@ -79,3 +79,29 @@ class StallBokingNotifier extends StateNotifier<XFile?> {
     state = null;
   }
 }
+
+// Provider for Payagain
+final payAgainImageProvider =
+    StateNotifierProvider<PayAgainNotifier, XFile?>((ref) {
+  return PayAgainNotifier();
+});
+
+class PayAgainNotifier extends StateNotifier<XFile?> {
+  PayAgainNotifier() : super(null);
+
+  Future<void> fromCamera() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    state = pickedFile;
+  }
+
+  Future<void> fromGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    state = pickedFile;
+  }
+
+  void clearImage() {
+    state = null;
+  }
+}

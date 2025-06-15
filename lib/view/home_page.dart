@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
 import 'package:eventsolutions/view/contact_us_page.dart';
+import 'package:eventsolutions/view/my_bookings.dart';
 import 'package:eventsolutions/view/our_service_page.dart';
 import 'package:eventsolutions/view/profile.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
@@ -32,7 +34,8 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(
+        length: 3, vsync: this, animationDuration: Duration(milliseconds: 250));
   }
 
   @override
@@ -46,7 +49,6 @@ class _HomePageState extends ConsumerState<HomePage>
   void _handleBackPress(bool didPop, dynamic result) {
     if (didPop) return;
 
-    // If searching, exit search mode first
     if (isSearching) {
       setState(() {
         isSearching = false;
@@ -57,10 +59,13 @@ class _HomePageState extends ConsumerState<HomePage>
     }
 
     if (tabController.index == 2) {
-      tabController.animateTo(1);
+      // tabController.animateTo(1);
+      tabController.animateTo(1, duration: const Duration(milliseconds: 500));
       return;
     } else if (tabController.index == 1) {
-      tabController.animateTo(0);
+      // tabController.animateTo(0);
+
+      tabController.animateTo(0, duration: const Duration(milliseconds: 500));
       return;
     } else if (tabController.index == 0) {
       final now = DateTime.now();
@@ -114,6 +119,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
+    final user = ref.watch(userDetailsProvider);
 
     return PopScope(
       canPop: _canPop,
@@ -152,11 +158,23 @@ class _HomePageState extends ConsumerState<HomePage>
                   ' Profile',
                   Icons.account_circle,
                 ),
-                _drawer(
-                  context,
-                  7,
-                  ' My Ticket',
-                  Icons.local_activity,
+                user.when(
+                  data: (data) {
+                    if (data.role == 'user') {
+                      return _drawer(
+                        context,
+                        7,
+                        ' My Ticket',
+                        Icons.local_activity,
+                      );
+                    } else if (data.role == 'organization') {
+                      return _drawer(
+                          context, 7, 'My Booking', Icons.book_online_sharp);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                  loading: () => SizedBox.shrink(),
+                  error: (error, stackTrace) => SizedBox.shrink(),
                 ),
                 _drawer(
                   context,
@@ -164,12 +182,6 @@ class _HomePageState extends ConsumerState<HomePage>
                   'Our Services',
                   Icons.miscellaneous_services_rounded,
                 ),
-                // _drawer(
-                //   context,
-                //   5,
-                //   'Stall',
-                //   Icons.festival_rounded,
-                // ),
                 _drawer(
                   context,
                   0,
@@ -430,10 +442,28 @@ class _HomePageState extends ConsumerState<HomePage>
                 break;
               case 7:
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TicketQr(ticketId: null)));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => TicketQr(ticketId: null)));
+                final userData = ref.read(userDetailsProvider).value;
+                if (userData != null) {
+                  if (userData.role == 'user') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TicketQr(ticketId: null)));
+                  } else if (userData.role == 'organization') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UserBookingDetailsScreen()));
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('User data not available')),
+                  );
+                }
                 break;
               case 8:
                 Navigator.pop(context);
@@ -448,7 +478,7 @@ class _HomePageState extends ConsumerState<HomePage>
               Icon(
                 icon,
                 size: 25,
-                color: Colors.green,
+                color: Color(0xff0a519d),
               ),
               Text(
                 title,

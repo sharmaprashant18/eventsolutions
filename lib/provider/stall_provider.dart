@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:eventsolutions/model/stall/hold_stall_model.dart';
 import 'package:eventsolutions/model/stall/one_stall_model.dart';
+import 'package:eventsolutions/model/stall/pay_again_model.dart';
 import 'package:eventsolutions/model/stall/stall_booking_model.dart';
 import 'package:eventsolutions/model/stall/stall_model.dart';
+import 'package:eventsolutions/model/stall/user_booking_details_model.dart';
 import 'package:eventsolutions/services/stalls_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,6 +22,19 @@ final stallProvider =
   } catch (e) {
     log('Error fetching stalls: $e', name: 'StallProvider');
     throw Exception('Error fetching stalls: $e');
+  }
+});
+
+// Provider to fetch the user booking details
+final userBookingdetailsProvider =
+    FutureProvider<List<UserBookingDetailsModel>>((ref) async {
+  final stallService = ref.watch(stallServiceProvider);
+  try {
+    return await stallService.fetchUserBooking();
+  } catch (e) {
+    log('Error fetching user booking details: $e',
+        name: 'UserBookingDetailsProvider');
+    throw Exception('Error fetching user booking details: $e');
   }
 });
 
@@ -66,5 +81,16 @@ final multipleStallHoldProvider =
     holdingData['contactPersonName']!,
     holdingData['contactPersonNumber']!,
     holdingData['contactPersonEmail']!,
+  );
+});
+
+final payAgainProvider =
+    FutureProvider.family<PayAgainModel, Map<String, dynamic>>(
+        (ref, payingData) async {
+  return await StallsServices().payagain(
+    payingData['bookingId'],
+    payingData['paidAmount']!,
+    payingData['paymentMethod']!,
+    payingData['paymentProof']!,
   );
 });
