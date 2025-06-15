@@ -19,7 +19,7 @@ class ApiServices {
       '$baseUrl/stalls/event/$eventId';
   static String stallById(String stallId) => '$baseUrl/stalls/$stallId';
   static const stallBooking = '$baseUrl/bookings';
-  static const multipleStallBooking = '$baseUrl/bookings/multiple';
+  // static const multipleStallBooking = '$baseUrl/bookings/multiple';
   static const holdStall = '$baseUrl/bookings/hold';
   static const multipleStallHold = '$baseUrl/bookings/multiple/hold';
   static const userBookingsDetails = '$baseUrl/bookings/user';

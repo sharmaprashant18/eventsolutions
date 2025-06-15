@@ -1252,7 +1252,7 @@ class _StallPageState extends ConsumerState<StallPage> {
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     final stalls = ref.watch(stallProvider(widget.eventId));
-    const baseUrlImage = 'http://182.93.94.210:8000';
+    const baseUrlImage = 'http://182.93.94.210:8001';
 
     return Scaffold(
       appBar: AppBar(
@@ -1313,7 +1313,7 @@ class _StallPageState extends ConsumerState<StallPage> {
                                       Image.asset('assets/error.png',
                                           fit: BoxFit.cover),
                                       const Text(
-                                        'No Image Found',
+                                        'No Images Found',
                                         style: TextStyle(
                                           color: Colors.red,
                                           fontSize: 16,

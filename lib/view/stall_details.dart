@@ -61,9 +61,14 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
     super.dispose();
   }
 
+  // double calculateTotalPrice(List<dynamic> stalls) {
+  //   return stalls.fold<double>(
+  //       0, (sum, stall) => sum + (stall.price * stall.sizeInSqFt * 1.13));
+  // }
   double calculateTotalPrice(List<dynamic> stalls) {
-    return stalls.fold<double>(
+    double sum = stalls.fold<double>(
         0, (sum, stall) => sum + (stall.price * stall.sizeInSqFt * 1.13));
+    return double.parse(sum.toStringAsFixed(2)); // Rounds to 2 decimal places
   }
 
   @override
@@ -137,12 +142,13 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
                     infoRow('Size', stall.size),
                     infoRow('Size in SqFt', '${stall.sizeInSqFt}'),
                     infoRow('Type', stall.stallTypeName),
-                    infoRow('Price per sqft',
-                        'Rs ${stall.price.toStringAsFixed(2)}'),
+                    infoRow('Price per sqft', 'Rs ${stall.price}'),
                     infoRow(
                       'Total Price with VAT',
-                      'Rs ${(stall.price * stall.sizeInSqFt * 1.13).toStringAsFixed(2)}',
+                      'Rs ${(stall.price * stall.sizeInSqFt * 1.13)}',
                     ),
+                    infoRow(
+                        'Extra Charge', (stall.upchargeInPercent.toString())),
                     infoRow(
                       'Status',
                       stall.status[0].toUpperCase() + stall.status.substring(1),
@@ -707,9 +713,10 @@ class _StallDetailsState extends ConsumerState<StallDetails> {
           maxLines: maxLines,
           readOnly: readOnly,
           enabled: enabled,
-          // Add input formatting for payment amount
+
           inputFormatters: label == 'Paying Amount'
               ? [
+                  // FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                 ]
               : null,

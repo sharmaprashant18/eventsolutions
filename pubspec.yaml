@@ -27,6 +27,7 @@ dependencies:
   timezone: ^0.10.1
   permission_handler: ^12.0.0+1
   flutter_native_splash: ^2.4.4
+  shimmer: ^3.0.0
 flutter_native_splash:
   color: "#F3F3F3"
   image: assets/splash_logo.png

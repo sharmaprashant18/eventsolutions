@@ -42,7 +42,7 @@ class _UpcomingEventsState extends ConsumerState<UpcomingEvents> {
   Widget build(BuildContext context) {
     final upcomingEvents = ref.watch(upcomingEventProvider);
     final userDetails = ref.watch(userDetailsProvider); // Fetch user details
-    final baseUrlImage = 'http://182.93.94.210:8000';
+    final baseUrlImage = 'http://182.93.94.210:8001';
 
     return Container(
       color: const Color(0xffF4F4F4),
@@ -71,7 +71,10 @@ class _UpcomingEventsState extends ConsumerState<UpcomingEvents> {
               final upcomingevent = filteredEvents[index];
               return ongoingEvents(
                 context,
-                '$baseUrlImage${upcomingevent.poster}',
+                // '$baseUrlImage${upcomingevent.poster}',
+                upcomingevent.poster != null && upcomingevent.poster!.isNotEmpty
+                    ? '$baseUrlImage${upcomingevent.poster}'
+                    : 'assets/error.png',
                 upcomingevent.title,
                 '${formatDateManually(DateTime.parse(upcomingevent.startDate))}-${formatDateManually(DateTime.parse(upcomingevent.endDate))}',
                 upcomingevent.location,
@@ -125,6 +128,21 @@ class _UpcomingEventsState extends ConsumerState<UpcomingEvents> {
                     width: 72,
                     height: 72,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/error.png',
+                        width: 72,
+                        height: 72,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
                 ),
                 userDetails.when(

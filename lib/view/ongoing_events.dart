@@ -150,27 +150,21 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
                       children: [
                         // Event Image
                         ClipRRect(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(15)),
-                          child: (events.poster != null &&
-                                  events.poster!.isNotEmpty)
-                              ? Image.network(
-                                  '$baseUrlImage${events.poster}',
-                                  // height: screenHeight * 0.2,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image.asset('assets/event1.png');
-                                  },
-                                )
-                              : Image.asset(
-                                  'assets/event1.png',
-                                  height: screenHeight * 0.2,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(15),
+                                topRight: Radius.circular(15)),
+                            child: (events.poster != null &&
+                                    events.poster!.isNotEmpty)
+                                ? Image.network(
+                                    '$baseUrlImage${events.poster}',
+                                    // height: screenHeight * 0.2,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset('assets/event1.png');
+                                    },
+                                  )
+                                : Center(child: CircularProgressIndicator())),
                         // Content
                         Padding(
                           padding: const EdgeInsets.all(8.0),

@@ -125,7 +125,7 @@ class StallsServices {
       });
       final token = await TokenStorage().getAccessToken();
       final response = await dio.post(
-        ApiServices.stallBooking, // Ensure API supports multiple stallIds
+        ApiServices.stallBooking,
         data: formData,
         options: Options(
           contentType: 'multipart/form-data',
