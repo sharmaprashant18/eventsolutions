@@ -17,7 +17,7 @@ class OngoingEvents extends ConsumerStatefulWidget {
 }
 
 class _UpcomingPageState extends ConsumerState<OngoingEvents> {
-  final baseUrlImage = 'http://182.93.94.210:8000';
+  final baseUrlImage = 'http://182.93.94.210:8001';
 
   String formatDateManually(DateTime dateTime,
       {bool includeYear = false, bool yearOnly = false}) {

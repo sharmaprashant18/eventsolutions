@@ -6,6 +6,7 @@ import 'package:eventsolutions/view/contact_us_page.dart';
 import 'package:eventsolutions/view/my_bookings.dart';
 import 'package:eventsolutions/view/our_service_page.dart';
 import 'package:eventsolutions/view/profile.dart';
+import 'package:eventsolutions/view/scan_qr.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
 import 'package:eventsolutions/view/ongoing_events.dart';
 import 'package:eventsolutions/view/faq.dart';
@@ -64,7 +65,6 @@ class _HomePageState extends ConsumerState<HomePage>
       return;
     } else if (tabController.index == 1) {
       // tabController.animateTo(0);
-
       tabController.animateTo(0, duration: const Duration(milliseconds: 500));
       return;
     } else if (tabController.index == 0) {
@@ -170,6 +170,13 @@ class _HomePageState extends ConsumerState<HomePage>
                     } else if (data.role == 'organization') {
                       return _drawer(
                           context, 7, 'My Booking', Icons.book_online_sharp);
+                    } else if (data.role == 'employee') {
+                      return _drawer(
+                        context,
+                        7,
+                        'Scan Qr',
+                        Icons.qr_code_scanner,
+                      );
                     }
                     return const SizedBox.shrink();
                   },
@@ -458,6 +465,9 @@ class _HomePageState extends ConsumerState<HomePage>
                         context,
                         MaterialPageRoute(
                             builder: (context) => UserBookingDetailsScreen()));
+                  } else if (userData.role == 'employee') {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ScanQr()));
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

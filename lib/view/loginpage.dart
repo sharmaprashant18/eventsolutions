@@ -7,6 +7,7 @@ import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/forgot_password.dart';
 import 'package:eventsolutions/view/home_page.dart';
 import 'package:eventsolutions/view/signup_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -119,12 +120,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         if (!mounted) return;
         // Navigate to HomePage after successful login
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login Successful'),
-              backgroundColor: Color(0xff0a519d),
-            ),
-          );
+          if (kDebugMode) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Login Successful'),
+                backgroundColor: Color(0xff0a519d),
+              ),
+            );
+          }
         }
 
         if (mounted) {

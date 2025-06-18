@@ -23,7 +23,7 @@ class AboutUsPage extends ConsumerWidget {
             'About the Company',
             style: TextStyle(
                 fontSize: 20,
-                color: Colors.red,
+                color: Color(0xffe92429),
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.5,
                 wordSpacing: 2),
@@ -62,7 +62,7 @@ Our team believes in working as a team to achieve the greatest outcomes, and the
                         'Our Approach',
                         style: TextStyle(
                             fontSize: 22,
-                            color: Colors.red,
+                            color: Color(0xffe92429),
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.5,
                             wordSpacing: 2),
@@ -97,7 +97,9 @@ Our team believes in working as a team to achieve the greatest outcomes, and the
     return Container(
       decoration: BoxDecoration(
           // color: Colors.blueGrey,
-          color: Colors.green[700],
+          // color: Colors.green[700],
+
+          color: Color(0xff0a519d),
           borderRadius: BorderRadius.only(
               // topLeft: Radius.circular(15),
               topLeft: Radius.circular(5),

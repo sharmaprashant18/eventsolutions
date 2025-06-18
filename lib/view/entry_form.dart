@@ -92,7 +92,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
-    final baseUrlImage = 'http://182.93.94.210:8000';
+    final baseUrlImage = 'http://182.93.94.210:8001';
     final selectedImage = ref.watch(entryFormImagePickerProvider);
 
     return Scaffold(

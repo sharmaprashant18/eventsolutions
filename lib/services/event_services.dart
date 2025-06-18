@@ -135,7 +135,7 @@ class EventServices {
       });
       final token = await TokenStorage().getAccessToken();
       final response = await Dio().post(
-        'http://182.93.94.210:8000/api/v1/register-tickets',
+        'http://182.93.94.210:8001/api/v1/register-tickets',
         data: formData,
         options: Options(
             contentType: 'multipart/form-data',
@@ -165,7 +165,7 @@ class EventServices {
     final token = await TokenStorage().getAccessToken();
 
     final response = await Dio().get(
-      'http://182.93.94.210:8000/api/v1/tickets/$ticketId',
+      'http://182.93.94.210:8001/api/v1/tickets/$ticketId',
       options: Options(headers: {'Authorization': "Bearer $token"}),
     );
 

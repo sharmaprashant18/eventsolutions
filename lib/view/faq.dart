@@ -52,7 +52,8 @@ class FaqPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Card(
-        color: const Color.fromARGB(255, 188, 248, 219),
+        // color: const Color.fromARGB(255, 188, 248, 219),
+        color: Color(0xff0a519d),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16),
@@ -68,12 +69,15 @@ class FaqPage extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: Container(
-              color: const Color.fromARGB(255, 188, 248, 219),
+              // color: const Color.fromARGB(255, 188, 248, 219),
+              color: Color(0xff0a519d),
+
               child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(horizontal: 16),
                 title: Text(
                   question,
-                  style: TextStyle(fontWeight: FontWeight.w500, color: color),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500, color: Colors.white),
                 ),
                 children: [
                   Container(

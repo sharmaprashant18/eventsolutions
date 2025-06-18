@@ -8,6 +8,7 @@ import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 import 'package:eventsolutions/view/change_password.dart';
 import 'package:eventsolutions/view/loginpage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -154,13 +155,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             (Route<dynamic> route) => false,
           );
         } else {
-          // Show success and stay on page
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile updated successfully.'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          if (kDebugMode) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully.'),
+                backgroundColor: Color(0xff0a519d),
+              ),
+            );
+          }
         }
       } else {
         final updateState = ref.read(userUpdateStateProvider);
@@ -219,7 +221,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               _isEditing = false;
                             });
                           },
-                          child: const Text('Cancel'),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Color(0xff0a519d)),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         updateState.when(
@@ -231,7 +236,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           data: (_) => ElevatedButton(
                             onPressed: _saveChanges,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: Color(0xff0a519d),
                             ),
                             child: const Text('Save',
                                 style: TextStyle(color: Colors.white)),
@@ -239,7 +244,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           error: (_, __) => ElevatedButton(
                             onPressed: _saveChanges,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: Color(0xff0a519d),
                             ),
                             child: const Text('Save',
                                 style: TextStyle(color: Colors.white)),
@@ -339,7 +344,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Center(
                     child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: Color(0xff0a519d),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -424,7 +429,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               return null;
             },
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: Colors.green, size: 19),
+              prefixIcon: Icon(icon, color: Color(0xff0a519d), size: 19),
               labelText: title,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -457,7 +462,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 children: [
                   Icon(
                     icon,
-                    color: Colors.green,
+                    color: Color(0xff0a519d),
                     size: 19,
                   ),
                   const SizedBox(width: 15),

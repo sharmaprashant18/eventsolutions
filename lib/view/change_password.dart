@@ -44,7 +44,7 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Password Changed Successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: Color(0xff0a519d),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
         ),
@@ -195,7 +195,7 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
                 child: ElevatedButton(
                   onPressed: isResettingPassword ? null : passwordChange,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color(0xff0a519d),
                     minimumSize: const Size(0, 50),
                   ),
                   child: isResettingPassword

@@ -169,7 +169,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                                 onPressed: _submitForm,
                                 style: ElevatedButton.styleFrom(
                                   // backgroundColor: Colors.black,
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Color(0xff0a519d),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 16),
                                   shape: RoundedRectangleBorder(
@@ -200,7 +200,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                         children: [
                           Icon(
                             Icons.place,
-                            color: Colors.green,
+                            color: Color(0xff0a519d),
                           ),
                           SizedBox(width: 8),
                           InkWell(
@@ -223,7 +223,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                         children: [
                           Icon(
                             Icons.phone,
-                            color: Colors.green,
+                            color: Color(0xff0a519d),
                           ),
                           SizedBox(width: 8),
                           Row(
@@ -272,7 +272,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                         children: [
                           Icon(
                             Icons.email,
-                            color: Colors.green,
+                            color: Color(0xff0a519d),
                           ),
                           SizedBox(width: 8),
                           InkWell(

@@ -48,7 +48,7 @@ class _TicketQrState extends ConsumerState<TicketQr> {
   Future<void> _savePdfFile(BuildContext context, TicketData ticket) async {
     try {
       final pdf = pw.Document();
-      final baseUrl = 'http://182.93.94.210:8000';
+      final baseUrl = 'http://182.93.94.210:8001';
 
       Uint8List? qrImageBytes;
       if (ticket.qr != null) {
@@ -282,7 +282,7 @@ class _TicketQrState extends ConsumerState<TicketQr> {
         }
 
         final tickets = snapshot.data!;
-        final baseUrl = 'http://182.93.94.210:8000';
+        final baseUrl = 'http://182.93.94.210:8001';
 
         return Scaffold(
           appBar: AppBar(

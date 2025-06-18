@@ -120,22 +120,22 @@ class ServicePage extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(vertical: 13),
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    Color(0xFF00D4AA),
-                                    Color(0xFF00C4B4),
-                                  ],
-                                ),
+                                // gradient: const LinearGradient(
+                                //   begin: Alignment.centerLeft,
+                                //   end: Alignment.centerRight,
+                                //   colors: [
+                                //     Color(0xFF00D4AA),
+                                //     Color(0xFF00C4B4),
+                                //   ],
+                                // ),
+                                color: Color(0xff0a519d),
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(20),
                                   topRight: Radius.circular(20),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        const Color(0xFF00E5A0).withAlpha(30),
+                                    color: Color(0xff0a519d).withAlpha(30),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
