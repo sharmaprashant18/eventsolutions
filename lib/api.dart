@@ -24,4 +24,6 @@ class ApiServices {
   static const multipleStallHold = '$baseUrl/bookings/multiple/hold';
   static const userBookingsDetails = '$baseUrl/bookings/user';
   static const payAgain = '$baseUrl/payments/add';
+  static String featuresByTicketId(String ticketId) =>
+      '$baseUrl/tickets/info/$ticketId';
 }

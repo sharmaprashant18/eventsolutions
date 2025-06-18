@@ -2,6 +2,7 @@
 import 'package:eventsolutions/model/events/all_events_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
+import 'package:eventsolutions/model/events/ticket_features_model.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/services/event_services.dart';
 import 'package:flutter/material.dart';
@@ -63,4 +64,11 @@ final registerEventProvider =
     data['paymentScreenshot']!,
     data['eventId']!,
   );
+});
+
+final ticketfeaturesProvider =
+    FutureProvider.family<List<TicketFeaturesModel>, String>(
+        (ref, ticketId) async {
+  final featureservice = ref.watch(eventServiceProvider);
+  return await featureservice.getTicketFeaturesByTicketId(ticketId);
 });

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/api.dart';
@@ -5,6 +6,7 @@ import 'package:eventsolutions/model/events/all_events_model.dart';
 import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
+import 'package:eventsolutions/model/events/ticket_features_model.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/model/our_services_model.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
@@ -189,6 +191,33 @@ class EventServices {
       } else {
         throw Exception('Network error');
       }
+    }
+  }
+
+  Future<List<TicketFeaturesModel>> getTicketFeaturesByTicketId(
+      String ticketId) async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.get(
+        ApiServices.featuresByTicketId(ticketId),
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['data'];
+        final List<TicketFeaturesModel> featuresofTicket =
+            data.map((e) => TicketFeaturesModel.fromJson(e)).toList();
+        return featuresofTicket;
+      } else {
+        throw Exception('Error getting the features');
+      }
+    } on DioException catch (e) {
+      log('$e');
+      throw Exception('Error getting the features');
+    } catch (e) {
+      log('$e');
+      throw Exception('Error getting the features');
     }
   }
 }
