@@ -26,4 +26,9 @@ class ApiServices {
   static const payAgain = '$baseUrl/payments/add';
   static String featuresByTicketId(String ticketId) =>
       '$baseUrl/tickets/info/$ticketId';
+  static String reedemFeaturesByTicketId(String ticketId) =>
+      '$baseUrl/tickets/$ticketId';
+
+  static const otherEvents = '$baseUrl/other-events';
+  static const ourTeam = '$baseUrl/our-team';
 }

@@ -2,8 +2,11 @@
 import 'package:eventsolutions/model/events/all_events_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
+import 'package:eventsolutions/model/events/other_events_model.dart';
+import 'package:eventsolutions/model/events/reedem_ticket_features_model.dart';
 import 'package:eventsolutions/model/events/ticket_features_model.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
+import 'package:eventsolutions/model/our_team_model.dart';
 import 'package:eventsolutions/services/event_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,4 +74,22 @@ final ticketfeaturesProvider =
         (ref, ticketId) async {
   final featureservice = ref.watch(eventServiceProvider);
   return await featureservice.getTicketFeaturesByTicketId(ticketId);
+});
+
+final reedemTicketfeaturesProvider = FutureProvider.family<
+    List<RedeemTicketFeaturesModel>,
+    ({String ticketId, String featureName})>((ref, params) async {
+  final reedemTicketFeaturesService = ref.watch(eventServiceProvider);
+  return await reedemTicketFeaturesService.redeemTicketFeaturesByTicketId(
+      params.ticketId, params.featureName);
+});
+
+final otherEventsProvider = FutureProvider<List<OtherEventsModel>>((ref) async {
+  final otherEventsService = ref.watch(eventServiceProvider);
+  return otherEventsService.fetchOtherEvents();
+});
+
+final teamProvider = FutureProvider<List<OurTeamModel>>((ref) async {
+  final teamMemberService = ref.watch(eventServiceProvider);
+  return teamMemberService.fetchOurTeam();
 });

@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:developer';
+
 import 'package:eventsolutions/provider/contact_us_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:flutter/material.dart';
@@ -292,8 +294,61 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                                 color: Color(0xFF2D5A5A),
                               ),
                             ),
-                          )
+                          ),
                         ],
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.02,
+                      ),
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                launchUrl(Uri.parse(
+                                    "https://www.facebook.com/share/1F5m4WH47V/"));
+                                log("Facebook link tapped");
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Color(0xff0a519d).withAlpha(25),
+                                    )),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/facebook.png',
+                                    width: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                launchUrl(Uri.parse(
+                                    "https://www.instagram.com/eventsolutionnepal?igsh=MWJ5dDVlYmtzejB6dA=="));
+                                log("Instagram link tapped");
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Color(0xff0a519d).withAlpha(25),
+                                    )),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/insta.png',
+                                    width: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   )

@@ -462,7 +462,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           ElevatedButton(
             onPressed: isVerifyingOtp ? null : verifyOtpAndCompleteSignup,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              // backgroundColor: Colors.green,
+              backgroundColor: Color(0xff0a519d),
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -497,7 +498,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             child: const Text(
               'Back to edit details',
               style: TextStyle(
-                  color: Colors.green, decoration: TextDecoration.underline),
+                  color: Color(0xff0a519d),
+                  decoration: TextDecoration.underline),
             ),
           ),
         ],

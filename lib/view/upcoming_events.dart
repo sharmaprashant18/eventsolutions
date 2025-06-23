@@ -48,6 +48,14 @@ class _UpcomingEventsState extends ConsumerState<UpcomingEvents> {
       color: const Color(0xffF4F4F4),
       child: upcomingEvents.when(
         data: (upcomingevents) {
+          if (upcomingevents.isEmpty) {
+            return const Center(
+              child: Text(
+                'No events available',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            );
+          }
           final filteredEvents = upcomingevents
               .where((event) =>
                   event.title

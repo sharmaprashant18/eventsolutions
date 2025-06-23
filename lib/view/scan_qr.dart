@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'package:eventsolutions/view/scanned_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -16,8 +17,6 @@ class ScanQr extends ConsumerStatefulWidget {
 
 class _ScanQrState extends ConsumerState<ScanQr> {
   MobileScannerController? controller;
-  String? scannedCode;
-  dynamic parsedJson;
   bool isScanning = false;
   bool isFlashOn = false;
   bool frontCamera = false;
@@ -37,6 +36,7 @@ class _ScanQrState extends ConsumerState<ScanQr> {
       formats: [BarcodeFormat.all],
       returnImage: false,
     );
+    log('Scanner initialized successfully');
   }
 
   @override
@@ -47,33 +47,49 @@ class _ScanQrState extends ConsumerState<ScanQr> {
 
   void _onDetect(BarcodeCapture capture) {
     if (_isDialogShowing || isScanning) return;
+    log('Qr code is detected');
 
     final List<Barcode> barcodes = capture.barcodes;
     if (barcodes.isNotEmpty) {
       setState(() {
         isScanning = true;
-        scannedCode = barcodes.first.displayValue ?? 'No data';
       });
 
       try {
-        parsedJson = jsonDecode(scannedCode!);
+        final scannedCode = barcodes.first.displayValue ?? 'No data';
+        log("Scanned Code:$scannedCode");
+        final parsedJson = jsonDecode(scannedCode);
         if (parsedJson is Map<String, dynamic> &&
             parsedJson['createdBy'] == 'Event Solution') {
+          final ticketId = parsedJson['ticketId']?.toString();
+
+          if (ticketId != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScannedDataPage(ticketId: ticketId),
+              ),
+            ).then((_) {
+              setState(() {
+                isScanning = false;
+              });
+            });
+          } else {
+            _showErrorDialog('Invalid QR code: Missing ticketId');
+            setState(() {
+              isScanning = false;
+            });
+          }
         } else {
           _showErrorDialog('This QR code is not valid in this app');
           setState(() {
-            scannedCode = null;
-            parsedJson = null;
             isScanning = false;
           });
         }
       } catch (e) {
         log('Error parsing JSON: $e');
-
         _showErrorDialog('This QR code is not valid in this app');
         setState(() {
-          scannedCode = null;
-          parsedJson = null;
           isScanning = false;
         });
       }
@@ -92,10 +108,24 @@ class _ScanQrState extends ConsumerState<ScanQr> {
             final parsed = jsonDecode(code);
             if (parsed is Map<String, dynamic> &&
                 parsed['createdBy'] == 'Event Solution') {
-              setState(() {
-                scannedCode = code;
-                parsedJson = parsed;
-              });
+              final ticketId = parsed['ticketId']?.toString();
+              if (ticketId != null) {
+                setState(() {
+                  isScanning = true;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ScannedDataPage(ticketId: ticketId),
+                  ),
+                ).then((_) {
+                  setState(() {
+                    isScanning = false;
+                  });
+                });
+              } else {
+                _showErrorDialog('Invalid QR code: Missing ticketId');
+              }
             } else {
               _showErrorDialog('This QR code is not valid in this app');
             }
@@ -187,6 +217,10 @@ class _ScanQrState extends ConsumerState<ScanQr> {
                 MobileScanner(
                   controller: controller,
                   onDetect: _onDetect,
+                  errorBuilder: (context, error, child) {
+                    log('Scanner error: $error');
+                    return Center(child: Text('Scanner error: $error'));
+                  },
                 ),
                 Center(
                   child: Container(
@@ -205,93 +239,50 @@ class _ScanQrState extends ConsumerState<ScanQr> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             color: Colors.white,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (scannedCode != null) ...[
-                    const Text(
-                      'Scanned Data:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Point camera at QR code or select from gallery',
+                  style: TextStyle(color: Colors.black, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _pickImageFromGallery,
+                      icon: const Icon(
+                        Icons.photo_library,
+                        color: Colors.white,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[700]!),
+                      label: const Text('Gallery'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xff0a519d),
                       ),
-                      child: parsedJson != null &&
-                              parsedJson is Map<String, dynamic>
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: parsedJson.entries.map<Widget>((entry) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 2),
-                                  child: Text(
-                                    '${entry.key}: ${entry.value}',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                );
-                              }).toList(),
-                            )
-                          : Text(
-                              scannedCode!,
-                              style: const TextStyle(fontSize: 14),
-                              textAlign: TextAlign.center,
-                            ),
                     ),
-                    const SizedBox(height: 20),
-                  ] else ...[
-                    const Text(
-                      'Point camera at QR code or select from gallery',
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                      textAlign: TextAlign.center,
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          isScanning = false;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.qr_code_scanner,
+                        color: Colors.white,
+                      ),
+                      label: const Text('Scan'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xff0a519d),
+                      ),
                     ),
-                    const SizedBox(height: 20),
                   ],
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: _pickImageFromGallery,
-                        icon: const Icon(
-                          Icons.photo_library,
-                          color: Colors.white,
-                        ),
-                        label: const Text('Gallery'),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Color(0xff0a519d),
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            isScanning = false;
-                            scannedCode = null;
-                            parsedJson = null;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.qr_code_scanner,
-                          color: Colors.white,
-                        ),
-                        label: const Text('Scan'),
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Color(0xff0a519d)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

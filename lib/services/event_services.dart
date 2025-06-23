@@ -6,9 +6,12 @@ import 'package:eventsolutions/model/events/all_events_model.dart';
 import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
+import 'package:eventsolutions/model/events/other_events_model.dart';
+import 'package:eventsolutions/model/events/reedem_ticket_features_model.dart';
 import 'package:eventsolutions/model/events/ticket_features_model.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/model/our_services_model.dart';
+import 'package:eventsolutions/model/our_team_model.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
 import 'package:eventsolutions/services/auth_services/dio_client.dart';
 import 'package:eventsolutions/services/token_storage.dart';
@@ -218,6 +221,72 @@ class EventServices {
     } catch (e) {
       log('$e');
       throw Exception('Error getting the features');
+    }
+  }
+
+  Future<List<RedeemTicketFeaturesModel>> redeemTicketFeaturesByTicketId(
+      String ticketId, String featureName) async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.patch(
+        ApiServices.reedemFeaturesByTicketId(ticketId),
+        data: {'featureName': featureName},
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['data'];
+        final List<RedeemTicketFeaturesModel> featuresofTicket =
+            data.map((e) => RedeemTicketFeaturesModel.fromJson(e)).toList();
+        return featuresofTicket;
+      } else {
+        throw Exception('Error redeeming the features');
+      }
+    } on DioException catch (e) {
+      log('$e');
+      throw Exception('Error redeeming mg the features');
+    } catch (e) {
+      log('$e');
+      throw Exception('Error getting the features');
+    }
+  }
+
+  Future<List<OtherEventsModel>> fetchOtherEvents() async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.get(ApiServices.otherEvents,
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        final List<dynamic> otherEventsData = response.data['data'];
+        final List<OtherEventsModel> data =
+            otherEventsData.map((e) => OtherEventsModel.fromJson(e)).toList();
+        return data;
+      } else {
+        throw Exception('Error getting the events');
+      }
+    } on DioException catch (e) {
+      throw Exception('Error to fetch the all events:$e');
+    } catch (e) {
+      throw Exception('Error to fetch the all events:$e');
+    }
+  }
+
+  Future<List<OurTeamModel>> fetchOurTeam() async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.get(ApiServices.ourTeam,
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        final List<dynamic> teamData = response.data['data'];
+        final List<OurTeamModel> teamMemberData =
+            teamData.map((e) => OurTeamModel.fromJson(e)).toList();
+        return teamMemberData;
+      } else {
+        throw Exception('Error to get the team members');
+      }
+    } catch (e) {
+      throw Exception('Error to get the team members');
     }
   }
 }

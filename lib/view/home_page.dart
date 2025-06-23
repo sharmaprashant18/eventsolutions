@@ -4,7 +4,9 @@ import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
 import 'package:eventsolutions/view/contact_us_page.dart';
 import 'package:eventsolutions/view/my_bookings.dart';
+import 'package:eventsolutions/view/other_events.dart';
 import 'package:eventsolutions/view/our_service_page.dart';
+import 'package:eventsolutions/view/our_team.dart';
 import 'package:eventsolutions/view/profile.dart';
 import 'package:eventsolutions/view/scan_qr.dart';
 import 'package:eventsolutions/view/ticket_qr.dart';
@@ -36,7 +38,7 @@ class _HomePageState extends ConsumerState<HomePage>
   void initState() {
     super.initState();
     tabController = TabController(
-        length: 3, vsync: this, animationDuration: Duration(milliseconds: 250));
+        length: 4, vsync: this, animationDuration: Duration(milliseconds: 250));
   }
 
   @override
@@ -59,7 +61,11 @@ class _HomePageState extends ConsumerState<HomePage>
       return;
     }
 
-    if (tabController.index == 2) {
+    if (tabController.index == 3) {
+      // tabController.animateTo(1);
+      tabController.animateTo(2, duration: const Duration(milliseconds: 500));
+      return;
+    } else if (tabController.index == 2) {
       // tabController.animateTo(1);
       tabController.animateTo(1, duration: const Duration(milliseconds: 500));
       return;
@@ -191,6 +197,12 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
                 _drawer(
                   context,
+                  9,
+                  'Our Team',
+                  Icons.group_outlined,
+                ),
+                _drawer(
+                  context,
                   0,
                   'About Us',
                   Icons.info,
@@ -305,17 +317,21 @@ class _HomePageState extends ConsumerState<HomePage>
                       controller: tabController,
                       dividerColor: Colors.transparent,
                       indicatorSize: TabBarIndicatorSize.tab,
-                      labelColor: Colors.deepOrange,
-                      unselectedLabelColor: Colors.grey,
-                      padding: const EdgeInsets.all(9),
+                      unselectedLabelColor: Color(0xffe92429),
+                      labelColor: Colors.white,
+                      padding:
+                          const EdgeInsets.only(top: 9, bottom: 9, left: 9),
                       labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 14),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      labelPadding: EdgeInsets.all(0),
                       unselectedLabelStyle: const TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
                       indicator: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
+                        color: Color(0xff0a519d),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withAlpha(20),
@@ -324,11 +340,13 @@ class _HomePageState extends ConsumerState<HomePage>
                             offset: const Offset(0, 1),
                           ),
                         ],
-                        color: Colors.white,
                       ),
                       tabs: const [
-                        Tab(text: 'ONGOING'),
+                        Tab(
+                          text: 'ONGOING',
+                        ),
                         Tab(text: 'UPCOMING'),
+                        Tab(text: 'OTHERS'),
                         Tab(text: 'SERVICES'),
                       ],
                     ),
@@ -340,6 +358,9 @@ class _HomePageState extends ConsumerState<HomePage>
                     children: [
                       OngoingEvents(searchQuery: searchQuery),
                       UpcomingEvents(searchQuery: searchQuery),
+                      OtherEvents(
+                        searchQuery: searchQuery,
+                      ),
                       ServicePage(
                         searchQuery: searchQuery,
                         showAppBarTitle: false,
@@ -429,14 +450,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   },
                 );
                 break;
-              // case 5:
-              //   Navigator.pop(context);
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => const StallPage(eventId: '')),
-              //   );
-              //   break;
+
               case 6:
                 Navigator.pop(context);
                 Navigator.push(
@@ -449,10 +463,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 break;
               case 7:
                 Navigator.pop(context);
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => TicketQr(ticketId: null)));
+
                 final userData = ref.read(userDetailsProvider).value;
                 if (userData != null) {
                   if (userData.role == 'user') {
@@ -479,6 +490,12 @@ class _HomePageState extends ConsumerState<HomePage>
                 Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ProfileScreen()));
+                break;
+
+              case 9:
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => OurTeamPage()));
                 break;
             }
           },

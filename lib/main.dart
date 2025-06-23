@@ -15,10 +15,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(DevicePreview(
-      enabled: kDebugMode,
-      builder: (BuildContext context) => ProviderScope(child: Home())));
-  // runApp(ProviderScope(child: Home()));
+  // runApp(DevicePreview(
+  //     enabled: kDebugMode,
+  //     builder: (BuildContext context) => ProviderScope(child: Home())));
+  runApp(ProviderScope(child: Home()));
 }
 
 class Home extends ConsumerWidget {
@@ -56,6 +56,7 @@ class Home extends ConsumerWidget {
       //       return LoginPage();
       //     }),
       home: authStatus.when(
+        // data: (isLoggedIn) => isLoggedIn ? HomePage() : LoginPage(),
         data: (isLoggedIn) => isLoggedIn ? HomePage() : LoginPage(),
         loading: () => const Scaffold(
           body: Center(child: CircularProgressIndicator()),

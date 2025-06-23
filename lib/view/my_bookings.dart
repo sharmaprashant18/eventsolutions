@@ -24,7 +24,9 @@ class UserBookingDetailsScreen extends ConsumerWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xff50d99b),
+        // backgroundColor: const Color(0xff50d99b),
+        backgroundColor: Color(0xff0a519d),
+
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),

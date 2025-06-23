@@ -99,8 +99,11 @@ class _UpcomingPageState extends ConsumerState<OngoingEvents> {
       body: event.when(
         data: (event) {
           if (event.isEmpty) {
-            return Center(
-              child: Text('No Event Available'),
+            return const Center(
+              child: Text(
+                'No events available',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
             );
           }
           final filteredEvents = event
