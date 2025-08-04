@@ -1,14 +1,14 @@
 class OurServiceModel {
   final String name;
   final String description;
-  final String icon;
+  final String image;
   final String serviceId;
   final String createdAt;
   final String updatedAt;
   OurServiceModel(
       {required this.name,
       required this.description,
-      required this.icon,
+      required this.image,
       required this.serviceId,
       required this.createdAt,
       required this.updatedAt});
@@ -16,7 +16,7 @@ class OurServiceModel {
     return OurServiceModel(
       name: json['name'],
       description: json['description'],
-      icon: json['icon'],
+      image: json['image'],
       serviceId: json['_id'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
@@ -26,7 +26,7 @@ class OurServiceModel {
     return {
       'name': name,
       'description': description,
-      'icon': icon,
+      'image': image,
       '_id': serviceId,
       'createdAt': createdAt,
       'updatedAt': updatedAt,

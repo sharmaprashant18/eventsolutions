@@ -251,8 +251,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                       ] else
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined),
+                        ElevatedButton.icon(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStatePropertyAll(Color(0xff0a519d))),
+                          label: Text(
+                            'Edit',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            color: Colors.white,
+                          ),
                           onPressed: () => _toggleEdit(user),
                         ),
                     ],
@@ -312,33 +322,54 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.04),
-                  const Text('Personal Information',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: screenHeight * 0.03),
-                  if (_isEditing) ...[
-                    _buildEditableField('Name', Icons.person_outline,
-                        nameController, 'Please enter your name'),
-                    _buildEditableField('Phone Number', Icons.phone_outlined,
-                        phoneController, 'Please enter your phone number'),
-                    _buildEditableField('Email Address', Icons.email_outlined,
-                        emailController, 'Please enter your email',
-                        isEmail: true),
-                  ] else ...[
-                    listTile('Name', Icons.person_outline, user.fullName),
-                    listTile('Phone Number', Icons.phone_outlined, user.phone),
-                    listTile('Email Address', Icons.email_outlined, user.email),
-                  ],
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ChangePassword()),
-                      );
-                    },
-                    child: listTile('Change Password', Icons.lock_reset,
-                        'Change your password'),
+                  Card(
+                    elevation: 5,
+                    color: Colors.white70,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const Text('Personal Information',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                          SizedBox(height: screenHeight * 0.03),
+                          if (_isEditing) ...[
+                            _buildEditableField('Name', Icons.person_outline,
+                                nameController, 'Please enter your name'),
+                            _buildEditableField(
+                                'Phone Number',
+                                Icons.phone_outlined,
+                                phoneController,
+                                'Please enter your phone number'),
+                            _buildEditableField(
+                                'Email Address',
+                                Icons.email_outlined,
+                                emailController,
+                                'Please enter your email',
+                                isEmail: true),
+                          ] else ...[
+                            listTile(
+                                'Name', Icons.person_outline, user.fullName),
+                            listTile('Phone Number', Icons.phone_outlined,
+                                user.phone),
+                            listTile('Email Address', Icons.email_outlined,
+                                user.email),
+                          ],
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ChangePassword()),
+                              );
+                            },
+                            child: listTile('Change Password', Icons.lock_reset,
+                                'Change your password'),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   SizedBox(height: screenHeight * 0.04),
                   Center(

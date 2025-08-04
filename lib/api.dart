@@ -15,6 +15,7 @@ class ApiServices {
   static const changeDetails = '$baseUrl/update-user';
   static const googleSign = '$baseUrl/login/google';
   static const orgGoogleSign = '$baseUrl/org/login/google';
+  static String eventByEventId(String eventId) => '$baseUrl/events/$eventId';
   static String availableStalls(String eventId) =>
       '$baseUrl/stalls/event/$eventId';
   static String stallById(String stallId) => '$baseUrl/stalls/$stallId';
@@ -31,4 +32,5 @@ class ApiServices {
 
   static const otherEvents = '$baseUrl/other-events';
   static const ourTeam = '$baseUrl/our-team';
+  static const qrCode = '$baseUrl/payment-methods';
 }

@@ -47,26 +47,6 @@ class _AdminChangingState extends ConsumerState<AdminChanging> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(15),
-              //   child: (widget.events.poster != null &&
-              //           widget.events.poster!.isNotEmpty)
-              //       ? Image.network(
-              //           '$baseUrlImage${widget.events.poster}',
-              // height: screenHeight * 0.2,
-              // width: double.infinity,
-              // fit: BoxFit.cover,
-              //           errorBuilder: (context, error, stackTrace) {
-              //             return Image.asset('assets/event1.png');
-              //           },
-              //         )
-              //       : Image.asset(
-              //           'assets/event1.png',
-              //           height: screenHeight * 0.2,
-              //           width: double.infinity,
-              //           fit: BoxFit.cover,
-              //         ),
-              // ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.asset(
@@ -76,7 +56,6 @@ class _AdminChangingState extends ConsumerState<AdminChanging> {
                   fit: BoxFit.cover,
                 ),
               ),
-
               SizedBox(
                 height: 15,
               ),

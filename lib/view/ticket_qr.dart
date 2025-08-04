@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -407,11 +408,17 @@ class _TicketQrState extends ConsumerState<TicketQr> {
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
-                                                child: Image.network(
-                                                  '$baseUrl${ticket.qr}',
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      '$baseUrl${ticket.qr}',
                                                   height: 120,
                                                   width: 120,
                                                   fit: BoxFit.cover,
+                                                  errorWidget:
+                                                      (context, url, error) {
+                                                    return Icon(
+                                                        Icons.broken_image);
+                                                  },
                                                 ),
                                               ),
                                             ),

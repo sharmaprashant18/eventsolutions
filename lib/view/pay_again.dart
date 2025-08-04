@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 import 'package:eventsolutions/provider/stall_provider.dart';
 import 'package:flutter/material.dart';
@@ -383,28 +385,41 @@ class _PayAgainState extends ConsumerState<PayAgain> {
   }
 
   Widget qrCode() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
-          softWrap: true,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2D5A5A),
-          ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              'assets/qrcode.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Consumer(
+        builder: (context, ref, child) {
+          final qr = ref.watch(qrProvider);
+          final baseUrlImage = 'http://182.93.94.210:8001';
+
+          return qr.when(
+            data: (qr) {
+              if (qr.isEmpty) {
+                return const Text('No QR code found');
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: qr.map((qrData) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: '$baseUrlImage${qrData.image}',
+                      fit: BoxFit.contain,
+                      errorWidget: (context, url, error) {
+                        return Icon(Icons.broken_image);
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+            error: (error, stackTrace) {
+              return const Text('Error');
+            },
+            loading: () => const CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 

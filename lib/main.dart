@@ -1,20 +1,15 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:device_preview/device_preview.dart';
+import 'package:eventsolutions/firebase_options.dart';
 import 'package:eventsolutions/provider/auth_provider/auth_status_provider.dart';
 import 'package:eventsolutions/services/token_storage.dart';
 import 'package:eventsolutions/view/home_page.dart';
-
-import 'package:eventsolutions/view/loginpage.dart';
+import 'package:eventsolutions/view/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // runApp(DevicePreview(
   //     enabled: kDebugMode,
   //     builder: (BuildContext context) => ProviderScope(child: Home())));
@@ -57,12 +52,12 @@ class Home extends ConsumerWidget {
       //     }),
       home: authStatus.when(
         // data: (isLoggedIn) => isLoggedIn ? HomePage() : LoginPage(),
-        data: (isLoggedIn) => isLoggedIn ? HomePage() : LoginPage(),
+        data: (isLoggedIn) => isLoggedIn ? HomePage() : SplashScreen(),
         loading: () => const Scaffold(
           body: Center(child: CircularProgressIndicator()),
         ),
         error: (err, stack) => Scaffold(
-          body: Center(child: Text("Error: $err")),
+          body: Center(child: Image.asset('assets/wrong.png')),
         ),
       ),
     );

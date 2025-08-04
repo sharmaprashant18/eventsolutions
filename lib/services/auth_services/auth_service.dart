@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:eventsolutions/api.dart';
 import 'package:eventsolutions/model/auth_model/change_password_model.dart';
@@ -416,36 +415,3 @@ class AuthService {
     }
   }
 }
-
-  // Future<OrganizationGoogleData> organizationGoogleSignIn({
-  //   required String email,
-  //   required String fullName,
-  //   required String googleId,
-  // }) async {
-  //   try {
-  //     final response = await Dio().post(
-  //       ApiServices.orgGoogleSign,
-  //       data: {
-  //         'email': email,
-  //         'fullName': fullName,
-  //         'uid': googleId,
-  //       },
-  //       options: Options(
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       ),
-  //     );
-
-  //     final googleData = OrganizationGoogleData.fromJson(response.data);
-  //     await saveToken(googleData.accessToken, googleData.accessToken);
-  //     return googleData;
-  //   } on DioException catch (e) {
-  //     debugPrint('Google sign-in error: ${e.response?.data}');
-  //     if (e.response != null) {
-  //       throw Exception(e.response?.data['message'] ?? 'Google sign-in failed');
-  //     } else {
-  //       throw Exception('Network error: ${e.message}');
-  //     }
-  //   }
-  // }

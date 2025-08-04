@@ -137,60 +137,72 @@ class _ChangePasswordState extends ConsumerState<ChangePassword> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.03),
-              Center(
-                child: Text(
-                  'Change Password',
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.06,
-                    fontWeight: FontWeight.bold,
+              Card(
+                // margin: EdgeInsets.all(10),
+                elevation: 5,
+                color: Colors.white70,
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        right: 10,
+                        left: 10,
+                        bottom: screenHeight * 0.05,
+                        top: screenHeight * 0.03),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text(
+                            'Change Password',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.06,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.0),
+                        buildTextField(
+                          hintText: 'Old Password',
+                          fieldKey: oldPasswordKey,
+                          controller: oldPasswordController,
+                          isObscure: !isOldPasswordVisible,
+                          onVisibilityToggle: () {
+                            setState(() =>
+                                isOldPasswordVisible = !isOldPasswordVisible);
+                          },
+                          validator: (value) =>
+                              validatePassword(value, 'Old Password'),
+                        ),
+                        buildTextField(
+                          hintText: 'New Password',
+                          fieldKey: newPasswordKey,
+                          controller: newPasswordController,
+                          isObscure: !isNewPasswordVisible,
+                          onVisibilityToggle: () {
+                            setState(() =>
+                                isNewPasswordVisible = !isNewPasswordVisible);
+                          },
+                          validator: (value) =>
+                              validatePassword(value, 'New Password'),
+                        ),
+                        buildTextField(
+                          hintText: 'Confirm Password',
+                          fieldKey: confirmPasswordKey,
+                          controller: confirmPasswordController,
+                          isObscure: !isConfirmPasswordVisible,
+                          onVisibilityToggle: () {
+                            setState(() => isConfirmPasswordVisible =
+                                !isConfirmPasswordVisible);
+                          },
+                          validator: (value) =>
+                              validatePassword(value, 'Confirm Password'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.05),
-              Form(
-                key: _formKey, // Make sure this matches the validation check
-                child: Column(
-                  children: [
-                    buildTextField(
-                      hintText: 'Old Password',
-                      fieldKey: oldPasswordKey,
-                      controller: oldPasswordController,
-                      isObscure: !isOldPasswordVisible,
-                      onVisibilityToggle: () {
-                        setState(
-                            () => isOldPasswordVisible = !isOldPasswordVisible);
-                      },
-                      validator: (value) =>
-                          validatePassword(value, 'Old Password'),
-                    ),
-                    buildTextField(
-                      hintText: 'New Password',
-                      fieldKey: newPasswordKey,
-                      controller: newPasswordController,
-                      isObscure: !isNewPasswordVisible,
-                      onVisibilityToggle: () {
-                        setState(
-                            () => isNewPasswordVisible = !isNewPasswordVisible);
-                      },
-                      validator: (value) =>
-                          validatePassword(value, 'New Password'),
-                    ),
-                    buildTextField(
-                      hintText: 'Confirm Password',
-                      fieldKey: confirmPasswordKey,
-                      controller: confirmPasswordController,
-                      isObscure: !isConfirmPasswordVisible,
-                      onVisibilityToggle: () {
-                        setState(() => isConfirmPasswordVisible =
-                            !isConfirmPasswordVisible);
-                      },
-                      validator: (value) =>
-                          validatePassword(value, 'Confirm Password'),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.1),
+              SizedBox(height: screenHeight * 0.02),
               Center(
                 child: ElevatedButton(
                   onPressed: isResettingPassword ? null : passwordChange,

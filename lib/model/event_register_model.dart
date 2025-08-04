@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class EventRegisterModel {
   final bool success;
   final String message;
@@ -32,7 +34,7 @@ class RegistrationData {
   final String number;
   final String email;
   final TicketInfo ticketInfo;
-  final String paymentScreenshot;
+  final String? paymentScreenshot;
   final String status;
   final String note;
   final String id;
@@ -48,7 +50,7 @@ class RegistrationData {
     required this.number,
     required this.email,
     required this.ticketInfo,
-    required this.paymentScreenshot,
+    this.paymentScreenshot,
     required this.status,
     required this.note,
     required this.id,
@@ -58,21 +60,25 @@ class RegistrationData {
   });
 
   factory RegistrationData.fromJson(Map<String, dynamic> json) {
+    log('Parsing RegistrationData from: $json');
+
     return RegistrationData(
-      eventId: json['eventId'],
-      name: json['name'],
-      eventName: json['eventName'],
-      userId: json['userId'],
-      number: json['number'],
-      email: json['email'],
-      ticketInfo: TicketInfo.fromJson(json['ticketInfo']),
-      paymentScreenshot: json['paymentScreenshot'],
-      status: json['status'],
-      note: json['note'],
-      id: json['_id'],
-      ticketId: json['ticketId'],
-      submittedAt: json['submittedAt'],
-      updatedAt: json['updatedAt'],
+      eventId: json['eventId']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      eventName: json['eventName']?.toString() ?? '',
+      userId: json['userId']?.toString() ?? '',
+      number: json['number']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      ticketInfo: json['ticketInfo'] != null
+          ? TicketInfo.fromJson(json['ticketInfo'])
+          : TicketInfo(tierName: '', price: 0.0, features: []),
+      paymentScreenshot: json['paymentScreenshot']?.toString(),
+      status: json['status']?.toString() ?? 'pending',
+      note: json['note']?.toString() ?? '',
+      id: json['_id']?.toString() ?? json['id']?.toString() ?? '',
+      ticketId: json['ticketId']?.toString() ?? '',
+      submittedAt: json['submittedAt']?.toString() ?? '',
+      updatedAt: json['updatedAt']?.toString() ?? '',
     );
   }
 }

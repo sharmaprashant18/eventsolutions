@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:developer';
+
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/services/auth_services/auth_service.dart';
 import 'package:eventsolutions/view/about_us_page.dart';
@@ -13,11 +15,11 @@ import 'package:eventsolutions/view/ticket_qr.dart';
 import 'package:eventsolutions/view/ongoing_events.dart';
 import 'package:eventsolutions/view/faq.dart';
 import 'package:eventsolutions/view/loginpage.dart';
-import 'package:eventsolutions/view/stall_page.dart';
 import 'package:eventsolutions/view/upcoming_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -39,6 +41,7 @@ class _HomePageState extends ConsumerState<HomePage>
     super.initState();
     tabController = TabController(
         length: 4, vsync: this, animationDuration: Duration(milliseconds: 250));
+    checkForUpdate();
   }
 
   @override
@@ -46,6 +49,23 @@ class _HomePageState extends ConsumerState<HomePage>
     tabController.dispose();
     searchController.dispose();
     super.dispose();
+  }
+
+  //Method to handle for the update
+  Future<void> checkForUpdate() async {
+    try {
+      AppUpdateInfo updateInfo = await InAppUpdate.checkForUpdate();
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        if (updateInfo.immediateUpdateAllowed) {
+          await InAppUpdate.performImmediateUpdate();
+        } else if (updateInfo.flexibleUpdateAllowed) {
+          await InAppUpdate.startFlexibleUpdate();
+          InAppUpdate.completeFlexibleUpdate();
+        }
+      }
+    } catch (e) {
+      log('Update check failed:$e');
+    }
   }
 
   // Method to handle back button press
@@ -149,13 +169,33 @@ class _HomePageState extends ConsumerState<HomePage>
                   height: screenHeight * 0.2,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      fit: BoxFit.cover,
-                      colorFilter:
-                          ColorFilter.mode(Colors.black, BlendMode.colorDodge),
-                      image: const AssetImage('assets/event_solutions.png'),
+                      fit: BoxFit.contain,
+                      image: const AssetImage(
+                        'assets/splash_screen.png',
+                      ),
                     ),
                   ),
                   padding: const EdgeInsets.only(top: 100, bottom: 20),
+                ),
+                ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black,
+                        Colors.black,
+                        Colors.transparent,
+                      ],
+                      stops: [0.0, 0.2, 0.7, 1],
+                    ).createShader(bounds);
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: Container(
+                    height: 0.5,
+                    color: Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 _drawer(

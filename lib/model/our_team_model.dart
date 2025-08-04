@@ -3,9 +3,10 @@ class OurTeamModel {
   final String name;
   final String position;
   final String description;
-  final String photo;
+  final String? photo;
   final String department;
   final int? hierarchyLevel;
+  final String email;
 
   OurTeamModel(
       {required this.socialLinks,
@@ -14,7 +15,8 @@ class OurTeamModel {
       required this.description,
       required this.photo,
       required this.department,
-      required this.hierarchyLevel});
+      required this.hierarchyLevel,
+      required this.email});
 
   factory OurTeamModel.fromJson(Map<String, dynamic> json) {
     return OurTeamModel(
@@ -26,7 +28,8 @@ class OurTeamModel {
         description: json['description'] ?? '',
         photo: json['photo'] ?? '',
         department: json['department'] ?? '',
-        hierarchyLevel: json['hierarchyLevel'] ?? '');
+        hierarchyLevel: json['hierarchyLevel'] ?? '',
+        email: json['email'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
@@ -37,7 +40,8 @@ class OurTeamModel {
       'description': description,
       'photo': photo,
       'department': department,
-      'hierarchyLevel': hierarchyLevel ?? ''
+      'hierarchyLevel': hierarchyLevel ?? '',
+      'email': email
     };
   }
 }

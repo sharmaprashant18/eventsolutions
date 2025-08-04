@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:eventsolutions/model/abstract/event_data.dart';
-
 import 'package:eventsolutions/provider/event_provider.dart';
 import 'package:eventsolutions/provider/image_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
@@ -12,11 +12,14 @@ import 'package:eventsolutions/view/ticket_qr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class EntryForm extends ConsumerStatefulWidget {
   const EntryForm({super.key, required this.eventData});
-  // final OngoingData eventData;
+
   final EventData eventData;
 
   @override
@@ -87,6 +90,191 @@ class _EntryFormState extends ConsumerState<EntryForm> {
     await prefs.setString('lastTicketId', ticketId);
   }
 
+  Future<void> _downloadPdf(String pdfUrl, String fileName) async {
+    try {
+      // Check current permission status
+      PermissionStatus status = await Permission.storage.status;
+
+      // For Android 13+ (API 33+), we don't need storage permission for Downloads
+      if (Platform.isAndroid) {
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        if (androidInfo.version.sdkInt >= 33) {
+          // Android 13+ doesn't require storage permission for Downloads folder
+          await _performDownload(pdfUrl, fileName);
+          return;
+        }
+      }
+
+      // Handle permission for older Android versions and iOS
+      if (status.isDenied) {
+        status = await Permission.storage.request();
+      }
+
+      if (status.isDenied) {
+        _showPermissionDeniedDialog();
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        _showPermanentlyDeniedDialog();
+        return;
+      }
+
+      if (status.isGranted) {
+        await _performDownload(pdfUrl, fileName);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+  Future<void> _performDownload(String pdfUrl, String fileName) async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Downloading PDF...'),
+            ],
+          ),
+        ),
+      );
+
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download');
+        if (!await directory.exists()) {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory != null) {
+        final filePath = '${directory.path}/$fileName.pdf';
+
+        Dio dio = Dio();
+        await dio.download(pdfUrl, filePath);
+
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF downloaded successfully!'),
+            backgroundColor: Color(0xff0a519d),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Download failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Permission Required'),
+        content: Text(
+            'Storage permission is required to download files. Please grant permission and try again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              final status = await Permission.storage.request();
+              if (status.isGranted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(
+                          'Permission granted! Please try downloading again.')),
+                );
+              }
+            },
+            child: Text('Grant Permission'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPermanentlyDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Permission Required'),
+        content: Text(
+            'Storage permission is permanently denied. Please enable it in app settings to download files.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+
+              await openAppSettings();
+            },
+            child: Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  EventTicketTier? _getSelectedTierData() {
+    final selectedTierName = ref.read(selectedTierProvider);
+
+    if (selectedTierName != null) {
+      try {
+        return widget.eventData.ticketTiers
+            .firstWhere((tier) => tier.name == selectedTierName);
+      } catch (e) {
+        return widget.eventData.ticketTiers.isNotEmpty
+            ? widget.eventData.ticketTiers[0]
+            : null;
+      }
+    } else {
+      return widget.eventData.ticketTiers.isNotEmpty
+          ? widget.eventData.ticketTiers[0]
+          : null;
+    }
+  }
+
+  bool _shouldShowPaymentSection() {
+    final selectedTierData = _getSelectedTierData();
+    return widget.eventData.entryType == 'paid' &&
+        selectedTierData != null &&
+        selectedTierData.price != 0;
+  }
+
+  bool _isPaymentRequired() {
+    return _shouldShowPaymentSection();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -118,7 +306,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           fontSize: 20,
                           letterSpacing: 1.5,
                           fontWeight: FontWeight.bold,
-                          // color: Colors.red,
                           color: Color(0xffe92429)),
                     ),
                   ),
@@ -127,13 +314,12 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                     borderRadius: BorderRadius.circular(15),
                     child: (widget.eventData.poster != null &&
                             widget.eventData.poster!.isNotEmpty)
-                        ? Image.network(
-                            '$baseUrlImage${widget.eventData.poster}',
-                            // height: screenHeight * 0.2,
+                        ? CachedNetworkImage(
+                            imageUrl: '$baseUrlImage${widget.eventData.poster}',
                             width: double.infinity,
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset('assets/event1.png');
+                            errorWidget: (context, error, stackTrace) {
+                              return Icon(Icons.broken_image);
                             },
                           )
                         : Image.asset(
@@ -184,7 +370,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           return Text(
                             'Price: $price',
                             style: const TextStyle(
-                              // color: Colors.orange,
                               color: Color(0xffe92429),
                               fontWeight: FontWeight.w500,
                             ),
@@ -193,16 +378,112 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                       ),
                       Row(
                         children: [
-                          Icon(Icons.location_on,
-                              color:
-                                  //  Color(0xffF77018)
-                                  Color(0xffe92429)),
-                          Text(widget.eventData.location),
+                          Icon(Icons.location_on, color: Color(0xffe92429)),
+                          FittedBox(child: Text(widget.eventData.location)),
                         ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  if (widget.eventData.proposal != null)
+                    Center(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            showAdaptiveDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.8,
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Event Proposal',
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Row(
+                                              children: [
+                                                IconButton(
+                                                  icon: const Icon(
+                                                      Icons.download),
+                                                  onPressed: () {
+                                                    _downloadPdf(
+                                                        '$baseUrlImage${widget.eventData.proposal}',
+                                                        '${widget.eventData.title}_proposal');
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.close),
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const Divider(),
+                                        Expanded(
+                                          child: SfPdfViewer.network(
+                                            interactionMode:
+                                                PdfInteractionMode.pan,
+                                            enableDoubleTapZooming: true,
+                                            enableDocumentLinkAnnotation: true,
+                                            enableHyperlinkNavigation: true,
+                                            enableTextSelection: true,
+                                            canShowScrollHead: true,
+                                            '$baseUrlImage${widget.eventData.proposal}',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Text(
+                            "View Proposal",
+                            style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                decorationStyle: TextDecorationStyle.wavy,
+                                decorationColor: Colors.blue,
+                                decorationThickness: 2,
+                                color: const Color(0xff0a519d)),
+                          ),
+                        ),
+                        Spacer(),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            _downloadPdf(
+                                '$baseUrlImage${widget.eventData.proposal}',
+                                '${widget.eventData.title}_proposal');
+                          },
+                          icon: const Icon(
+                            Icons.download,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                          label: const Text("Download Proposal"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff0a519d),
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    )),
+                  SizedBox(
+                    height: 20,
+                  ),
                   ShaderMask(
                     shaderCallback: (Rect bounds) {
                       return const LinearGradient(
@@ -239,7 +520,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                         children: [
                           RichText(
                             text: const TextSpan(
-                              text: 'Ticket Tier',
+                              text: 'Ticket Category',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -257,7 +538,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           DropdownButtonFormField<String>(
                             key: tierKey,
                             value: selectedTier,
-                            hint: const Text('Select a ticket tier'),
+                            hint: const Text('Select a ticket category'),
                             isExpanded: true,
                             items: tiers.isEmpty
                                 ? [
@@ -321,7 +602,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           const SizedBox(height: 8),
                           if (selectedTier == null)
                             const Text(
-                              'Select ticket tier to see the features',
+                              'Select ticket category to see the features',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.bold,
@@ -379,8 +660,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   ),
                   const SizedBox(height: 25),
                   Card(
-                    // color: Color(0xffFAFAFA),
-                    // elevation: 6,
                     margin: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -389,7 +668,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                         width: 1,
                       ),
                     ),
-                    // color: Colors.green.shade300,
                     color: Colors.grey.shade200,
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -417,24 +695,36 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                   SizedBox(
                     height: 20,
                   ),
-                  if (widget.eventData.ticketTiers.isNotEmpty &&
-                      widget.eventData.ticketTiers[0].price != 0)
-                    Column(
-                      children: [
-                        Text(
-                          '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
-                          softWrap: true,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D5A5A),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      // Watch for tier selection changes
+                      ref.watch(selectedTierProvider);
+
+                      final shouldShow = _shouldShowPaymentSection();
+
+                      if (!shouldShow) {
+                        return const SizedBox
+                            .shrink(); // Hide payment section for free tiers
+                      }
+
+                      return Column(
+                        children: [
+                          Text(
+                            '''Please do payment in this QR code and send the payment screenshot below and wait till the payment is verified''',
+                            softWrap: true,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2D5A5A),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        qrCode(),
-                        const SizedBox(height: 25),
-                        buildImageUploadSection(context, ref, selectedImage),
-                      ],
-                    ),
+                          const SizedBox(height: 12),
+                          qrCode(),
+                          const SizedBox(height: 25),
+                          buildImageUploadSection(context, ref, selectedImage),
+                        ],
+                      );
+                    },
+                  ),
                   Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -446,7 +736,9 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                           ? null
                           : () async {
                               if (_formKey.currentState!.validate()) {
-                                if (selectedImage == null) {
+                                // Check if payment screenshot is required for the selected tier
+                                if (_isPaymentRequired() &&
+                                    selectedImage == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       backgroundColor: Colors.red,
@@ -456,23 +748,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                   );
                                   return;
                                 }
-
-                                // // Validate file type
-                                // final fileExtension = selectedImage.path
-                                //     .toLowerCase()
-                                //     .split('.')
-                                //     .last;
-                                // if (!['png', 'jpg', 'jpeg']
-                                //     .contains(fileExtension)) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     const SnackBar(
-                                //       backgroundColor: Colors.red,
-                                //       content: Text(
-                                //           'Payment screenshot must be a PNG or JPEG image'),
-                                //     ),
-                                //   );
-                                //   return;
-                                // }
 
                                 final selectedTier =
                                     ref.read(selectedTierProvider);
@@ -499,34 +774,35 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                   return;
                                 }
 
-                                // Step 2: Show loading state
                                 setState(() {
                                   _isLoading = true;
                                 });
 
                                 try {
-                                  // Step 3: Prepare registration data
                                   final registrationData = {
-                                    'email': emailController.text,
-                                    'name': fullNameController.text,
-                                    'number': phoneController.text,
+                                    'email': emailController.text
+                                        .trim()
+                                        .toLowerCase(),
+                                    'name': fullNameController.text.trim(),
+                                    'number': phoneController.text.trim(),
                                     'tierName': selectedTier ??
                                         widget.eventData.ticketTiers[0].name,
-                                    'paymentScreenshot':
-                                        File(selectedImage.path),
+                                    'paymentScreenshot': _isPaymentRequired() &&
+                                            selectedImage != null
+                                        ? File(selectedImage.path)
+                                        : null, // Pass null for free tiers
                                     'eventId': widget.eventData.eventId,
                                   };
 
-                                  // Step 4: Send registration request
                                   final response = await ref.read(
                                     registerEventProvider(registrationData)
                                         .future,
                                   );
 
-                                  // Step 5: Save ticketId to Shared Preferences
+                                  // Save ticketId to Shared Preferences
                                   await _saveTicketId(response.ticketId);
 
-                                  // Step 6: Clear form fields after successful registration
+                                  // Clear form fields
                                   fullNameController.clear();
                                   emailController.clear();
                                   phoneController.clear();
@@ -538,7 +814,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                       .read(selectedTierProvider.notifier)
                                       .state = null;
 
-                                  // Step 7: Show success dialog
+                                  // Show success dialog
                                   showAdaptiveDialog(
                                     context: context,
                                     builder: (context) {
@@ -607,18 +883,20 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               ElevatedButton(
+                                                style: const ButtonStyle(
+                                                    backgroundColor:
+                                                        WidgetStatePropertyAll(
+                                                            Color(0xff0a519d))),
                                                 onPressed: () {
-                                                  Navigator.pop(
-                                                      context); // Close dialog
-                                                  Navigator.pop(
-                                                      context); // Navigate back to event list
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(context);
                                                 },
                                                 child: const Text(
                                                   'OK',
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Colors.blue,
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                               ),
@@ -658,7 +936,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                     },
                                   );
                                 } catch (e) {
-                                  // Step 8: Handle errors with a failure dialog
+                                  // Handle errors with a failure dialog
                                   String errorMessage = 'Something went wrong';
                                   if (e.toString().contains('Exception:')) {
                                     errorMessage = e
@@ -726,7 +1004,6 @@ class _EntryFormState extends ConsumerState<EntryForm> {
                                     },
                                   );
                                 } finally {
-                                  // Step 9: Reset loading state
                                   setState(() {
                                     _isLoading = false;
                                   });
@@ -784,14 +1061,40 @@ class _EntryFormState extends ConsumerState<EntryForm> {
   }
 
   Widget qrCode() {
-    return SizedBox(
-      width: double.infinity,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Image.asset(
-          'assets/qrcode.png',
-          fit: BoxFit.contain,
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Consumer(
+        builder: (context, ref, child) {
+          final qr = ref.watch(qrProvider);
+          final baseUrlImage = 'http://182.93.94.210:8001';
+
+          return qr.when(
+            data: (qr) {
+              if (qr.isEmpty) {
+                return const Text('No QR code found');
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: qr.map((qrData) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: '$baseUrlImage${qrData.image}',
+                      fit: BoxFit.contain,
+                      errorWidget: (context, url, error) {
+                        return Icon(Icons.broken_image);
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+            error: (error, stackTrace) {
+              return const Text('Something went wrong');
+            },
+            loading: () => const CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
@@ -802,19 +1105,21 @@ class _EntryFormState extends ConsumerState<EntryForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             text: 'Payment screenshot',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2D5A5A),
             ),
-            children: [
-              TextSpan(
-                text: ' *',
-                style: TextStyle(color: Colors.red),
-              ),
-            ],
+            children: _isPaymentRequired()
+                ? [
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ]
+                : [], // No asterisk for free tiers
           ),
         ),
         const SizedBox(height: 8),
@@ -1040,7 +1345,7 @@ class _EntryFormState extends ConsumerState<EntryForm> {
             const SizedBox(width: 12),
             Expanded(
               child: TextFormField(
-                maxLength: 13,
+                maxLength: 10,
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
                 validator: MyValidation.validateMobile,

@@ -4,6 +4,7 @@ import 'package:eventsolutions/firebase_options.dart';
 import 'package:eventsolutions/model/user_update_model.dart';
 import 'package:eventsolutions/provider/auth_provider/auth_provider.dart';
 import 'package:eventsolutions/validation/form_validation.dart';
+// import 'package:eventsolutions/validation/form_validation.dart';
 import 'package:eventsolutions/view/forgot_password.dart';
 import 'package:eventsolutions/view/home_page.dart';
 import 'package:eventsolutions/view/signup_page.dart';
@@ -108,7 +109,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         final authService = ref.read(authServiceProvider);
 
         await authService.login(
-          emailController.text.trim(),
+          emailController.text.trim().toLowerCase(),
           passwordController.text.trim(),
         );
 
@@ -145,7 +146,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Login Failed: $errorMessage'),
+              content: Text('Login Failed'),
               backgroundColor: Colors.red,
             ),
           );
@@ -171,14 +172,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         scrollDirection: Axis.vertical,
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 500,
-            ),
+            constraints: const BoxConstraints(maxWidth: 500),
             child: Padding(
               padding: EdgeInsets.only(
-                  top: screenHeight * 0.05,
-                  right: screenWidth * 0.05,
-                  left: screenWidth * 0.05),
+                top: screenHeight * 0.05,
+                right: screenWidth * 0.05,
+                left: screenWidth * 0.05,
+              ),
               child: Column(
                 children: [
                   Image.asset(
@@ -187,9 +187,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     width: double.infinity,
                     height: screenHeight * 0.08,
                   ),
-                  SizedBox(
-                    height: screenHeight * 0.08,
-                  ),
+                  SizedBox(height: screenHeight * 0.08),
                   Form(
                     key: _formKey,
                     child: Column(
@@ -200,31 +198,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.04,
-                        ),
-                        const Text(
-                          'Email',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.009,
-                        ),
+                        SizedBox(height: screenHeight * 0.04),
+                        const Text('Email', style: TextStyle(fontSize: 15)),
+                        SizedBox(height: screenHeight * 0.009),
                         TextFormField(
-                          autofillHints:
-                              rememberMe ? [AutofillHints.email] : null,
+                          autofillHints: rememberMe
+                              ? [AutofillHints.email]
+                              : null,
                           decoration: const InputDecoration(
                             filled: false,
                             contentPadding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 10),
+                              vertical: 12,
+                              horizontal: 10,
+                            ),
                             focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Color(0xff0a519d))),
+                              borderSide: BorderSide(color: Color(0xff0a519d)),
+                            ),
                             enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                             border: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey),
                             ),
@@ -233,51 +230,49 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           validator: (value) =>
                               MyValidation.validateEmail(value),
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.025,
-                        ),
-                        const Text(
-                          'Password',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.009,
-                        ),
+                        SizedBox(height: screenHeight * 0.025),
+                        const Text('Password', style: TextStyle(fontSize: 15)),
+                        SizedBox(height: screenHeight * 0.009),
                         TextFormField(
-                            autofillHints:
-                                rememberMe ? [AutofillHints.password] : null,
-                            obscureText: isObscure,
-                            decoration: InputDecoration(
-                                filled: false,
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 12, horizontal: 10),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Color(0xff0a519d))),
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isObscure = !isObscure;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      isObscure
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                      color: Colors.grey,
-                                    ))),
-                            controller: passwordController,
-                            validator: (value) {
-                              return MyValidation.validatePassword(value);
-                            }),
-                        SizedBox(
-                          height: screenHeight * 0.01,
+                          autofillHints: rememberMe
+                              ? [AutofillHints.password]
+                              : null,
+                          obscureText: isObscure,
+                          decoration: InputDecoration(
+                            filled: false,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 10,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xff0a519d)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isObscure = !isObscure;
+                                });
+                              },
+                              icon: Icon(
+                                isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          controller: passwordController,
+                          // validator: (value) {
+                          //   return MyValidation.validatePassword(value);
+                          // }
                         ),
+                        SizedBox(height: screenHeight * 0.01),
                         Row(
                           children: [
                             Checkbox(
@@ -296,9 +291,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.02,
-                        ),
+                        SizedBox(height: screenHeight * 0.02),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             // backgroundColor: Colors.pinkAccent,
@@ -321,9 +314,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 )
                               : Text(
                                   'LOGIN',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
+                                  style: TextStyle(color: Colors.white),
                                 ),
                         ),
                         Row(
@@ -331,48 +322,53 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           children: [
                             TextButton(
                               style: const ButtonStyle(
-                                  overlayColor:
-                                      WidgetStatePropertyAll(Colors.grey)),
+                                overlayColor: WidgetStatePropertyAll(
+                                  Colors.grey,
+                                ),
+                              ),
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ForgotPassword()));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPassword(),
+                                  ),
+                                );
                               },
                               child: const Text(
                                 'Forgot Password?',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 13),
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
                               ),
-                            )
+                            ),
                           ],
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.01,
-                        ),
+                        SizedBox(height: screenHeight * 0.01),
                         Row(
                           children: [
                             const Expanded(child: Divider(color: Colors.grey)),
                             Container(
                               decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(color: Colors.grey)),
+                                shape: BoxShape.rectangle,
+                                border: Border.all(color: Colors.grey),
+                              ),
                               child: const Padding(
                                 padding: EdgeInsets.all(2),
                                 child: Text(
                                   'OR',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 13),
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ),
-                            const Expanded(child: Divider(color: Colors.grey))
+                            const Expanded(child: Divider(color: Colors.grey)),
                           ],
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.02,
-                        ),
+                        SizedBox(height: screenHeight * 0.02),
                         Center(
                           child: Text(
                             'Continue with Google',
@@ -383,9 +379,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        SizedBox(height: 10),
                         Column(
                           children: [
                             //for normal user
@@ -408,10 +402,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               isLoading = true;
                                             });
 
-                                            final GoogleSignIn googleSignIn =
-                                                GoogleSignIn(
+                                            final GoogleSignIn
+                                            googleSignIn = GoogleSignIn(
                                               clientId: DefaultFirebaseOptions
-                                                  .currentPlatform.iosClientId,
+                                                  .currentPlatform
+                                                  .iosClientId,
                                               scopes: ['email', 'profile'],
                                               forceCodeForRefreshToken: true,
                                             );
@@ -419,8 +414,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             await googleSignIn.signOut();
 
                                             final GoogleSignInAccount?
-                                                googleUser =
-                                                await googleSignIn.signIn();
+                                            googleUser = await googleSignIn
+                                                .signIn();
 
                                             if (googleUser == null) {
                                               setState(() {
@@ -435,26 +430,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             final userId = googleUser.id;
 
                                             final googleSignInResult = await ref
-                                                .read(googleSignInProvider({
-                                              'email': userEmail,
-                                              'fullName': userName,
-                                              'uid': userId,
-                                            }).future);
+                                                .read(
+                                                  googleSignInProvider({
+                                                    'email': userEmail,
+                                                    'fullName': userName,
+                                                    'uid': userId,
+                                                  }).future,
+                                                );
 
                                             if (rememberMe) {
                                               final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
+                                                  await SharedPreferences.getInstance();
                                               await prefs.setString(
-                                                  'email', userEmail);
+                                                'email',
+                                                userEmail,
+                                              );
                                               await prefs.setBool(
-                                                  'rememberMe', true);
+                                                'rememberMe',
+                                                true,
+                                              );
                                             }
 
                                             // Check if user needs to input phone number
                                             final needsPhoneInput =
                                                 await _shouldShowPhoneInput(
-                                                    userEmail, ref);
+                                                  userEmail,
+                                                  ref,
+                                                );
 
                                             if (mounted) {
                                               if (needsPhoneInput) {
@@ -464,20 +466,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         PhoneNumberInputScreen(
-                                                      userEmail: userEmail,
-                                                      userName: userName,
-                                                    ),
+                                                          userEmail: userEmail,
+                                                          userName: userName,
+                                                        ),
                                                   ),
                                                 );
                                               } else {
                                                 // User already has phone number, go directly to HomePage
                                                 ref.refresh(
-                                                    userDetailsProvider);
+                                                  userDetailsProvider,
+                                                );
                                                 Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const HomePage()),
+                                                    builder: (context) =>
+                                                        const HomePage(),
+                                                  ),
                                                 );
                                               }
                                             }
@@ -487,20 +491,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             });
 
                                             if (mounted) {
-                                              String errorMessage =
-                                                  e.toString();
-                                              if (errorMessage
-                                                  .startsWith('Exception: ')) {
-                                                errorMessage =
-                                                    errorMessage.replaceFirst(
-                                                        'Exception: ', '');
+                                              String errorMessage = e
+                                                  .toString();
+                                              if (errorMessage.startsWith(
+                                                'Exception: ',
+                                              )) {
+                                                errorMessage = errorMessage
+                                                    .replaceFirst(
+                                                      'Exception: ',
+                                                      '',
+                                                    );
                                               }
 
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 SnackBar(
                                                   content: Text(
-                                                      'Google Sign-In failed: $errorMessage'),
+                                                    'Google Sign-In failed',
+                                                  ),
                                                   backgroundColor: Colors.red,
                                                 ),
                                               );
@@ -524,9 +533,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
+                            SizedBox(height: 10),
 
                             // For Organization Google Sign-In
                             Align(
@@ -548,10 +555,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                               isLoading = true;
                                             });
 
-                                            final GoogleSignIn googleSignIn =
-                                                GoogleSignIn(
+                                            final GoogleSignIn
+                                            googleSignIn = GoogleSignIn(
                                               clientId: DefaultFirebaseOptions
-                                                  .currentPlatform.iosClientId,
+                                                  .currentPlatform
+                                                  .iosClientId,
                                               scopes: ['email', 'profile'],
                                               forceCodeForRefreshToken: true,
                                             );
@@ -559,8 +567,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             await googleSignIn.signOut();
 
                                             final GoogleSignInAccount?
-                                                googleUser =
-                                                await googleSignIn.signIn();
+                                            googleUser = await googleSignIn
+                                                .signIn();
 
                                             if (googleUser == null) {
                                               setState(() {
@@ -574,28 +582,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                 googleUser.displayName ?? '';
                                             final userId = googleUser.id;
 
-                                            final googleSignInResult =
-                                                await ref.read(
-                                                    organizationGoogleSignInProvider({
-                                              'email': userEmail,
-                                              'fullName': userName,
-                                              'uid': userId,
-                                            }).future);
+                                            final googleSignInResult = await ref
+                                                .read(
+                                                  organizationGoogleSignInProvider(
+                                                    {
+                                                      'email': userEmail,
+                                                      'fullName': userName,
+                                                      'uid': userId,
+                                                    },
+                                                  ).future,
+                                                );
 
                                             if (rememberMe) {
                                               final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
+                                                  await SharedPreferences.getInstance();
                                               await prefs.setString(
-                                                  'email', userEmail);
+                                                'email',
+                                                userEmail,
+                                              );
                                               await prefs.setBool(
-                                                  'rememberMe', true);
+                                                'rememberMe',
+                                                true,
+                                              );
                                             }
 
                                             // Check if user needs to input phone number
                                             final needsPhoneInput =
                                                 await _shouldShowPhoneInput(
-                                                    userEmail, ref);
+                                                  userEmail,
+                                                  ref,
+                                                );
 
                                             if (mounted) {
                                               if (needsPhoneInput) {
@@ -605,20 +621,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         PhoneNumberInputScreen(
-                                                      userEmail: userEmail,
-                                                      userName: userName,
-                                                    ),
+                                                          userEmail: userEmail,
+                                                          userName: userName,
+                                                        ),
                                                   ),
                                                 );
                                               } else {
                                                 // User already has phone number, go directly to HomePage
                                                 ref.refresh(
-                                                    userDetailsProvider);
+                                                  userDetailsProvider,
+                                                );
                                                 Navigator.pushReplacement(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const HomePage()),
+                                                    builder: (context) =>
+                                                        const HomePage(),
+                                                  ),
                                                 );
                                               }
                                             }
@@ -628,20 +646,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             });
 
                                             if (mounted) {
-                                              String errorMessage =
-                                                  e.toString();
-                                              if (errorMessage
-                                                  .startsWith('Exception: ')) {
-                                                errorMessage =
-                                                    errorMessage.replaceFirst(
-                                                        'Exception: ', '');
+                                              String errorMessage = e
+                                                  .toString();
+                                              if (errorMessage.startsWith(
+                                                'Exception: ',
+                                              )) {
+                                                errorMessage = errorMessage
+                                                    .replaceFirst(
+                                                      'Exception: ',
+                                                      '',
+                                                    );
                                               }
 
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 SnackBar(
                                                   content: Text(
-                                                      'Google Sign-In failed: $errorMessage'),
+                                                    'Google Sign-In failed',
+                                                  ),
                                                   backgroundColor: Colors.red,
                                                 ),
                                               );
@@ -666,9 +689,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: screenHeight * 0.018,
-                        ),
+                        SizedBox(height: screenHeight * 0.018),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -677,24 +698,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               style: TextStyle(color: Colors.black),
                             ),
                             TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SignupPage(),
-                                      ));
-                                },
-                                style: TextButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 6),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignupPage(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
                                 ),
-                                child: const Text(
-                                  'SIGN UP',
-                                  style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: Colors.black),
-                                ))
+                              ),
+                              child: const Text(
+                                'SIGN UP',
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -758,7 +782,7 @@ class _PhoneNumberInputScreenState
 
         if (success) {
           // Refresh user details after successful update
-          ref.refresh(userDetailsProvider);
+          ref.invalidate(userDetailsProvider);
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -801,7 +825,7 @@ class _PhoneNumberInputScreenState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error updating profile: $e'),
+              content: Text('Error updating profile'),
               backgroundColor: Colors.red,
             ),
           );
@@ -854,7 +878,6 @@ class _PhoneNumberInputScreenState
                     //   height: screenHeight * 0.08,
                     // ),
                     // SizedBox(height: screenHeight * 0.06),
-
                     Text(
                       'Welcome, ${widget.userName}!',
                       style: const TextStyle(
@@ -867,18 +890,12 @@ class _PhoneNumberInputScreenState
 
                     Text(
                       'Please add your phone number to complete your profile',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: screenHeight * 0.04),
 
-                    const Text(
-                      'Phone Number',
-                      style: TextStyle(fontSize: 15),
-                    ),
+                    const Text('Phone Number', style: TextStyle(fontSize: 15)),
                     SizedBox(height: screenHeight * 0.009),
 
                     TextFormField(

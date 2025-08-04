@@ -1,7 +1,7 @@
 name: eventsolutions
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.0+1
+version: 1.0.4+4
 environment:
   sdk: ^3.6.2
 dependencies:
@@ -10,10 +10,10 @@ dependencies:
   riverpod: ^2.6.1
   flutter_riverpod: ^2.6.1    
   cupertino_icons: ^1.0.8
-  device_preview: ^1.2.0
+
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
-  intl: ^0.19.0
+  intl: ^0.20.2
   connectivity_plus: ^6.1.4
   image_picker: ^1.1.2
   camera: ^0.11.1
@@ -23,20 +23,16 @@ dependencies:
   photo_view: ^0.15.0
   google_sign_in: ^6.3.0
   firebase_core: ^3.13.1
-  flutter_local_notifications: ^19.2.1
   timezone: ^0.10.1
   permission_handler: ^12.0.0+1
-  flutter_native_splash: ^2.4.4
-  shimmer: ^3.0.0
   mobile_scanner: ^6.0.10
+  cached_network_image: ^3.4.1
+  syncfusion_flutter_pdfviewer: ^29.1.38
+  device_info_plus: ^11.5.0
+  in_app_update: ^4.2.3
 
-flutter_native_splash:
-  color: "#F3F3F3"
-  image: assets/splash_logo.png
-  color_dark: "#F3F3F3"
-  android_12:
-    image: assets/splash_logo.png 
-  web: false
+
+
 
 
   
@@ -55,6 +51,9 @@ flutter:
 
 
   fonts:
+    - family: Inter
+      fonts: 
+        - asset: assets/fonts/Inter-Black.ttf  
     - family: Montserrat
       fonts: 
         - asset: assets/fonts/Montserrat-Black.ttf

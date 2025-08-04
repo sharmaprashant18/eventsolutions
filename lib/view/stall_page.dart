@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eventsolutions/model/stall/stall_model.dart';
 import 'package:eventsolutions/provider/stall_provider.dart';
 import 'package:eventsolutions/view/hold_stall.dart';
@@ -123,175 +126,185 @@ class _StallPageState extends ConsumerState<StallPage> {
     const baseUrlImage = 'http://182.93.94.210:8001';
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: const Text(
-          'Select Stall',
-          style:
-              TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2D5A5A)),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: const Text(
+            'Select Stall',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Color(0xFF2D5A5A)),
+          ),
+          actions: [
+            if (isMultiSelectMode && selectedStallIds.isNotEmpty)
+              IconButton(
+                icon: const Icon(Icons.check),
+                onPressed: () {
+                  _showActionDialog(context, selectedStallIds.toList());
+                },
+              ),
+          ],
         ),
-        actions: [
-          if (isMultiSelectMode && selectedStallIds.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {
-                _showActionDialog(context, selectedStallIds.toList());
-              },
-            ),
-        ],
-      ),
-      body: stalls.when(
-        data: (stalls) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: screenWidth * 0.05,
-                    right: screenWidth * 0.05,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: screenHeight * 0.3,
-                        width: screenWidth,
-                        child: PageView.builder(
-                          controller: PageController(viewportFraction: 1),
-                          itemCount: stalls.floorPlans.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: PhotoView(
-                                  imageProvider: NetworkImage(
-                                      '$baseUrlImage${stalls.floorPlans[index]}'),
-                                  backgroundDecoration: const BoxDecoration(
-                                      color: Colors.transparent),
-                                  loadingBuilder: (context, event) =>
-                                      const Center(
-                                          child: CircularProgressIndicator()),
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Column(
-                                    children: [
-                                      Image.asset('assets/error.png',
-                                          fit: BoxFit.cover),
-                                      const Text(
-                                        'No Images Found',
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  minScale:
-                                      PhotoViewComputedScale.contained * 0.5,
-                                  maxScale:
-                                      PhotoViewComputedScale.covered * 6.0,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      const Text(
-                        'Select stall',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      gridViewItem(context, stalls),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                decoration: const BoxDecoration(
-                                    color: Colors.blue, shape: BoxShape.circle),
-                                height: screenHeight * 0.015,
-                                width: screenWidth * 0.1,
-                              ),
-                              const Text('Holded',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                decoration: const BoxDecoration(
-                                    color: Color(0xff57EB63),
-                                    shape: BoxShape.circle),
-                                height: screenHeight * 0.015,
-                                width: screenWidth * 0.1,
-                              ),
-                              const Text('Booked',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                height: screenHeight * 0.015,
-                                width: screenWidth * 0.1,
-                              ),
-                              const Text('Available',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.13),
-                if (!isMultiSelectMode)
+        body: stalls.when(
+          data: (stalls) {
+            if (stalls.stall.isEmpty) {
+              return Center(
+                child: Text('No stalls available'),
+              );
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: ElevatedButton(
-                      onPressed: selectedStallIds.isNotEmpty
-                          ? () {
-                              _showActionDialog(
-                                  context, selectedStallIds.toList());
-                            }
-                          : null,
-                      child: const Text('Proceed to Booking'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2D5A5A),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.3,
-                          vertical: screenHeight * 0.015,
+                    padding: EdgeInsets.only(
+                      left: screenWidth * 0.05,
+                      right: screenWidth * 0.05,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: screenHeight * 0.3,
+                          width: screenWidth,
+                          child: PageView.builder(
+                            controller: PageController(viewportFraction: 1),
+                            itemCount: stalls.floorPlans.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: PhotoView(
+                                    imageProvider: CachedNetworkImageProvider(
+                                      '$baseUrlImage${stalls.floorPlans[index]}',
+                                    ),
+                                    backgroundDecoration: const BoxDecoration(
+                                        color: Colors.transparent),
+                                    loadingBuilder: (context, event) =>
+                                        const Center(
+                                            child: CircularProgressIndicator()),
+                                    errorBuilder:
+                                        (context, error, stackTrace) => Column(
+                                      children: [
+                                        Image.asset('assets/error.png',
+                                            fit: BoxFit.cover),
+                                        const Text(
+                                          'No Images Found',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    minScale:
+                                        PhotoViewComputedScale.contained * 0.5,
+                                    maxScale:
+                                        PhotoViewComputedScale.covered * 6.0,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                        SizedBox(height: screenHeight * 0.02),
+                        const Text(
+                          'Select stall',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 17),
+                        ),
+                        SizedBox(height: screenHeight * 0.02),
+                        gridViewItem(context, stalls),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      color: Colors.blue,
+                                      shape: BoxShape.circle),
+                                  height: screenHeight * 0.015,
+                                  width: screenWidth * 0.1,
+                                ),
+                                const Text('Holded',
+                                    style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: const BoxDecoration(
+                                      color: Color(0xff57EB63),
+                                      shape: BoxShape.circle),
+                                  height: screenHeight * 0.015,
+                                  width: screenWidth * 0.1,
+                                ),
+                                const Text('Booked',
+                                    style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  height: screenHeight * 0.015,
+                                  width: screenWidth * 0.1,
+                                ),
+                                const Text('Available',
+                                    style: TextStyle(color: Colors.grey)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.13),
+                  if (!isMultiSelectMode)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: ElevatedButton(
+                        onPressed: selectedStallIds.isNotEmpty
+                            ? () {
+                                _showActionDialog(
+                                    context, selectedStallIds.toList());
+                              }
+                            : null,
+                        child: const Text('Proceed to Booking'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2D5A5A),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.3,
+                            vertical: screenHeight * 0.015,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-          );
-        },
-        error: (error, stackTrace) {
-          return Center(child: Text('Error: $error'));
-        },
-        loading: () {
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
+                ],
+              ),
+            );
+          },
+          error: (error, stackTrace) {
+            log('Error:$error');
+            return Center(
+              child: Text('Failed to get the stalls'),
+            );
+          },
+          loading: () {
+            return const Center(child: CircularProgressIndicator());
+          },
+        ));
   }
 
   Widget gridViewItem(BuildContext context, StallData stalls) {

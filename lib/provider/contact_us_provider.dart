@@ -7,6 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final contactusProvider =
     FutureProvider.family<ContactUsModel, Map<String, dynamic>>((ref, data) {
   final contactService = ref.read(eventServiceProvider);
-  return contactService.register(
+  return contactService.contactUs(
       data['email']!, data['name']!, data['message']!);
 });

@@ -114,7 +114,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('OTP sent to your email. Please verify to continue.'),
-            backgroundColor: Colors.green,
+            backgroundColor: Color(0xff0a519d),
           ),
         );
       }
@@ -390,7 +390,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         color: Colors.white, strokeWidth: 2),
                   )
                 : Text(
-                    isOtpSent ? 'OTP SENT' : 'SEND OTP',
+                    isOtpSent ? 'OTP SENT' : 'SIGN UP   ',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -441,7 +441,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               contentPadding:
                   EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green)),
+                  borderSide: BorderSide(color: Color(0xff0a519d))),
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),
               border: OutlineInputBorder(
@@ -581,98 +581,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             width: screenWidth * 0.7,
                             height: screenHeight * 0.05,
                             child: TextButton.icon(
-                              // onPressed: isLoading || isOtpSent
-                              //     ? null
-                              //     : () async {
-                              //         try {
-                              //           setState(() {
-                              //             isLoading = true;
-                              //           });
-
-                              //           // Initialize GoogleSignIn to always show account picker
-                              //           final GoogleSignIn googleSignIn =
-                              //               GoogleSignIn(
-                              //             clientId: DefaultFirebaseOptions
-                              //                 .currentPlatform.iosClientId,
-                              //             scopes: ['email', 'profile'],
-                              //             forceCodeForRefreshToken: true,
-                              //           );
-
-                              //           // Disconnect and sign out to force account selection
-                              //           // await googleSignIn.disconnect();
-                              //           await googleSignIn.signOut();
-
-                              //           // Trigger Google Sign-In flow - this will now show account picker
-                              //           final GoogleSignInAccount? googleUser =
-                              //               await googleSignIn.signIn();
-
-                              //           if (googleUser == null) {
-                              //             // User cancelled the sign-in
-                              //             setState(() {
-                              //               isLoading = false;
-                              //             });
-                              //             return;
-                              //           }
-
-                              //           // Get user data
-                              //           final userEmail = googleUser.email;
-                              //           final userName =
-                              //               googleUser.displayName ?? '';
-                              //           final userId = googleUser.id;
-
-                              //           final googleSignInResult = await ref
-                              //               .read(googleSignInProvider({
-                              //             'email': userEmail,
-                              //             'fullName': userName,
-                              //             'uid': userId,
-                              //           }).future);
-
-                              //           // Save credentials if rememberMe is checked
-                              //           if (rememberMe) {
-                              //             final prefs = await SharedPreferences
-                              //                 .getInstance();
-                              //             await prefs.setString(
-                              //                 'email', userEmail);
-                              //             await prefs.setBool(
-                              //                 'rememberMe', true);
-                              //           }
-
-                              //           // Refresh user details and navigate to HomePage
-                              //           ref.refresh(userDetailsProvider);
-                              //           if (mounted) {
-                              //             Navigator.pushReplacement(
-                              //               context,
-                              //               MaterialPageRoute(
-                              //                   builder: (context) =>
-                              //                       const HomePage()),
-                              //             );
-                              //           }
-                              //         } catch (e) {
-                              //           setState(() {
-                              //             isLoading = false;
-                              //           });
-
-                              //           if (mounted) {
-                              //             String errorMessage = e.toString();
-                              //             if (errorMessage
-                              //                 .startsWith('Exception: ')) {
-                              //               errorMessage =
-                              //                   errorMessage.replaceFirst(
-                              //                       'Exception: ', '');
-                              //             }
-
-                              //             ScaffoldMessenger.of(context)
-                              //                 .showSnackBar(
-                              //               SnackBar(
-                              //                 content: Text(
-                              //                     'Google Sign-In failed: $errorMessage'),
-                              //                 backgroundColor: Colors.red,
-                              //               ),
-                              //             );
-                              //           }
-                              //         }
-                              //       },
-
                               // For normal user Google Sign-In
                               onPressed: isLoading
                                   ? null
@@ -809,97 +717,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             width: screenWidth * 0.7,
                             height: screenHeight * 0.05,
                             child: TextButton.icon(
-                              // onPressed: isLoading || isOtpSent
-                              //     ? null
-                              //     : () async {
-                              //         try {
-                              //           setState(() {
-                              //             isLoading = true;
-                              //           });
-
-                              //           // Initialize GoogleSignIn with forceCodeForRefreshToken to show account picker
-                              //           final GoogleSignIn googleSignIn =
-                              //               GoogleSignIn(
-                              //             clientId: DefaultFirebaseOptions
-                              //                 .currentPlatform.iosClientId,
-                              //             scopes: ['email', 'profile'],
-                              //             // Force account selection dialog
-                              //             forceCodeForRefreshToken: true,
-                              //           );
-
-                              //           // Sign out first to ensure account picker shows
-                              //           await googleSignIn.signOut();
-
-                              //           // Trigger Google Sign-In flow - this will now show account picker
-                              //           final GoogleSignInAccount? googleUser =
-                              //               await googleSignIn.signIn();
-
-                              //           if (googleUser == null) {
-                              //             // User cancelled the sign-in
-                              //             setState(() {
-                              //               isLoading = false;
-                              //             });
-                              //             return;
-                              //           }
-
-                              //           // Get user data
-                              //           final userEmail = googleUser.email;
-                              //           final userName =
-                              //               googleUser.displayName ?? '';
-                              //           final userId = googleUser.id;
-
-                              //           final googleSignInResult = await ref.read(
-                              //               organizationGoogleSignInProvider({
-                              //             'email': userEmail,
-                              //             'fullName': userName,
-                              //             'uid': userId,
-                              //           }).future);
-
-                              //           // Save credentials if rememberMe is checked
-                              //           if (rememberMe) {
-                              //             final prefs = await SharedPreferences
-                              //                 .getInstance();
-                              //             await prefs.setString(
-                              //                 'email', userEmail);
-                              //             await prefs.setBool(
-                              //                 'rememberMe', true);
-                              //           }
-
-                              //           // Refresh user details and navigate to HomePage
-                              //           ref.refresh(userDetailsProvider);
-                              //           if (mounted) {
-                              //             Navigator.pushReplacement(
-                              //               context,
-                              //               MaterialPageRoute(
-                              //                   builder: (context) =>
-                              //                       const HomePage()),
-                              //             );
-                              //           }
-                              //         } catch (e) {
-                              //           setState(() {
-                              //             isLoading = false;
-                              //           });
-
-                              //           if (mounted) {
-                              //             String errorMessage = e.toString();
-                              //             if (errorMessage
-                              //                 .startsWith('Exception: ')) {
-                              //               errorMessage =
-                              //                   errorMessage.replaceFirst(
-                              //                       'Exception: ', '');
-                              //             }
-
-                              //             ScaffoldMessenger.of(context)
-                              //                 .showSnackBar(
-                              //               SnackBar(
-                              //                 content: Text(
-                              //                     'Google Sign-In failed: $errorMessage'),
-                              //                 backgroundColor: Colors.red,
-                              //               ),
-                              //             );
-                              //           }
-                              //         }
-                              //       },
                               // For organization Google Sign-In
                               onPressed: isLoading
                                   ? null

@@ -5,6 +5,7 @@ import 'package:eventsolutions/api.dart';
 import 'package:eventsolutions/model/events/all_events_model.dart';
 import 'package:eventsolutions/model/contact_us_model.dart';
 import 'package:eventsolutions/model/event_register_model.dart';
+import 'package:eventsolutions/model/events/event_by_event_id.dart';
 import 'package:eventsolutions/model/events/ongoing.dart';
 import 'package:eventsolutions/model/events/other_events_model.dart';
 import 'package:eventsolutions/model/events/reedem_ticket_features_model.dart';
@@ -12,6 +13,7 @@ import 'package:eventsolutions/model/events/ticket_features_model.dart';
 import 'package:eventsolutions/model/events/upcoming.dart';
 import 'package:eventsolutions/model/our_services_model.dart';
 import 'package:eventsolutions/model/our_team_model.dart';
+import 'package:eventsolutions/model/qr_code.dart';
 import 'package:eventsolutions/model/ticket_model.dart';
 import 'package:eventsolutions/services/auth_services/dio_client.dart';
 import 'package:eventsolutions/services/token_storage.dart';
@@ -39,7 +41,7 @@ class EventServices {
       throw Exception('Dio error: ${e.message}');
     } catch (e) {
       debugPrint('Unexpected error: $e');
-      throw Exception('Unexpected error: $e');
+      throw Exception('Unexpected error');
     }
   }
 
@@ -121,23 +123,30 @@ class EventServices {
     String name,
     String number,
     String tierName,
-    File paymentScreenshot,
+    File? paymentScreenshot,
     String eventId,
   ) async {
     try {
-      String fileName = paymentScreenshot.path.split('/').last;
-
-      FormData formData = FormData.fromMap({
+      // Create base form data map
+      Map<String, dynamic> formDataMap = {
         'eventId': eventId,
         'email': email,
         'name': name,
         'number': number,
         'tierName': tierName,
-        'paymentScreenshot': await MultipartFile.fromFile(
+      };
+
+      // Only add payment screenshot if it's provided
+      if (paymentScreenshot != null) {
+        String fileName = paymentScreenshot.path.split('/').last;
+        formDataMap['paymentScreenshot'] = await MultipartFile.fromFile(
           paymentScreenshot.path,
           filename: fileName,
-        ),
-      });
+        );
+      }
+
+      FormData formData = FormData.fromMap(formDataMap);
+
       final token = await TokenStorage().getAccessToken();
       final response = await Dio().post(
         'http://182.93.94.210:8001/api/v1/register-tickets',
@@ -147,21 +156,55 @@ class EventServices {
             headers: {"Authorization": "Bearer $token"}),
       );
 
-      if (response.statusCode == 201) {
-        return RegistrationData.fromJson(response.data['data']);
+      // ADD DETAILED LOGGING
+      debugPrint('Response Status Code: ${response.statusCode}');
+      debugPrint('Response Data: ${response.data}');
+      debugPrint('Response Headers: ${response.headers}');
+
+      // EXPAND SUCCESS CONDITION - Backend might return 200 or 201
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Check if response.data has the expected structure
+        if (response.data is Map<String, dynamic>) {
+          final responseMap = response.data as Map<String, dynamic>;
+
+          // Handle different response structures
+          if (responseMap.containsKey('data')) {
+            return RegistrationData.fromJson(responseMap['data']);
+          } else if (responseMap.containsKey('success') &&
+              responseMap['success'] == true) {
+            // If the response structure is different, adapt accordingly
+            return RegistrationData.fromJson(responseMap);
+          } else {
+            // Log the actual response structure
+            debugPrint('Unexpected response structure: $responseMap');
+            throw Exception('Unexpected response format from server');
+          }
+        } else {
+          debugPrint('Response data is not a Map: ${response.data}');
+          throw Exception('Invalid response format from server');
+        }
       } else {
-        throw Exception('Failed to register ticket: ${response.statusMessage}');
+        debugPrint('Unexpected status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to register ticket: HTTP ${response.statusCode}');
       }
     } on DioException catch (e) {
+      debugPrint('DioException: ${e.toString()}');
+      debugPrint('DioException Type: ${e.type}');
+      debugPrint('DioException Response: ${e.response?.data}');
+      debugPrint('DioException Status Code: ${e.response?.statusCode}');
+
       if (e.response != null) {
-        throw Exception(
-          e.response?.data['message'] ?? 'Something went wrong',
-        );
+        final errorMessage = e.response?.data is Map
+            ? e.response?.data['message'] ?? 'Something went wrong'
+            : e.response?.data?.toString() ?? 'Something went wrong';
+        throw Exception(errorMessage);
       } else {
         throw Exception('Network error: ${e.message}');
       }
     } catch (e) {
-      debugPrint('Unexpected error: $e');
+      debugPrint('Unexpected error in registerEvent: $e');
+      debugPrint('Error type: ${e.runtimeType}');
       throw Exception('Unexpected error: $e');
     }
   }
@@ -181,7 +224,23 @@ class EventServices {
     }
   }
 
-  Future<ContactUsModel> register(
+  Future<EventByEventId> fetchEventByEventId(String eventId) async {
+    final token = await TokenStorage().getAccessToken();
+    final response = await Dio().get(
+      ApiServices.eventByEventId(eventId),
+      options: Options(headers: {'Authorization': "Bearer $token"}),
+    );
+
+    if (response.statusCode == 200) {
+      final eventData = EventByEventId.fromJson(response.data['data']);
+      log('Event fetched successfully: $eventData');
+      return eventData;
+    } else {
+      throw Exception('Failed to fetch event: ${response.statusMessage}');
+    }
+  }
+
+  Future<ContactUsModel> contactUs(
       String email, String name, String message) async {
     try {
       final response = await dio.post('/contact',
@@ -207,8 +266,24 @@ class EventServices {
           'Authorization': 'Bearer $token',
         }),
       );
+
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['data'];
+
+        // Handle the case where API returns only entry status
+        if (data.isNotEmpty &&
+            data.first.containsKey('Entry') &&
+            data.first.keys.length == 1) {
+          // This means entry is false, return empty list to indicate entry not allowed
+          if (data.first['Entry'] == false) {
+            throw Exception('Entry not allowed');
+          }
+          // If entry is true, show printing dialog and navigate back
+          if (data.first['Entry'] == true) {
+            throw Exception('Entry true - printing ticket');
+          }
+        }
+
         final List<TicketFeaturesModel> featuresofTicket =
             data.map((e) => TicketFeaturesModel.fromJson(e)).toList();
         return featuresofTicket;
@@ -216,11 +291,15 @@ class EventServices {
         throw Exception('Error getting the features');
       }
     } on DioException catch (e) {
-      log('$e');
-      throw Exception('Error getting the features');
+      log('Dio error: $e');
+      throw Exception('Error getting the features: ${e.message}');
     } catch (e) {
-      log('$e');
-      throw Exception('Error getting the features');
+      log('Unexpected error: $e');
+      if (e.toString().contains('Entry not allowed') ||
+          e.toString().contains('Entry true - printing ticket')) {
+        rethrow;
+      }
+      throw Exception('Error getting the features: $e');
     }
   }
 
@@ -287,6 +366,28 @@ class EventServices {
       }
     } catch (e) {
       throw Exception('Error to get the team members');
+    }
+  }
+
+  Future<List<QrCodeModel>> getQrCode() async {
+    try {
+      final token = await TokenStorage().getAccessToken();
+      final response = await dio.get(ApiServices.qrCode,
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      if (response.statusCode == 200) {
+        final List<dynamic> qr = response.data['data'];
+        final List<QrCodeModel> qrData =
+            qr.map((e) => QrCodeModel.fromJson(e)).toList();
+        return qrData;
+      } else {
+        throw Exception('Error');
+      }
+    } on DioException catch (e) {
+      log('$e');
+      throw Exception('Error');
+    } catch (e) {
+      log('$e');
+      throw Exception('Error');
     }
   }
 }

@@ -58,6 +58,7 @@ class FaqPage extends StatelessWidget {
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16),
             bottomRight: Radius.circular(16),
+            bottomLeft: Radius.circular(16),
           ),
         ),
         child: Theme(
@@ -68,30 +69,27 @@ class FaqPage extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Container(
-              // color: const Color.fromARGB(255, 188, 248, 219),
-              color: Color(0xff0a519d),
-
-              child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-                title: Text(
-                  question,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500, color: Colors.white),
-                ),
-                children: [
-                  Container(
-                    width: double.infinity,
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 12.0),
-                    child: Text(
-                      answer,
-                      style: const TextStyle(color: Colors.black87),
-                    ),
-                  ),
-                ],
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+              iconColor: Colors.white,
+              collapsedIconColor: Colors.white,
+              title: Text(
+                question,
+                style:
+                    TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
               ),
+              children: [
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  child: Text(
+                    answer,
+                    style: const TextStyle(color: Colors.black87),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

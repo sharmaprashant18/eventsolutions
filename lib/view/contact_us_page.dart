@@ -58,12 +58,20 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
 
         if (contactUsModel.success) {
           showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Thank You!'),
+              backgroundColor: Colors.white,
+              title: const Text(
+                'Thank You!',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               content: const Text('Thank you for contacting us!'),
               actions: [
-                TextButton(
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStatePropertyAll(Color(0xff0a519d))),
                   onPressed: () {
                     Navigator.of(context).pop();
                     _formKey.currentState!.reset();
@@ -75,7 +83,10 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                       _selectedCountryCode = '+977';
                     });
                   },
-                  child: const Text('OK'),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -83,7 +94,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(contactUsModel.message),
+              content: Text('Failed to send the contact form'),
               backgroundColor: Colors.red,
             ),
           );
@@ -102,28 +113,30 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    // final screenWidth = screenSize.width;
+    final screenWidth = screenSize.width;
     final screenHeight = screenSize.height;
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.only(
           top: screenHeight * 0.06,
           bottom: screenHeight * 0.01,
+          right: screenWidth * 0.03,
+          left: screenWidth * 0.03,
         ),
-        child: Column(
-          children: [
-            Text(
-              'Contact Us',
-              style: TextStyle(
-                color: Color(0xFF2D5A5A),
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              Text(
+                'Contact Us',
+                style: TextStyle(
+                  color: Color(0xFF2D5A5A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(right: 16, left: 16),
-              child: Column(
+              SizedBox(height: screenHeight * 0.02),
+              Column(
                 children: [
                   Card(
                     margin: EdgeInsets.zero,
@@ -211,7 +224,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                                   "https://maps.app.goo.gl/Mm18oQMJmQBDj1H48"));
                             },
                             child: Text(
-                              'Jwagal, Lalitpur, Nepal',
+                              'Jwagal-10, Lalitpur, Nepal',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -233,13 +246,13 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                               InkWell(
                                   onTap: () {
                                     launchUrl(
-                                      Uri.parse("tel:+977-01-5260535"),
+                                      Uri.parse("tel:+977-01-5268103"),
                                       mode: LaunchMode.externalApplication,
                                     );
                                     debugPrint("Phone1 link tapped");
                                   },
                                   child: Text(
-                                    '+977-01-5260535',
+                                    '+977-01-5268535',
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -354,8 +367,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
                   )
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -376,8 +389,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
           text: TextSpan(
             text: label,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
               color: Color(0xFF2D5A5A),
             ),
             children: isRequired
@@ -431,7 +444,7 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
 
   Widget _buildPhoneField() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dropdownWidth = screenWidth * 0.35; // 35% of screen width
+    final dropdownWidth = screenWidth * 0.35;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,8 +452,8 @@ class _ContactUsPageState extends ConsumerState<ContactUsPage> {
         const Text(
           'Phone Number',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Color(0xFF2D5A5A),
           ),
         ),

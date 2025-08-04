@@ -55,8 +55,11 @@ final multipleStallBookingProvider =
   (ref, data) async {
     final stallService = ref.watch(stallServiceProvider);
     try {
+      final stallIds = data['stallIds'] is String
+          ? [data['stallIds'] as String]
+          : data['stallIds'] as List<String>;
       return await stallService.bookStall(
-          data['stallIds'] as List<String>,
+          stallIds,
           data['businessName']!,
           data['businessPhone']!,
           data['businessEmail']!,

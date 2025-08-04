@@ -46,7 +46,31 @@ class UpcomingData implements EventData {
   final bool hasStalls;
   @override
   final List<String> floorPlans;
+  @override
+  final String? registrationOpen;
+  @override
+  final String? registrationClose;
+  @override
+  final String entryType;
+  @override
+  final String eventType;
+  @override
+  final String? proposal;
+  @override
+  final String scheduleStart;
+  @override
+  final String scheduleEnd;
+  @override
+  final String? organizer;
+  @override
+  final String? organizerLogo;
+  @override
+  final String? googleMapUrl;
 
+  @override
+  final String? managedBy;
+  @override
+  final String? managedByLogo;
   UpcomingData(
       {this.poster,
       required this.eventId,
@@ -57,7 +81,19 @@ class UpcomingData implements EventData {
       required this.ticketTiers,
       required this.location,
       required this.hasStalls,
-      required this.floorPlans});
+      required this.floorPlans,
+      this.registrationOpen,
+      this.registrationClose,
+      required this.entryType,
+      required this.eventType,
+      this.proposal,
+      required this.scheduleStart,
+      required this.scheduleEnd,
+      this.organizer,
+      this.organizerLogo,
+      this.googleMapUrl,
+      this.managedBy,
+      this.managedByLogo});
 
   factory UpcomingData.fromJson(Map<String, dynamic> json) {
     return UpcomingData(
@@ -72,7 +108,19 @@ class UpcomingData implements EventData {
           json['ticketTiers'].map((e) => UpcomingTicketTier.fromJson(e)),
         ),
         location: json['location'],
-        hasStalls: json['hasStalls'] ?? false);
+        hasStalls: json['hasStalls'] ?? false,
+        registrationOpen: json['registrationOpen'] ?? '',
+        registrationClose: json['registrationClose'] ?? '',
+        entryType: json['entryType'],
+        eventType: json['eventType'],
+        proposal: json['proposal'],
+        scheduleStart: json['scheduleStart'],
+        scheduleEnd: json['scheduleEnd'],
+        organizer: json['organizer'] ?? '',
+        organizerLogo: json['organizerLogo'] ?? '',
+        googleMapUrl: json['googleMapUrl'] ?? '',
+        managedBy: json['managedBy'] ?? '',
+        managedByLogo: json['managedByLogo'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +135,18 @@ class UpcomingData implements EventData {
       'location': location,
       'hasStalls': hasStalls,
       'floorPlans': floorPlans.map((e) => e).toList(),
+      'registrationOpen': registrationOpen,
+      'registrationClose': registrationClose,
+      'entryType': entryType,
+      ' eventType': eventType,
+      'proposal': proposal,
+      'scheduleStart': scheduleStart,
+      'scheduleEnd': scheduleEnd,
+      'organizer': organizer,
+      'organizerLogo': organizerLogo,
+      'googleMapUrl': googleMapUrl,
+      'managedBy': managedBy,
+      'managedByLogo': managedByLogo
     };
   }
 }
